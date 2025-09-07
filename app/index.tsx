@@ -25,7 +25,6 @@ export default function SplashScreen() {
 
   return (
     <>
-      <Stack.Screen options={{ headerShown: false }} />
       <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
         <Image
           source={require('../assets/images/splash-earth.jpg')}
