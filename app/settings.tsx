@@ -1,12 +1,21 @@
 // app/settings.tsx
-import { View, Text, StyleSheet, Switch, ScrollView } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Switch,
+  ScrollView,
+  TouchableOpacity,
+} from 'react-native';
 import { Stack } from 'expo-router';
 import { useTheme } from './context/ThemeContext';
 import { useThemeColors } from './hooks/useThemeColors';
+import { useFontSize, FontSizeLevel } from './context/FontSizeContext';
 
 export default function SettingsScreen() {
   const { isDark, toggleTheme } = useTheme();
   const colors = useThemeColors();
+  const { fontSize, setFontSize, fontSizeOptions } = useFontSize();
 
   return (
     <>
@@ -15,13 +24,12 @@ export default function SettingsScreen() {
           title: '应用设置',
           headerShown: true,
           headerStyle: { backgroundColor: colors.card },
-          headerTintColor: colors.text,	// 后退箭头颜色
+          headerTintColor: colors.text,
           headerTitleStyle: { color: colors.text },
         }}
       />
       <ScrollView
         style={[styles.container, { backgroundColor: colors.background }]}>
-
         <View style={[styles.section, { backgroundColor: colors.card }]}>
           <Text
             style={[
@@ -36,7 +44,42 @@ export default function SettingsScreen() {
             switchValue={isDark}
             onSwitchChange={toggleTheme}
           />
-          <SettingItem title='字体大小' value='中等' />
+
+          {/* 新增字体大小选择器 */}
+          <View
+            style={[styles.settingItem, { borderBottomColor: colors.border }]}>
+            <Text style={[styles.settingTitle, { color: colors.text }]}>
+              字体大小
+            </Text>
+            <View style={styles.fontSizeOptions}>
+              {fontSizeOptions.map((option) => (
+                <TouchableOpacity
+                  key={option.value}
+                  style={[
+                    styles.fontSizeOption,
+                    fontSize === option.value && styles.fontSizeOptionSelected,
+                    {
+                      backgroundColor:
+                        fontSize === option.value
+                          ? colors.primary
+                          : 'transparent',
+                    },
+                  ]}
+                  onPress={() => setFontSize(option.value)}>
+                  <Text
+                    style={[
+                      styles.fontSizeOptionText,
+                      {
+                        color:
+                          fontSize === option.value ? '#FFFFFF' : colors.text,
+                      },
+                    ]}>
+                    {option.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
         </View>
 
         <View style={[styles.section, { backgroundColor: colors.card }]}>
@@ -114,5 +157,24 @@ const styles = StyleSheet.create({
   },
   settingValue: {
     fontSize: 14,
+  },
+  // 新增字体大小选择器样式
+  fontSizeOptions: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  fontSizeOption: {
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#007AFF',
+  },
+  fontSizeOptionSelected: {
+    backgroundColor: '#007AFF',
+  },
+  fontSizeOptionText: {
+    fontSize: 14,
+    fontWeight: '500',
   },
 });

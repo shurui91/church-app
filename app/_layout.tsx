@@ -3,6 +3,7 @@ import { Stack, usePathname } from 'expo-router';
 import CustomTabBar from './components/CustomTabBar';
 import { ThemeProvider } from './context/ThemeContext';
 import { useThemeColors } from './hooks/useThemeColors';
+import { FontSizeProvider } from './context/FontSizeContext';
 
 // 定义需要显示底部导航栏的路由白名单
 const TAB_BAR_ROUTES = ['/home', '/profile'];
@@ -54,7 +55,9 @@ function ThemedLayout() {
 export default function RootLayout() {
   return (
     <ThemeProvider>
-      <ThemedLayout />
+      <FontSizeProvider>
+        <ThemedLayout />
+      </FontSizeProvider>
     </ThemeProvider>
   );
 }

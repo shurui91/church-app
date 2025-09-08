@@ -11,10 +11,10 @@ const tabs = [
     activeIcon: 'home',
   },
   {
-    name: '我',
+    name: '设置',
     path: '/profile',
-    icon: 'settings-outline',
-    activeIcon: 'settings',
+    icon: 'cog-outline',
+    activeIcon: 'cog',
   },
 ];
 
