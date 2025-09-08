@@ -7,6 +7,8 @@ import {
   TouchableOpacity,
   Alert,
   Modal,
+  Linking,
+  Platform,
 } from 'react-native';
 import { Stack } from 'expo-router';
 import { useThemeColors } from './hooks/useThemeColors';
@@ -20,7 +22,7 @@ const zoomMeetings = [
   {
     id: 1,
     title: '主日聚会',
-    time: '每周日 10:00am - 12:15pm',
+    time: '每主日上午 10:00am - 12:15pm',
     meetingId: '865 7676 6857',
     password: '603550',
     link: 'https://us02web.zoom.us/j/86576766857?pwd=bXFRSW4wR3grQlFibDB1Ry9lVkZ0Zz09',
@@ -28,7 +30,7 @@ const zoomMeetings = [
   {
     id: 2,
     title: '李常受文集聚会',
-    time: '每主日 4:00 - 5:00pm',
+    time: '每主日下午 4:00 - 5:00pm',
     meetingId: '865 7676 6857',
     password: '603550',
     link: 'https://us02web.zoom.us/j/86576766857?pwd=bXFRSW4wR3grQlFibDB1Ry9lVkZ0Zz09',
@@ -62,11 +64,45 @@ export default function MeetingScreen() {
     }
   };
 
+  // 打开 Zoom 会议
+  const openZoomMeeting = async (meeting: any) => {
+    try {
+      // 尝试直接打开 Zoom App
+      const zoomUrl = `zoomus://zoom.us/join?action=join&confno=${meeting.meetingId.replace(
+        /\s/g,
+        ''
+      )}&pwd=${meeting.password}`;
+
+      // 检查是否可以打开 Zoom App
+      const canOpen = await Linking.canOpenURL(zoomUrl);
+
+      if (canOpen) {
+        await Linking.openURL(zoomUrl);
+      } else {
+        // 如果 Zoom App 未安装，打开网页版 Zoom
+        await Linking.openURL(meeting.link);
+      }
+    } catch (error) {
+      Alert.alert(
+        '打开会议失败',
+        '请确保已安装 Zoom App 或使用网页版参加聚会',
+        [
+          {
+            text: '复制链接',
+            onPress: () => Clipboard.setStringAsync(meeting.link),
+          },
+          { text: '确定', style: 'cancel' },
+        ]
+      );
+    }
+  };
+
   return (
     <>
       <Stack.Screen
         options={{
           title: '聚会',
+          headerLeft: () => null,
           headerShown: true,
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
@@ -131,18 +167,6 @@ export default function MeetingScreen() {
                 {meeting.title}
               </Text>
 
-              {/* 会议主题 */}
-              <Text
-                style={[
-                  styles.meetingTopic,
-                  {
-                    color: colors.textSecondary,
-                    fontSize: getFontSizeValue(16),
-                  },
-                ]}>
-                {meeting.topic}
-              </Text>
-
               {/* 会议时间 */}
               <View style={styles.infoRow}>
                 <Ionicons
@@ -200,45 +224,50 @@ export default function MeetingScreen() {
                 </Text>
               </View>
 
-              {/* 会议链接 */}
-              <View style={styles.infoRow}>
-                <Ionicons
-                  name='link-outline'
-                  size={getFontSizeValue(16)}
-                  color={colors.textSecondary}
-                />
-                <Text
+              {/* 按钮容器 */}
+              <View style={styles.buttonsContainer}>
+                {/* 一键复制按钮 */}
+                <TouchableOpacity
+                  onPress={() => copyAllMeetingInfo(meeting)}
                   style={[
-                    styles.infoText,
-                    {
-                      color: colors.textSecondary,
-                      fontSize: getFontSizeValue(14),
-                    },
+                    styles.actionButton,
+                    { backgroundColor: colors.primary + '20' },
                   ]}>
-                  会议链接: {meeting.link}
-                </Text>
-              </View>
+                  <Ionicons
+                    name='copy-outline'
+                    size={getFontSizeValue(16)}
+                    color={colors.primary}
+                  />
+                  <Text
+                    style={[
+                      styles.actionButtonText,
+                      { color: colors.primary, fontSize: getFontSizeValue(14) },
+                    ]}>
+                    复制信息
+                  </Text>
+                </TouchableOpacity>
 
-              {/* 一键复制按钮 */}
-              <TouchableOpacity
-                onPress={() => copyAllMeetingInfo(meeting)}
-                style={[
-                  styles.copyAllButton,
-                  { backgroundColor: colors.primary },
-                ]}>
-                <Ionicons
-                  name='copy-outline'
-                  size={getFontSizeValue(16)}
-                  color='#FFFFFF'
-                />
-                <Text
+                {/* 前往聚会按钮 */}
+                <TouchableOpacity
+                  onPress={() => openZoomMeeting(meeting)}
                   style={[
-                    styles.copyAllText,
-                    { color: '#FFFFFF', fontSize: getFontSizeValue(14) },
+                    styles.actionButton,
+                    { backgroundColor: colors.primary },
                   ]}>
-                  一键复制会议信息
-                </Text>
-              </TouchableOpacity>
+                  <Ionicons
+                    name='videocam-outline'
+                    size={getFontSizeValue(16)}
+                    color='#FFFFFF'
+                  />
+                  <Text
+                    style={[
+                      styles.actionButtonText,
+                      { color: '#FFFFFF', fontSize: getFontSizeValue(14) },
+                    ]}>
+                    前往聚会
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
           ))}
         </View>
@@ -309,10 +338,6 @@ const styles = StyleSheet.create({
   },
   meetingTitle: {
     fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  meetingTopic: {
-    fontWeight: '600',
     marginBottom: 12,
   },
   infoRow: {
@@ -326,16 +351,23 @@ const styles = StyleSheet.create({
     marginRight: 12,
     flex: 1,
   },
-  copyAllButton: {
+  // 按钮容器
+  buttonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    gap: 12,
+  },
+  actionButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     padding: 12,
     borderRadius: 8,
-    marginTop: 12,
+    gap: 6,
   },
-  copyAllText: {
-    marginLeft: 8,
+  actionButtonText: {
     fontWeight: '600',
   },
   // 模态框样式

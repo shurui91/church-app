@@ -10,11 +10,11 @@ const tabs = [
     icon: 'videocam-outline',
     activeIcon: 'videocam',
   },
-  {
-    name: '首页',
-    path: '/home',
-    icon: 'home-outline',
-    activeIcon: 'home',
+  { 
+    name: '通知',
+    path: '/announcement', 
+    icon: 'notifications-outline',
+    activeIcon: 'notifications'
   },
   {
     name: '设置',
