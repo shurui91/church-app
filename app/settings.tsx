@@ -10,7 +10,7 @@ import {
 import { Stack } from 'expo-router';
 import { useTheme } from './context/ThemeContext';
 import { useThemeColors } from './hooks/useThemeColors';
-import { useFontSize, FontSizeLevel } from './context/FontSizeContext';
+import { useFontSize } from './context/FontSizeContext';
 
 export default function SettingsScreen() {
   const { isDark, toggleTheme } = useTheme();

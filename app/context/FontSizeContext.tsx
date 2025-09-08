@@ -58,8 +58,8 @@ export function FontSizeProvider({ children }: { children: React.ReactNode }) {
     const multipliers = {
       small: 0.9,
       medium: 1,
-      large: 1.2,
-      xlarge: 1.4,
+      large: 1.3,
+      xlarge: 1.5,
     };
     return Math.round(baseSize * multipliers[fontSize]);
   };
