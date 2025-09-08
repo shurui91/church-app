@@ -1,11 +1,18 @@
 // app/(tabs)/home.tsx
 import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
+import { useThemeColors } from './hooks/useThemeColors';
 
 export default function HomeScreen() {
+  const colors = useThemeColors();
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text style={styles.text}>首页内容 🏠</Text>
+    <SafeAreaView
+      style={[styles.container, { backgroundColor: colors.background }]}>
+      <View style={[styles.content, { backgroundColor: colors.background }]}>
+        <Text style={[styles.text, { color: colors.text }]}>首页内容 🏠</Text>
+        <Text style={[styles.subtext, { color: colors.textSecondary }]}>
+          欢迎使用我们的应用
+        </Text>
       </View>
     </SafeAreaView>
   );
@@ -14,7 +21,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f9fa',
   },
   content: {
     flex: 1,
@@ -22,5 +28,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingBottom: 60, // 为底部导航栏留出空间
   },
-  text: { fontSize: 20 },
+  text: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  subtext: {
+    fontSize: 16,
+  },
 });
