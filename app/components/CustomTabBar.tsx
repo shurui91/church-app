@@ -5,6 +5,12 @@ import { useThemeColors } from '../hooks/useThemeColors';
 
 const tabs = [
   {
+    name: '线上聚会',
+    path: '/meeting',
+    icon: 'videocam-outline',
+    activeIcon: 'videocam',
+  },
+  {
     name: '首页',
     path: '/home',
     icon: 'home-outline',

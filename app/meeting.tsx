@@ -1,0 +1,376 @@
+// app/meeting.tsx
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  TouchableOpacity,
+  Alert,
+  Modal,
+} from 'react-native';
+import { Stack } from 'expo-router';
+import { useThemeColors } from './hooks/useThemeColors';
+import { useFontSize } from './context/FontSizeContext';
+import * as Clipboard from 'expo-clipboard';
+import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
+
+// Zoom聚会数据
+const zoomMeetings = [
+  {
+    id: 1,
+    title: '主日聚会',
+    time: '每周日 10:00am - 12:15pm',
+    meetingId: '865 7676 6857',
+    password: '603550',
+    link: 'https://us02web.zoom.us/j/86576766857?pwd=bXFRSW4wR3grQlFibDB1Ry9lVkZ0Zz09',
+  },
+  {
+    id: 2,
+    title: '李常受文集聚会',
+    time: '每主日 4:00 - 5:00pm',
+    meetingId: '865 7676 6857',
+    password: '603550',
+    link: 'https://us02web.zoom.us/j/86576766857?pwd=bXFRSW4wR3grQlFibDB1Ry9lVkZ0Zz09',
+  },
+];
+
+export default function MeetingScreen() {
+  const colors = useThemeColors();
+  const { getFontSizeValue } = useFontSize();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [copiedMeeting, setCopiedMeeting] = useState<any>(null);
+
+  // 复制所有会议信息到剪贴板
+  const copyAllMeetingInfo = async (meeting: any) => {
+    try {
+      const meetingInfo = `会议标题: ${meeting.title}
+会议ID: ${meeting.meetingId}
+会议密码: ${meeting.password}
+会议链接: ${meeting.link}`;
+
+      await Clipboard.setStringAsync(meetingInfo);
+      setCopiedMeeting(meeting);
+      setModalVisible(true);
+
+      // 2秒后自动关闭模态框
+      setTimeout(() => {
+        setModalVisible(false);
+      }, 2000);
+    } catch (error) {
+      Alert.alert('复制失败', '请重试');
+    }
+  };
+
+  return (
+    <>
+      <Stack.Screen
+        options={{
+          title: '聚会',
+          headerShown: true,
+          headerStyle: { backgroundColor: colors.card },
+          headerTintColor: colors.text,
+          headerTitleStyle: {
+            color: colors.text,
+            fontSize: getFontSizeValue(18),
+          },
+        }}
+      />
+      <ScrollView
+        style={[styles.container, { backgroundColor: colors.background }]}>
+        <View style={styles.content}>
+          <Text
+            style={[
+              styles.title,
+              {
+                color: colors.text,
+                fontSize: getFontSizeValue(24),
+                lineHeight: getFontSizeValue(24) * 1.4,
+              },
+            ]}>
+            聚会活动 🎉
+          </Text>
+
+          <Text
+            style={[
+              styles.paragraph,
+              {
+                color: colors.textSecondary,
+                fontSize: getFontSizeValue(16),
+                lineHeight: getFontSizeValue(16) * 1.5,
+                marginBottom: getFontSizeValue(24),
+              },
+            ]}>
+            欢迎参加我们的聚会活动！以下是近期的Zoom会议信息。
+          </Text>
+
+          {/* Zoom会议列表 */}
+          {zoomMeetings.map((meeting, index) => (
+            <View
+              key={meeting.id}
+              style={[
+                styles.meetingCard,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.borderLight,
+                  marginBottom:
+                    index === zoomMeetings.length - 1
+                      ? 0
+                      : getFontSizeValue(16),
+                },
+              ]}>
+              {/* 会议标题 */}
+              <Text
+                style={[
+                  styles.meetingTitle,
+                  {
+                    color: colors.text,
+                    fontSize: getFontSizeValue(20),
+                  },
+                ]}>
+                {meeting.title}
+              </Text>
+
+              {/* 会议主题 */}
+              <Text
+                style={[
+                  styles.meetingTopic,
+                  {
+                    color: colors.textSecondary,
+                    fontSize: getFontSizeValue(16),
+                  },
+                ]}>
+                {meeting.topic}
+              </Text>
+
+              {/* 会议时间 */}
+              <View style={styles.infoRow}>
+                <Ionicons
+                  name='time-outline'
+                  size={getFontSizeValue(16)}
+                  color={colors.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.infoText,
+                    {
+                      color: colors.textSecondary,
+                      fontSize: getFontSizeValue(14),
+                    },
+                  ]}>
+                  {meeting.time}
+                </Text>
+              </View>
+
+              {/* 会议ID */}
+              <View style={styles.infoRow}>
+                <Ionicons
+                  name='key-outline'
+                  size={getFontSizeValue(16)}
+                  color={colors.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.infoText,
+                    {
+                      color: colors.textSecondary,
+                      fontSize: getFontSizeValue(14),
+                    },
+                  ]}>
+                  会议ID: {meeting.meetingId}
+                </Text>
+              </View>
+
+              {/* 密码 */}
+              <View style={styles.infoRow}>
+                <Ionicons
+                  name='lock-closed-outline'
+                  size={getFontSizeValue(16)}
+                  color={colors.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.infoText,
+                    {
+                      color: colors.textSecondary,
+                      fontSize: getFontSizeValue(14),
+                    },
+                  ]}>
+                  密码: {meeting.password}
+                </Text>
+              </View>
+
+              {/* 会议链接 */}
+              <View style={styles.infoRow}>
+                <Ionicons
+                  name='link-outline'
+                  size={getFontSizeValue(16)}
+                  color={colors.textSecondary}
+                />
+                <Text
+                  style={[
+                    styles.infoText,
+                    {
+                      color: colors.textSecondary,
+                      fontSize: getFontSizeValue(14),
+                    },
+                  ]}>
+                  会议链接: {meeting.link}
+                </Text>
+              </View>
+
+              {/* 一键复制按钮 */}
+              <TouchableOpacity
+                onPress={() => copyAllMeetingInfo(meeting)}
+                style={[
+                  styles.copyAllButton,
+                  { backgroundColor: colors.primary },
+                ]}>
+                <Ionicons
+                  name='copy-outline'
+                  size={getFontSizeValue(16)}
+                  color='#FFFFFF'
+                />
+                <Text
+                  style={[
+                    styles.copyAllText,
+                    { color: '#FFFFFF', fontSize: getFontSizeValue(14) },
+                  ]}>
+                  一键复制会议信息
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+
+      {/* 复制成功模态框 */}
+      <Modal
+        animationType='fade'
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+            <Ionicons
+              name='checkmark-circle'
+              size={getFontSizeValue(48)}
+              color={colors.primary}
+            />
+            <Text
+              style={[
+                styles.modalTitle,
+                { color: colors.text, fontSize: getFontSizeValue(18) },
+              ]}>
+              复制成功！
+            </Text>
+            <Text
+              style={[
+                styles.modalText,
+                { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
+              ]}>
+              {copiedMeeting?.title} 的会议信息已复制到剪贴板
+            </Text>
+            <Text
+              style={[
+                styles.modalSubText,
+                { color: colors.textTertiary, fontSize: getFontSizeValue(12) },
+              ]}>
+              ID、密码和链接都已准备好分享
+            </Text>
+          </View>
+        </View>
+      </Modal>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  content: {
+    padding: 20,
+  },
+  title: {
+    fontWeight: 'bold',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  paragraph: {
+    marginBottom: 12,
+    textAlign: 'center',
+  },
+  meetingCard: {
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginBottom: 16,
+  },
+  meetingTitle: {
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  meetingTopic: {
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+    flexWrap: 'wrap',
+  },
+  infoText: {
+    marginLeft: 8,
+    marginRight: 12,
+    flex: 1,
+  },
+  copyAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 12,
+    borderRadius: 8,
+    marginTop: 12,
+  },
+  copyAllText: {
+    marginLeft: 8,
+    fontWeight: '600',
+  },
+  // 模态框样式
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    margin: 20,
+    borderRadius: 16,
+    padding: 24,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    minWidth: '80%',
+  },
+  modalTitle: {
+    fontWeight: 'bold',
+    marginTop: 16,
+    marginBottom: 8,
+    textAlign: 'center',
+  },
+  modalText: {
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  modalSubText: {
+    textAlign: 'center',
+  },
+});

@@ -16,7 +16,7 @@ export default function SplashScreen() {
         useNativeDriver: true,
       }).start(() => {
         // 动画完成后跳转
-        router.replace('/home');
+        router.replace('/meeting');
       });
     }, 3500);
 
