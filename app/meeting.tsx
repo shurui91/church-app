@@ -8,7 +8,6 @@ import {
   Alert,
   Modal,
   Linking,
-  Platform,
 } from 'react-native';
 import { Stack } from 'expo-router';
 import { useThemeColors } from './hooks/useThemeColors';
@@ -16,6 +15,7 @@ import { useFontSize } from './context/FontSizeContext';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Zoom聚会数据
 const zoomMeetings = [
@@ -98,12 +98,13 @@ export default function MeetingScreen() {
   };
 
   return (
-    <>
+    <SafeAreaView
+      style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
           title: '聚会',
-          headerLeft: () => null,
-          headerShown: true,
+          headerShown: false,
+		  headerBackVisible: false,
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
           headerTitleStyle: {
@@ -112,8 +113,11 @@ export default function MeetingScreen() {
           },
         }}
       />
+
       <ScrollView
-        style={[styles.container, { backgroundColor: colors.background }]}>
+        style={styles.container}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           <Text
             style={[
@@ -310,16 +314,23 @@ export default function MeetingScreen() {
           </View>
         </View>
       </Modal>
-    </>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
   container: {
     flex: 1,
   },
+  scrollContent: {
+    flexGrow: 1,
+  },
   content: {
     padding: 20,
+    paddingBottom: 40, // 增加底部内边距确保内容不被遮挡
   },
   title: {
     fontWeight: 'bold',

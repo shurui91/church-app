@@ -21,11 +21,11 @@ function ThemedLayout() {
           headerShown: false,
           contentStyle: { backgroundColor: colors.background },
         }}>
-        <Stack.Screen name='index' options={{ headerShown: false }} />
-        <Stack.Screen name='home' options={{ headerShown: false }} />
-        <Stack.Screen name='profile' options={{ headerShown: false }} />
-		<Stack.Screen name='meeting' options={{ headerShown: false }} />
-		<Stack.Screen name='announcement' options={{ headerShown: false }} />
+        <Stack.Screen name='index' />
+        <Stack.Screen name='home' />
+        <Stack.Screen name='profile' />
+        <Stack.Screen name='meeting' />
+        <Stack.Screen name='announcement' />
         <Stack.Screen
           name='settings'
           options={{
