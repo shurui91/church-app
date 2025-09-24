@@ -40,7 +40,7 @@ const sections = [
 
 export default function AnnouncementScreen() {
   const colors = useThemeColors();
-  const { getFontSizeValue } = useFontSize();
+  const { fontSize } = useFontSize();
   const [activeTab, setActiveTab] = useState(0); // 0 = 召会通知, 1 = 祷告事项
 
   const renderItem = ({ item }: { item: string }) => (
@@ -49,9 +49,9 @@ export default function AnnouncementScreen() {
         styles.textContent,
         {
           color: colors.text,
-          fontSize: getFontSizeValue(16),
-          lineHeight: getFontSizeValue(16) * 1.6,
-          marginBottom: getFontSizeValue(16),
+          fontSize: fontSize * 0.8,
+          lineHeight: fontSize * 1.3,
+          marginBottom: fontSize * 0.8,
         },
       ]}>
       {item}
@@ -69,7 +69,7 @@ export default function AnnouncementScreen() {
           headerTintColor: colors.text,
           headerTitleStyle: {
             color: colors.text,
-            fontSize: getFontSizeValue(18),
+            fontSize: fontSize * 0.9,
           },
         }}
       />
@@ -98,7 +98,7 @@ export default function AnnouncementScreen() {
                 styles.tabText,
                 {
                   color: activeTab === index ? colors.primary : colors.text,
-                  fontSize: getFontSizeValue(14),
+                  fontSize: fontSize * 0.7,
                 },
               ]}>
               {section.title}
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   textContent: {
-    lineHeight: 24,
+    // 行高和大小已用内联动态计算
   },
   tabContainer: {
     flexDirection: 'row',
