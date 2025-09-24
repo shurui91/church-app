@@ -7,7 +7,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function BibleScreen() {
   const colors = useThemeColors();
-  const { getFontSizeValue } = useFontSize();
+  const { fontSize } = useFontSize();
 
   // 示例经文内容
   const bibleVerses = [
@@ -50,33 +50,35 @@ export default function BibleScreen() {
           headerTintColor: colors.text,
           headerTitleStyle: {
             color: colors.text,
-            fontSize: getFontSizeValue(18),
+            fontSize: fontSize * 0.9,
           },
         }}
       />
 
       <ScrollView style={styles.scrollView}>
         <View style={styles.content}>
+          {/* 页面标题 */}
           <Text
             style={[
               styles.title,
               {
                 color: colors.text,
-                fontSize: getFontSizeValue(24),
-                lineHeight: getFontSizeValue(24) * 1.4,
+                fontSize: fontSize * 1.2,
+                lineHeight: fontSize * 1.5,
               },
             ]}>
             每日读经 📖
           </Text>
 
+          {/* 副标题 */}
           <Text
             style={[
               styles.subtitle,
               {
                 color: colors.textSecondary,
-                fontSize: getFontSizeValue(16),
-                lineHeight: getFontSizeValue(16) * 1.5,
-                marginBottom: getFontSizeValue(24),
+                fontSize: fontSize,
+                lineHeight: fontSize * 1.5,
+                marginBottom: fontSize * 1.2,
               },
             ]}>
             精选经文，帮助你在主的话语中成长
@@ -96,10 +98,7 @@ export default function BibleScreen() {
               <Text
                 style={[
                   styles.verseReference,
-                  {
-                    color: colors.primary,
-                    fontSize: getFontSizeValue(18),
-                  },
+                  { color: colors.primary, fontSize: fontSize * 0.9 },
                 ]}>
                 {verse.book} {verse.chapter}:{verse.verse}
               </Text>
@@ -109,8 +108,8 @@ export default function BibleScreen() {
                   styles.verseText,
                   {
                     color: colors.text,
-                    fontSize: getFontSizeValue(16),
-                    lineHeight: getFontSizeValue(16) * 1.6,
+                    fontSize: fontSize * 0.8,
+                    lineHeight: fontSize * 1.4,
                   },
                 ]}>
                 {verse.text}
@@ -127,10 +126,7 @@ export default function BibleScreen() {
             <Text
               style={[
                 styles.tipTitle,
-                {
-                  color: colors.primary,
-                  fontSize: getFontSizeValue(18),
-                },
+                { color: colors.primary, fontSize: fontSize * 0.9 },
               ]}>
               📌 读经提示
             </Text>
@@ -139,8 +135,8 @@ export default function BibleScreen() {
                 styles.tipText,
                 {
                   color: colors.textSecondary,
-                  fontSize: getFontSizeValue(14),
-                  lineHeight: getFontSizeValue(14) * 1.5,
+                  fontSize: fontSize * 0.7,
+                  lineHeight: fontSize * 1.3,
                 },
               ]}>
               每天花时间阅读神的话语，让圣经成为你生活的指南和力量的源泉。
@@ -184,7 +180,6 @@ const styles = StyleSheet.create({
   },
   verseText: {
     textAlign: 'center',
-    lineHeight: 24,
   },
   tipContainer: {
     padding: 16,
