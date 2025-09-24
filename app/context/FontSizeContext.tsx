@@ -2,13 +2,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export type FontSizeLevel = 'small' | 'medium' | 'large' | 'xlarge';
-
 interface FontSizeContextType {
-  fontSize: FontSizeLevel;
-  setFontSize: (size: FontSizeLevel) => void;
-  getFontSizeValue: (baseSize: number) => number;
-  fontSizeOptions: { label: string; value: FontSizeLevel }[];
+  fontSize: number;
+  setFontSize: (size: number) => void;
+  min: number;
+  max: number;
+  step: number;
 }
 
 const FontSizeContext = createContext<FontSizeContextType | undefined>(
@@ -16,23 +15,19 @@ const FontSizeContext = createContext<FontSizeContextType | undefined>(
 );
 
 export function FontSizeProvider({ children }: { children: React.ReactNode }) {
-  const [fontSize, setFontSize] = useState<FontSizeLevel>('medium');
+  const [fontSize, setFontSize] = useState<number>(20); // 默认值 20
 
-  // 字体大小选项配置
-  const fontSizeOptions = [
-    { label: '小', value: 'small' as FontSizeLevel },
-    { label: '标准', value: 'medium' as FontSizeLevel },
-    { label: '大', value: 'large' as FontSizeLevel },
-    { label: '超大', value: 'xlarge' as FontSizeLevel },
-  ];
+  const min = 12;
+  const max = 40;
+  const step = 4;
 
+  // 从存储中读取字体大小
   useEffect(() => {
-    // 从存储中读取字体大小设置
     const loadFontSize = async () => {
       try {
         const saved = await AsyncStorage.getItem('fontSize');
-        if (saved && ['small', 'medium', 'large', 'xlarge'].includes(saved)) {
-          setFontSize(saved as FontSizeLevel);
+        if (saved) {
+          setFontSize(Number(saved));
         }
       } catch (error) {
         console.error('Failed to load font size preference', error);
@@ -41,11 +36,11 @@ export function FontSizeProvider({ children }: { children: React.ReactNode }) {
     loadFontSize();
   }, []);
 
-  // 保存字体大小设置
+  // 保存字体大小
   useEffect(() => {
     const saveFontSize = async () => {
       try {
-        await AsyncStorage.setItem('fontSize', fontSize);
+        await AsyncStorage.setItem('fontSize', String(fontSize));
       } catch (error) {
         console.error('Failed to save font size preference', error);
       }
@@ -53,25 +48,8 @@ export function FontSizeProvider({ children }: { children: React.ReactNode }) {
     saveFontSize();
   }, [fontSize]);
 
-  // 根据字体等级获取实际字体大小
-  const getFontSizeValue = (baseSize: number): number => {
-    const multipliers = {
-      small: 0.9,
-      medium: 1,
-      large: 1.3,
-      xlarge: 1.5,
-    };
-    return Math.round(baseSize * multipliers[fontSize]);
-  };
-
   return (
-    <FontSizeContext.Provider
-      value={{
-        fontSize,
-        setFontSize,
-        getFontSizeValue,
-        fontSizeOptions,
-      }}>
+    <FontSizeContext.Provider value={{ fontSize, setFontSize, min, max, step }}>
       {children}
     </FontSizeContext.Provider>
   );
@@ -79,7 +57,7 @@ export function FontSizeProvider({ children }: { children: React.ReactNode }) {
 
 export function useFontSize() {
   const context = useContext(FontSizeContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useFontSize must be used within a FontSizeProvider');
   }
   return context;

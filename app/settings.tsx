@@ -1,21 +1,16 @@
 // app/settings.tsx
-import {
-  View,
-  Text,
-  StyleSheet,
-  Switch,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { View, Text, StyleSheet, Switch, ScrollView } from 'react-native';
 import { Stack } from 'expo-router';
 import { useTheme } from './context/ThemeContext';
 import { useThemeColors } from './hooks/useThemeColors';
 import { useFontSize } from './context/FontSizeContext';
+// import Slider from '@react-native-community/slider';
+import Slider from '@react-native-assets/slider';
 
 export default function SettingsScreen() {
   const { isDark, toggleTheme } = useTheme();
   const colors = useThemeColors();
-  const { fontSize, setFontSize, fontSizeOptions } = useFontSize();
+  const { fontSize, setFontSize } = useFontSize();
 
   return (
     <>
@@ -30,6 +25,7 @@ export default function SettingsScreen() {
       />
       <ScrollView
         style={[styles.container, { backgroundColor: colors.background }]}>
+        {/* 显示设置 */}
         <View style={[styles.section, { backgroundColor: colors.card }]}>
           <Text
             style={[
@@ -45,43 +41,72 @@ export default function SettingsScreen() {
             onSwitchChange={toggleTheme}
           />
 
-          {/* 新增字体大小选择器 */}
+          {/* 字体大小 */}
           <View
-            style={[styles.settingItem, { borderBottomColor: colors.border }]}>
+            style={[
+              styles.settingItemColumn,
+              { borderBottomColor: colors.border },
+            ]}>
             <Text style={[styles.settingTitle, { color: colors.text }]}>
               字体大小
             </Text>
-            <View style={styles.fontSizeOptions}>
-              {fontSizeOptions.map((option) => (
-                <TouchableOpacity
-                  key={option.value}
-                  style={[
-                    styles.fontSizeOption,
-                    fontSize === option.value && styles.fontSizeOptionSelected,
-                    {
-                      backgroundColor:
-                        fontSize === option.value
-                          ? colors.primary
-                          : 'transparent',
-                    },
-                  ]}
-                  onPress={() => setFontSize(option.value)}>
+
+            {/* 示例文字 */}
+            <Text style={[styles.sampleText, { fontSize, color: colors.text }]}>
+              这是一个示例文字
+            </Text>
+
+            {/* 滑动条 */}
+            <View style={{ marginTop: 8 }}>
+              <Slider
+                style={{ width: '100%', height: 40 }}
+                minimumValue={12}
+                maximumValue={40}
+                step={4}
+                value={fontSize}
+                onValueChange={setFontSize}
+                minimumTrackTintColor={colors.primary}
+                maximumTrackTintColor={colors.border}
+                thumbTintColor={colors.primary}
+              />
+
+              {/* 刻度线 */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                {Array.from(
+                  { length: (40 - 12) / 4 + 1 },
+                  (_, i) => 12 + i * 4
+                ).map((size) => (
                   <Text
-                    style={[
-                      styles.fontSizeOptionText,
-                      {
-                        color:
-                          fontSize === option.value ? '#FFFFFF' : colors.text,
-                      },
-                    ]}>
-                    {option.label}
+                    key={size}
+                    style={{ fontSize: 12, color: colors.textSecondary }}>
+                    |
                   </Text>
-                </TouchableOpacity>
-              ))}
+                ))}
+              </View>
+
+              {/* 刻度文字 */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                }}>
+                {[12, 40].map((size) => (
+                  <Text
+                    key={size}
+                    style={{ fontSize: 12, color: colors.textSecondary }}>
+                    {size}
+                  </Text>
+                ))}
+              </View>
             </View>
           </View>
         </View>
 
+        {/* 其他设置 */}
         <View style={[styles.section, { backgroundColor: colors.card }]}>
           <Text
             style={[
@@ -152,29 +177,19 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderBottomWidth: 1,
   },
+  settingItemColumn: {
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+  },
   settingTitle: {
     fontSize: 16,
+    marginBottom: 12,
   },
   settingValue: {
     fontSize: 14,
   },
-  // 新增字体大小选择器样式
-  fontSizeOptions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  fontSizeOption: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#007AFF',
-  },
-  fontSizeOptionSelected: {
-    backgroundColor: '#007AFF',
-  },
-  fontSizeOptionText: {
-    fontSize: 14,
-    fontWeight: '500',
+  sampleText: {
+    marginBottom: 12,
+    textAlign: 'center',
   },
 });

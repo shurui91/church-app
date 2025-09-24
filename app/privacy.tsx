@@ -5,20 +5,14 @@ import { useFontSize } from './context/FontSizeContext';
 
 export default function PrivacyScreen() {
   const colors = useThemeColors();
-  const { getFontSizeValue } = useFontSize();
+  const { fontSize } = useFontSize();
 
-  // 定义基准字体大小
-  const baseSizes = {
-    title: 24,
-    subtitle: 18,
-    paragraph: 16,
-  };
+  // 动态字号
+  const titleSize = fontSize * 1.2;
+  const subtitleSize = fontSize * 0.9;
+  const paragraphSize = fontSize * 0.8;
 
-  // 计算动态字体大小和行高
-  const titleSize = getFontSizeValue(baseSizes.title);
-  const subtitleSize = getFontSizeValue(baseSizes.subtitle);
-  const paragraphSize = getFontSizeValue(baseSizes.paragraph);
-
+  // 行高
   const titleLineHeight = titleSize * 1.4;
   const subtitleLineHeight = subtitleSize * 1.4;
   const paragraphLineHeight = paragraphSize * 1.5;
@@ -33,7 +27,7 @@ export default function PrivacyScreen() {
           headerTintColor: colors.text,
           headerTitleStyle: {
             color: colors.text,
-            fontSize: getFontSizeValue(18), // 头部标题也支持字体大小调整
+            fontSize: fontSize * 0.9, // 动态标题大小
           },
         }}
       />
@@ -47,7 +41,7 @@ export default function PrivacyScreen() {
                 color: colors.text,
                 fontSize: titleSize,
                 lineHeight: titleLineHeight,
-                marginBottom: titleSize * 0.67, // 动态间距
+                marginBottom: titleSize * 0.67,
               },
             ]}>
             隐私政策
@@ -191,7 +185,5 @@ const styles = StyleSheet.create({
   subtitle: {
     fontWeight: '600',
   },
-  paragraph: {
-    // 所有样式都移到内联样式，以便动态计算
-  },
+  paragraph: {},
 });
