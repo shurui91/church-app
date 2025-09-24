@@ -27,7 +27,7 @@ export default function SplashScreen() {
     <>
       <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
         <Image
-          source={require('../assets/images/splash-earth.jpg')}
+          source={require('../assets/images/splash-book.png')}
           style={styles.image}
           resizeMode='cover'
         />

@@ -6,7 +6,7 @@ import { useThemeColors } from './hooks/useThemeColors';
 import { FontSizeProvider } from './context/FontSizeContext';
 
 // 定义需要显示底部导航栏的路由白名单
-const TAB_BAR_ROUTES = ['/home', '/profile', '/meeting', '/announcement'];
+const TAB_BAR_ROUTES = ['/home', '/profile', '/meeting', '/announcement', '/bible'];
 
 function ThemedLayout() {
   const pathname = usePathname();
@@ -26,6 +26,7 @@ function ThemedLayout() {
         <Stack.Screen name='profile' />
         <Stack.Screen name='meeting' />
         <Stack.Screen name='announcement' />
+		<Stack.Screen name='bible' />
         <Stack.Screen
           name='settings'
           options={{

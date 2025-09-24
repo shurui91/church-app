@@ -104,7 +104,7 @@ export default function MeetingScreen() {
         options={{
           title: '聚会',
           headerShown: false,
-		  headerBackVisible: false,
+          headerBackVisible: false,
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
           headerTitleStyle: {

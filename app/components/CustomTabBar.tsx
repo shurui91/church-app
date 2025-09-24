@@ -11,6 +11,12 @@ const tabs = [
     activeIcon: 'videocam',
   },
   { 
+    name: '读经',
+    path: '/bible', 
+    icon: 'book-outline',
+    activeIcon: 'book'
+  },
+  { 
     name: '通知',
     path: '/announcement', 
     icon: 'notifications-outline',
