@@ -8,8 +8,8 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { Stack } from 'expo-router';
-import { useThemeColors } from './hooks/useThemeColors';
-import { useFontSize } from './context/FontSizeContext';
+import { useThemeColors } from './src/hooks/useThemeColors';
+import { useFontSize } from './src/context/FontSizeContext';
 import { useState } from 'react';
 
 const sections = [
@@ -40,7 +40,8 @@ const sections = [
 
 export default function AnnouncementScreen() {
   const colors = useThemeColors();
-  const { fontSize } = useFontSize();
+  const { fontSize: rawFontSize } = useFontSize();
+  const fontSize = Number.isFinite(rawFontSize) ? rawFontSize : 16;
   const [activeTab, setActiveTab] = useState(0); // 0 = 召会通知, 1 = 祷告事项
 
   const renderItem = ({ item }: { item: string }) => (

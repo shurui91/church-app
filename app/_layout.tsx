@@ -1,9 +1,9 @@
 // app/_layout.tsx
 import { Stack, usePathname } from 'expo-router';
 import CustomTabBar from './components/CustomTabBar';
-import { ThemeProvider } from './context/ThemeContext';
-import { useThemeColors } from './hooks/useThemeColors';
-import { FontSizeProvider } from './context/FontSizeContext';
+import { ThemeProvider } from './src/context/ThemeContext';
+import { useThemeColors } from './src/hooks/useThemeColors';
+import { FontSizeProvider } from './src/context/FontSizeContext';
 
 // 定义需要显示底部导航栏的路由白名单
 const TAB_BAR_ROUTES = ['/home', '/profile', '/meeting', '/announcement', '/bible'];

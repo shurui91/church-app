@@ -27,7 +27,13 @@ export function FontSizeProvider({ children }: { children: React.ReactNode }) {
       try {
         const saved = await AsyncStorage.getItem('fontSize');
         if (saved) {
-          setFontSize(Number(saved));
+          const parsed = Number(saved);
+          if (!Number.isFinite(parsed)) {
+            // 如果解析失败，回退到默认值
+            setFontSize(20);
+          } else {
+            setFontSize(parsed);
+          }
         }
       } catch (error) {
         console.error('Failed to load font size preference', error);
@@ -36,11 +42,13 @@ export function FontSizeProvider({ children }: { children: React.ReactNode }) {
     loadFontSize();
   }, []);
 
-  // 保存字体大小
+  // 保存字体大小（确保不会存 NaN）
   useEffect(() => {
     const saveFontSize = async () => {
       try {
-        await AsyncStorage.setItem('fontSize', String(fontSize));
+        if (Number.isFinite(fontSize)) {
+          await AsyncStorage.setItem('fontSize', String(fontSize));
+        }
       } catch (error) {
         console.error('Failed to save font size preference', error);
       }

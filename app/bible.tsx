@@ -8,8 +8,8 @@ import {
 } from 'react-native';
 import oldTestament from '../assets/old.json';
 import newTestament from '../assets/new.json';
-import { useThemeColors } from './hooks/useThemeColors';
-import { useFontSize } from './context/FontSizeContext';
+import { useThemeColors } from './src/hooks/useThemeColors';
+import { useFontSize } from './src/context/FontSizeContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -39,7 +39,8 @@ function groupByChapter(data: any[]) {
 
 export default function BibleScreen() {
   const colors = useThemeColors();
-  const { fontSize } = useFontSize();
+  const { fontSize: rawFontSize } = useFontSize();
+  const fontSize = rawFontSize || 16;
   const [oldChapters, setOldChapters] = useState<any[]>([]);
   const [newChapters, setNewChapters] = useState<any[]>([]);
   const [formattedDate, setFormattedDate] = useState('');

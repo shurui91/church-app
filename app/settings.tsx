@@ -1,16 +1,16 @@
 // app/settings.tsx
 import { View, Text, StyleSheet, Switch, ScrollView } from 'react-native';
 import { Stack } from 'expo-router';
-import { useTheme } from './context/ThemeContext';
-import { useThemeColors } from './hooks/useThemeColors';
-import { useFontSize } from './context/FontSizeContext';
+import { useTheme } from './src/context/ThemeContext';
+import { useThemeColors } from './src/hooks/useThemeColors';
+import { useFontSize } from './src/context/FontSizeContext';
 // import Slider from '@react-native-community/slider';
 import Slider from '@react-native-assets/slider';
 
 export default function SettingsScreen() {
   const { isDark, toggleTheme } = useTheme();
   const colors = useThemeColors();
-  const { fontSize, setFontSize } = useFontSize();
+  const { fontSize = 16, setFontSize } = useFontSize();
 
   return (
     <>

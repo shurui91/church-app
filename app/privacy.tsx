@@ -1,11 +1,11 @@
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Stack } from 'expo-router';
-import { useThemeColors } from './hooks/useThemeColors';
-import { useFontSize } from './context/FontSizeContext';
+import { useThemeColors } from './src/hooks/useThemeColors';
+import { useFontSize } from './src/context/FontSizeContext';
 
 export default function PrivacyScreen() {
   const colors = useThemeColors();
-  const { fontSize } = useFontSize();
+  const { fontSize = 16 } = useFontSize();
 
   // 动态字号
   const titleSize = fontSize * 1.2;

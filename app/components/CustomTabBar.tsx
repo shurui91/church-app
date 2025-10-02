@@ -1,7 +1,7 @@
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useThemeColors } from '../hooks/useThemeColors';
+import { useThemeColors } from '../src/hooks/useThemeColors';
 
 const tabs = [
   {

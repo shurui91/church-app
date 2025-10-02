@@ -1,6 +1,6 @@
 // app/(tabs)/home.tsx
 import { View, Text, StyleSheet, SafeAreaView } from 'react-native';
-import { useThemeColors } from './hooks/useThemeColors';
+import { useThemeColors } from './src/hooks/useThemeColors';
 
 export default function HomeScreen() {
   const colors = useThemeColors();

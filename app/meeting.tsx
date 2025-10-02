@@ -10,8 +10,8 @@ import {
   Linking,
 } from 'react-native';
 import { Stack } from 'expo-router';
-import { useThemeColors } from './hooks/useThemeColors';
-import { useFontSize } from './context/FontSizeContext';
+import { useThemeColors } from './src/hooks/useThemeColors';
+import { useFontSize } from './src/context/FontSizeContext';
 import * as Clipboard from 'expo-clipboard';
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
@@ -39,7 +39,7 @@ const zoomMeetings = [
 
 export default function MeetingScreen() {
   const colors = useThemeColors();
-  const { fontSize } = useFontSize();
+  const { fontSize = 16 } = useFontSize();
   const [modalVisible, setModalVisible] = useState(false);
   const [copiedMeeting, setCopiedMeeting] = useState<any>(null);
 
