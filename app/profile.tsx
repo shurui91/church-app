@@ -47,9 +47,9 @@ export default function ProfileScreen() {
           <Text style={[styles.versionText, { color: colors.textSecondary }]}>
             版本号: 1.0.0
           </Text>
-          <Text style={[styles.copyrightText, { color: colors.textTertiary }]}>
-            © {new Date().getFullYear()} Church in Cerritos. All rights reserved.
-          </Text>
+          {/* <Text style={[styles.copyrightText, { color: colors.textTertiary }]}>
+            © {new Date().getFullYear()} Church App. All rights reserved.
+          </Text> */}
         </View>
       </ScrollView>
     </SafeAreaView>
