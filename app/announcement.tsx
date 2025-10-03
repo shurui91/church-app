@@ -7,45 +7,53 @@ import {
   StyleSheet,
   SafeAreaView,
   ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { Stack } from 'expo-router';
 import { useThemeColors } from './src/hooks/useThemeColors';
 import { useFontSize } from './src/context/FontSizeContext';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 
-// 两个 Gist txt Raw 地址
+// 两个 Gist txt Raw 地址（基础地址）
 const ANNOUNCEMENT_URL =
-  'https://gist.githubusercontent.com/shurui91/1f4aa8bf7c23908c97c198e4b762f1f2/raw/a3c8d53025b8b5eab1a9e9979a91a896ff59dd27/annoucement_chinese.txt';
+  'https://gist.githubusercontent.com/shurui91/1f4aa8bf7c23908c97c198e4b762f1f2/raw/annoucement_chinese.txt';
 const PRAYER_URL =
-  'https://gist.githubusercontent.com/shurui91/40ecf68fa147682428df8afc43abcebe/raw/5ffc19b55226fc37d8aa91f80bd142ab0b02626b/prayer_item_chinese.txt';
+  'https://gist.githubusercontent.com/shurui91/40ecf68fa147682428df8afc43abcebe/raw/prayer_item_chinese.txt';
 
 export default function AnnouncementScreen() {
   const colors = useThemeColors();
-  const { getFontSizeValue } = useFontSize(); // ✅ 用 context 提供的函数
+  const { getFontSizeValue } = useFontSize();
 
   const [activeTab, setActiveTab] = useState(0);
   const [announcement, setAnnouncement] = useState<string | null>(null);
   const [prayer, setPrayer] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const fetchData = useCallback(async () => {
+    if (!refreshing) setLoading(true);
+    try {
+      const [announcementRes, prayerRes] = await Promise.all([
+        fetch(`${ANNOUNCEMENT_URL}?t=${Date.now()}`).then((res) => res.text()),
+        fetch(`${PRAYER_URL}?t=${Date.now()}`).then((res) => res.text()),
+      ]);
+      setAnnouncement(announcementRes);
+      setPrayer(prayerRes);
+    } catch (e) {
+      setAnnouncement(null);
+      setPrayer(null);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [refreshing]);
 
   useEffect(() => {
-    Promise.all([
-      fetch(ANNOUNCEMENT_URL)
-        .then((res) => res.text())
-        .catch(() => null),
-      fetch(PRAYER_URL)
-        .then((res) => res.text())
-        .catch(() => null),
-    ])
-      .then(([announcementText, prayerText]) => {
-        setAnnouncement(announcementText);
-        setPrayer(prayerText);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    fetchData();
+  }, [fetchData]);
 
   const renderContent = (content: string | null) => {
-    if (loading) {
+    if (loading && !refreshing) {
       return (
         <ActivityIndicator
           size='large'
@@ -58,12 +66,24 @@ export default function AnnouncementScreen() {
       return <Text style={{ color: colors.error, padding: 20 }}>加载失败</Text>;
     }
     return (
-      <ScrollView contentContainerStyle={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              fetchData();
+            }}
+            colors={[colors.primary]}
+            tintColor={colors.primary}
+          />
+        }>
         <Text
           style={{
             color: colors.text,
-            fontSize: getFontSizeValue(16), // ✅ 字号由 context 保证整数
-            lineHeight: getFontSizeValue(24), // ✅ 行高也交给 context
+            fontSize: getFontSizeValue(16),
+            lineHeight: getFontSizeValue(24),
           }}>
           {content}
         </Text>
@@ -110,7 +130,7 @@ export default function AnnouncementScreen() {
                 styles.tabText,
                 {
                   color: activeTab === index ? colors.primary : colors.text,
-                  fontSize: getFontSizeValue(14), // ✅ tab 字体
+                  fontSize: getFontSizeValue(14),
                 },
               ]}>
               {section.title}
