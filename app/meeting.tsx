@@ -26,6 +26,7 @@ const zoomMeetings = [
     meetingId: '865 7676 6857',
     password: '603550',
     link: 'https://us02web.zoom.us/j/86576766857?pwd=bXFRSW4wR3grQlFibDB1Ry9lVkZ0Zz09',
+    special: '10月主日爱宴是10月13日',
   },
   {
     id: 2,
@@ -47,9 +48,9 @@ export default function MeetingScreen() {
   const copyAllMeetingInfo = async (meeting: any) => {
     try {
       const meetingInfo = `会议标题: ${meeting.title}
-会议ID: ${meeting.meetingId}
-会议密码: ${meeting.password}
-会议链接: ${meeting.link}`;
+      会议ID: ${meeting.meetingId}
+      会议密码: ${meeting.password}
+      会议链接: ${meeting.link}`;
 
       await Clipboard.setStringAsync(meetingInfo);
       setCopiedMeeting(meeting);
@@ -215,6 +216,29 @@ export default function MeetingScreen() {
                   密码: {meeting.password}
                 </Text>
               </View>
+
+              {/* 特别说明 */}
+              {meeting.special && (
+                <View
+                  style={[
+                    styles.specialContainer,
+                    { backgroundColor: colors.primary + '20' }, // 半透明高亮
+                  ]}>
+                  <Ionicons
+                    name='star'
+                    size={fontSize * 0.9}
+                    color={colors.primary}
+                    style={{ marginRight: 6 }}
+                  />
+                  <Text
+                    style={[
+                      styles.specialText,
+                      { color: colors.primary, fontSize: fontSize * 0.8 },
+                    ]}>
+                    {meeting.special}
+                  </Text>
+                </View>
+              )}
 
               {/* 按钮容器 */}
               <View style={styles.buttonsContainer}>
@@ -398,5 +422,15 @@ const styles = StyleSheet.create({
   },
   modalSubText: {
     textAlign: 'center',
+  },
+  specialContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 8,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  specialText: {
+    fontWeight: '700',
   },
 });
