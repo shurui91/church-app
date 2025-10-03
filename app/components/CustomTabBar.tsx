@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     height: 60,
-    paddingBottom: 2, // ← 多留一点空间
+    paddingBottom: 4, // ← 多留一点空间
   },
   tab: {
     flex: 1,

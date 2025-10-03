@@ -1,63 +1,80 @@
 // app/announcement.tsx
 import {
-  FlatList,
+  ScrollView,
   Text,
   View,
   TouchableOpacity,
   StyleSheet,
   SafeAreaView,
+  ActivityIndicator,
 } from 'react-native';
 import { Stack } from 'expo-router';
 import { useThemeColors } from './src/hooks/useThemeColors';
 import { useFontSize } from './src/context/FontSizeContext';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
-const sections = [
-  {
-    title: '召会通知',
-    data: [
-      '1. 新人受浸\n8月31日，主日上午...',
-      '2. 为喜瑞都召会的儿童代祷...',
-      '3. 喜瑞都社区大学校园工作...',
-      '4. 李常受文集展览...',
-      '5. 二○二六年福音月历预购...',
-      '6. 二○二五年感恩节特会...',
-    ],
-  },
-  {
-    title: '祷告事项',
-    data: [
-      '使徒行传 13:23『从这人的后裔中...』',
-      '罗马书 8:2『因为生命之灵的律...』',
-      '哥林多前书 1:23–24『我们却是传扬...』',
-      '壹、儿童工作...',
-      '贰、青少年工作...',
-      '叁、喜瑞都社区大学校园工作...',
-      '肆、请为在病痛中的圣徒代祷...',
-    ],
-  },
-];
+// 两个 Gist txt Raw 地址
+const ANNOUNCEMENT_URL =
+  'https://gist.githubusercontent.com/shurui91/1f4aa8bf7c23908c97c198e4b762f1f2/raw/a3c8d53025b8b5eab1a9e9979a91a896ff59dd27/annoucement_chinese.txt';
+const PRAYER_URL =
+  'https://gist.githubusercontent.com/shurui91/40ecf68fa147682428df8afc43abcebe/raw/5ffc19b55226fc37d8aa91f80bd142ab0b02626b/prayer_item_chinese.txt';
 
 export default function AnnouncementScreen() {
   const colors = useThemeColors();
-  const { fontSize: rawFontSize } = useFontSize();
-  const fontSize = Number.isFinite(rawFontSize) ? rawFontSize : 16;
-  const [activeTab, setActiveTab] = useState(0); // 0 = 召会通知, 1 = 祷告事项
+  const { getFontSizeValue } = useFontSize(); // ✅ 用 context 提供的函数
 
-  const renderItem = ({ item }: { item: string }) => (
-    <Text
-      style={[
-        styles.textContent,
-        {
-          color: colors.text,
-          fontSize: fontSize * 0.8,
-          lineHeight: fontSize * 1.3,
-          marginBottom: fontSize * 0.8,
-        },
-      ]}>
-      {item}
-    </Text>
-  );
+  const [activeTab, setActiveTab] = useState(0);
+  const [announcement, setAnnouncement] = useState<string | null>(null);
+  const [prayer, setPrayer] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      fetch(ANNOUNCEMENT_URL)
+        .then((res) => res.text())
+        .catch(() => null),
+      fetch(PRAYER_URL)
+        .then((res) => res.text())
+        .catch(() => null),
+    ])
+      .then(([announcementText, prayerText]) => {
+        setAnnouncement(announcementText);
+        setPrayer(prayerText);
+      })
+      .finally(() => setLoading(false));
+  }, []);
+
+  const renderContent = (content: string | null) => {
+    if (loading) {
+      return (
+        <ActivityIndicator
+          size='large'
+          color={colors.primary}
+          style={{ marginTop: 20 }}
+        />
+      );
+    }
+    if (!content) {
+      return <Text style={{ color: colors.error, padding: 20 }}>加载失败</Text>;
+    }
+    return (
+      <ScrollView contentContainerStyle={styles.container}>
+        <Text
+          style={{
+            color: colors.text,
+            fontSize: getFontSizeValue(16), // ✅ 字号由 context 保证整数
+            lineHeight: getFontSizeValue(24), // ✅ 行高也交给 context
+          }}>
+          {content}
+        </Text>
+      </ScrollView>
+    );
+  };
+
+  const sections = [
+    { title: '召会通知', content: announcement },
+    { title: '祷告事项', content: prayer },
+  ];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
@@ -66,12 +83,6 @@ export default function AnnouncementScreen() {
           title: '召会通知 & 祷告事项',
           headerShown: false,
           headerBackVisible: false,
-          headerStyle: { backgroundColor: colors.card },
-          headerTintColor: colors.text,
-          headerTitleStyle: {
-            color: colors.text,
-            fontSize: fontSize * 0.9,
-          },
         }}
       />
 
@@ -99,7 +110,7 @@ export default function AnnouncementScreen() {
                 styles.tabText,
                 {
                   color: activeTab === index ? colors.primary : colors.text,
-                  fontSize: fontSize * 0.7,
+                  fontSize: getFontSizeValue(14), // ✅ tab 字体
                 },
               ]}>
               {section.title}
@@ -108,16 +119,8 @@ export default function AnnouncementScreen() {
         ))}
       </View>
 
-      {/* 当前 Tab 的内容 */}
-      <FlatList
-        data={sections[activeTab].data}
-        renderItem={renderItem}
-        keyExtractor={(item, index) => item + index}
-        contentContainerStyle={[
-          styles.container,
-          { backgroundColor: colors.background },
-        ]}
-      />
+      {/* 当前 Tab 内容 */}
+      {renderContent(sections[activeTab].content)}
     </SafeAreaView>
   );
 }
@@ -125,9 +128,6 @@ export default function AnnouncementScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-  },
-  textContent: {
-    // 行高和大小已用内联动态计算
   },
   tabContainer: {
     flexDirection: 'row',

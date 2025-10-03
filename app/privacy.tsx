@@ -5,17 +5,7 @@ import { useFontSize } from './src/context/FontSizeContext';
 
 export default function PrivacyScreen() {
   const colors = useThemeColors();
-  const { fontSize = 16 } = useFontSize();
-
-  // 动态字号
-  const titleSize = fontSize * 1.2;
-  const subtitleSize = fontSize * 0.9;
-  const paragraphSize = fontSize * 0.8;
-
-  // 行高
-  const titleLineHeight = titleSize * 1.4;
-  const subtitleLineHeight = subtitleSize * 1.4;
-  const paragraphLineHeight = paragraphSize * 1.5;
+  const { getFontSizeValue } = useFontSize();
 
   return (
     <>
@@ -27,7 +17,7 @@ export default function PrivacyScreen() {
           headerTintColor: colors.text,
           headerTitleStyle: {
             color: colors.text,
-            fontSize: fontSize * 0.9, // 动态标题大小
+            fontSize: getFontSizeValue(18), // ✅ 原 fontSize * 0.9
           },
         }}
       />
@@ -39,9 +29,9 @@ export default function PrivacyScreen() {
               styles.title,
               {
                 color: colors.text,
-                fontSize: titleSize,
-                lineHeight: titleLineHeight,
-                marginBottom: titleSize * 0.67,
+                fontSize: getFontSizeValue(24), // ✅ titleSize
+                lineHeight: getFontSizeValue(34), // ✅ titleLineHeight
+                marginBottom: getFontSizeValue(16), // ✅ titleSize * 0.67 (≈16)
               },
             ]}>
             隐私政策
@@ -52,9 +42,9 @@ export default function PrivacyScreen() {
               styles.paragraph,
               {
                 color: colors.textSecondary,
-                fontSize: paragraphSize,
-                lineHeight: paragraphLineHeight,
-                marginBottom: paragraphSize,
+                fontSize: getFontSizeValue(16), // ✅ paragraphSize
+                lineHeight: getFontSizeValue(24), // ✅ paragraphLineHeight
+                marginBottom: getFontSizeValue(16),
               },
             ]}>
             最后更新日期：{new Date().getFullYear()}年1月1日
@@ -65,10 +55,10 @@ export default function PrivacyScreen() {
               styles.subtitle,
               {
                 color: colors.text,
-                fontSize: subtitleSize,
-                lineHeight: subtitleLineHeight,
-                marginTop: subtitleSize,
-                marginBottom: subtitleSize * 0.44,
+                fontSize: getFontSizeValue(18), // ✅ subtitleSize
+                lineHeight: getFontSizeValue(25), // ✅ subtitleLineHeight
+                marginTop: getFontSizeValue(18),
+                marginBottom: getFontSizeValue(8), // ✅ subtitleSize * 0.44 ≈8
               },
             ]}>
             1. 信息收集
@@ -79,9 +69,9 @@ export default function PrivacyScreen() {
               styles.paragraph,
               {
                 color: colors.textSecondary,
-                fontSize: paragraphSize,
-                lineHeight: paragraphLineHeight,
-                marginBottom: paragraphSize,
+                fontSize: getFontSizeValue(16),
+                lineHeight: getFontSizeValue(24),
+                marginBottom: getFontSizeValue(16),
               },
             ]}>
             我们致力于保护您的隐私。本应用仅收集必要的个人信息以提供更好的服务体验。
@@ -92,10 +82,10 @@ export default function PrivacyScreen() {
               styles.subtitle,
               {
                 color: colors.text,
-                fontSize: subtitleSize,
-                lineHeight: subtitleLineHeight,
-                marginTop: subtitleSize,
-                marginBottom: subtitleSize * 0.44,
+                fontSize: getFontSizeValue(18),
+                lineHeight: getFontSizeValue(25),
+                marginTop: getFontSizeValue(18),
+                marginBottom: getFontSizeValue(8),
               },
             ]}>
             2. 信息使用
@@ -106,9 +96,9 @@ export default function PrivacyScreen() {
               styles.paragraph,
               {
                 color: colors.textSecondary,
-                fontSize: paragraphSize,
-                lineHeight: paragraphLineHeight,
-                marginBottom: paragraphSize,
+                fontSize: getFontSizeValue(16),
+                lineHeight: getFontSizeValue(24),
+                marginBottom: getFontSizeValue(16),
               },
             ]}>
             收集的信息将用于：提供和维护服务、改善用户体验、开发新功能。
@@ -119,10 +109,10 @@ export default function PrivacyScreen() {
               styles.subtitle,
               {
                 color: colors.text,
-                fontSize: subtitleSize,
-                lineHeight: subtitleLineHeight,
-                marginTop: subtitleSize,
-                marginBottom: subtitleSize * 0.44,
+                fontSize: getFontSizeValue(18),
+                lineHeight: getFontSizeValue(25),
+                marginTop: getFontSizeValue(18),
+                marginBottom: getFontSizeValue(8),
               },
             ]}>
             3. 数据安全
@@ -133,9 +123,9 @@ export default function PrivacyScreen() {
               styles.paragraph,
               {
                 color: colors.textSecondary,
-                fontSize: paragraphSize,
-                lineHeight: paragraphLineHeight,
-                marginBottom: paragraphSize,
+                fontSize: getFontSizeValue(16),
+                lineHeight: getFontSizeValue(24),
+                marginBottom: getFontSizeValue(16),
               },
             ]}>
             我们采用合理的安全措施来保护您的个人信息免遭未经授权的访问、使用或披露。
@@ -146,10 +136,10 @@ export default function PrivacyScreen() {
               styles.subtitle,
               {
                 color: colors.text,
-                fontSize: subtitleSize,
-                lineHeight: subtitleLineHeight,
-                marginTop: subtitleSize,
-                marginBottom: subtitleSize * 0.44,
+                fontSize: getFontSizeValue(18),
+                lineHeight: getFontSizeValue(25),
+                marginTop: getFontSizeValue(18),
+                marginBottom: getFontSizeValue(8),
               },
             ]}>
             4. 联系我们
@@ -160,8 +150,8 @@ export default function PrivacyScreen() {
               styles.paragraph,
               {
                 color: colors.textSecondary,
-                fontSize: paragraphSize,
-                lineHeight: paragraphLineHeight,
+                fontSize: getFontSizeValue(16),
+                lineHeight: getFontSizeValue(24),
               },
             ]}>
             如果您对隐私政策有任何疑问，请通过 email@example.com 与我们联系。
