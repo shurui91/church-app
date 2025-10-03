@@ -127,7 +127,7 @@ export default function MeetingScreen() {
                 lineHeight: fontSize * 1.4,
               },
             ]}>
-            聚会活动 🎉
+            线上聚会
           </Text>
 
           {/* 段落 */}
@@ -141,7 +141,7 @@ export default function MeetingScreen() {
                 marginBottom: fontSize * 1.5,
               },
             ]}>
-            欢迎参加我们的聚会活动！以下是近期的Zoom会议信息。
+            欢迎参加我们的线上聚会！以下是近期的Zoom会议信息。
           </Text>
 
           {/* Zoom会议列表 */}
