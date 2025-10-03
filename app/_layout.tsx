@@ -3,6 +3,9 @@ import CustomTabBar from './components/CustomTabBar';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { FontSizeProvider, useFontSize } from './src/context/FontSizeContext';
 import { useThemeColors } from './src/hooks/useThemeColors';
+import { useEffect } from 'react';
+import { Alert } from 'react-native';
+import * as Updates from 'expo-updates';
 
 // 定义需要显示底部导航栏的路由白名单
 const TAB_BAR_ROUTES = [
@@ -65,6 +68,22 @@ function ThemedLayout() {
 }
 
 export default function RootLayout() {
+  useEffect(() => {
+    async function checkUpdate() {
+      try {
+        const update = await Updates.checkForUpdateAsync();
+        if (update.isAvailable) {
+          await Updates.fetchUpdateAsync();
+          await Updates.reloadAsync(); // 直接刷新，不弹提示
+        }
+      } catch (e) {
+        console.log('检查更新失败', e);
+      }
+    }
+
+    checkUpdate();
+  }, []);
+
   return (
     <ThemeProvider>
       <FontSizeProvider>
