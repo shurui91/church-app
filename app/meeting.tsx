@@ -47,10 +47,12 @@ export default function MeetingScreen() {
   // 复制所有会议信息到剪贴板
   const copyAllMeetingInfo = async (meeting: any) => {
     try {
-      const meetingInfo = `会议标题: ${meeting.title}
-      会议ID: ${meeting.meetingId}
-      会议密码: ${meeting.password}
-      会议链接: ${meeting.link}`;
+      const meetingInfo = [
+        `会议标题: ${meeting.title}`,
+        `会议ID: ${meeting.meetingId}`,
+        `会议密码: ${meeting.password}`,
+        `会议链接: ${meeting.link}`,
+      ].join('\n');
 
       await Clipboard.setStringAsync(meetingInfo);
       setCopiedMeeting(meeting);
