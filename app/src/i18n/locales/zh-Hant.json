@@ -1,0 +1,40 @@
+{
+  "settings": {
+    "title": "應用設定",
+    "display": "顯示設定",
+    "darkMode": "深色模式",
+    "fontSize": "字體大小",
+    "sampleText": "這是一個示例文字",
+    "language": "語言",
+    "currentLanguage": "目前語言",
+    "selectLanguage": "選擇語言",
+    "cancel": "取消"
+  },
+  "meeting": {
+    "pageTitle": "聚會",
+    "onlineTitle": "線上聚會",
+    "welcome": "歡迎參加我們的線上聚會！以下是近期的 Zoom 會議資訊。",
+    "id": "ID",
+    "password": "密碼",
+    "link": "連結",
+    "idLabel": "會議ID",
+    "passwordLabel": "會議密碼",
+    "copyInfo": "複製資訊",
+    "joinMeeting": "前往聚會",
+    "copiedSuccess": "複製成功！",
+    "copiedInfo": "{{title}} 的會議資訊已複製到剪貼簿",
+    "copiedDetail": "ID、密碼與連結都已準備好分享",
+    "copyFail": "複製失敗",
+    "retry": "請重試",
+    "openFail": "開啟會議失敗",
+    "openFailTip": "請確保已安裝 Zoom App 或使用網頁版參加聚會",
+    "copyLink": "複製連結",
+    "ok": "確定"
+  },
+  "profile": {
+    "pageTitle": "設定",
+    "appSettings": "應用設定",
+    "privacy": "隱私條款",
+    "version": "版本號"
+  }
+}

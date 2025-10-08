@@ -1,0 +1,40 @@
+{
+  "settings": {
+    "title": "应用设置",
+    "display": "显示设置",
+    "darkMode": "深色模式",
+    "fontSize": "字体大小",
+    "sampleText": "这是一个示例文字",
+    "language": "语言",
+    "currentLanguage": "当前语言",
+    "selectLanguage": "选择语言",
+    "cancel": "取消"
+  },
+  "meeting": {
+    "pageTitle": "聚会",
+    "onlineTitle": "线上聚会",
+    "welcome": "欢迎参加我们的线上聚会！以下是近期的 Zoom 会议信息。",
+    "id": "ID",
+    "password": "密码",
+    "link": "链接",
+    "idLabel": "会议ID",
+    "passwordLabel": "会议密码",
+    "copyInfo": "复制信息",
+    "joinMeeting": "前往聚会",
+    "copiedSuccess": "复制成功！",
+    "copiedInfo": "{{title}} 的会议信息已复制到剪贴板",
+    "copiedDetail": "ID、密码和链接都已准备好分享",
+    "copyFail": "复制失败",
+    "retry": "请重试",
+    "openFail": "打开会议失败",
+    "openFailTip": "请确保已安装 Zoom App 或使用网页版参加聚会",
+    "copyLink": "复制链接",
+    "ok": "确定"
+  },
+  "profile": {
+    "pageTitle": "设置",
+    "appSettings": "应用设置",
+    "privacy": "隐私条款",
+    "version": "版本号"
+  }
+}

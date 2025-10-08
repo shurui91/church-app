@@ -1,3 +1,5 @@
+// app/profile.tsx
+import React from 'react';
 import {
   View,
   Text,
@@ -8,11 +10,13 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { useThemeColors } from './src/hooks/useThemeColors';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const colors = useThemeColors();
+  const { t } = useTranslation();
 
   return (
     <SafeAreaView
@@ -20,36 +24,37 @@ export default function ProfileScreen() {
       <ScrollView
         style={styles.scrollView}
         showsVerticalScrollIndicator={false}>
+        {/* 顶部标题 */}
         <View
           style={[
             styles.header,
             { backgroundColor: colors.card, borderBottomColor: colors.border },
           ]}>
-          <Text style={[styles.title, { color: colors.text }]}>设置</Text>
+          <Text style={[styles.title, { color: colors.text }]}>
+            {t('profile.pageTitle') || '设置'}
+          </Text>
         </View>
 
+        {/* 菜单 */}
         <View style={[styles.menuContainer, { backgroundColor: colors.card }]}>
           <MenuItem
             icon='settings-outline'
-            title='应用设置'
+            title={t('profile.appSettings') || '应用设置'}
             onPress={() => router.push('/settings')}
           />
           <MenuItem
             icon='shield-checkmark-outline'
-            title='隐私条款'
+            title={t('profile.privacy') || '隐私条款'}
             onPress={() => router.push('/privacy')}
-            isLast={true}
+            isLast
           />
         </View>
 
         {/* 应用信息 */}
         <View style={styles.infoContainer}>
           <Text style={[styles.versionText, { color: colors.textSecondary }]}>
-            版本号: 1.0.0
+            {t('profile.version') || '版本号'}: 1.0.0
           </Text>
-          {/* <Text style={[styles.copyrightText, { color: colors.textTertiary }]}>
-            © {new Date().getFullYear()} Church App. All rights reserved.
-          </Text> */}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -88,12 +93,8 @@ function MenuItem({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-  },
+  container: { flex: 1 },
+  scrollView: { flex: 1 },
   header: {
     padding: 20,
     borderBottomWidth: 1,
@@ -131,8 +132,5 @@ const styles = StyleSheet.create({
   versionText: {
     fontSize: 14,
     marginBottom: 8,
-  },
-  copyrightText: {
-    fontSize: 12,
   },
 });

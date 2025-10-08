@@ -1,0 +1,19 @@
+[
+  {
+    "id": 1,
+    "title": "主日聚会",
+    "time": "每主日上午 10:00am - 12:15pm",
+    "meetingId": "865 7676 6857",
+    "password": "603550",
+    "link": "https://us02web.zoom.us/j/86576766857?pwd=bXFRSW4wR3grQlFibDB1Ry9lVkZ0Zz09",
+    "special": "10月主日爱宴是10月13日"
+  },
+  {
+    "id": 2,
+    "title": "李常受文集聚会",
+    "time": "每主日下午 4:00 - 5:00pm",
+    "meetingId": "865 7676 6857",
+    "password": "603550",
+    "link": "https://us02web.zoom.us/j/86576766857?pwd=bXFRSW4wR3grQlFibDB1Ry9lVkZ0Zz09"
+  }
+]

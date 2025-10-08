@@ -1,4 +1,5 @@
 // app/meeting.tsx
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -10,60 +11,46 @@ import {
   Linking,
 } from 'react-native';
 import { Stack } from 'expo-router';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Ionicons } from '@expo/vector-icons';
+import * as Clipboard from 'expo-clipboard';
+import { useTranslation } from 'react-i18next';
+
 import { useThemeColors } from './src/hooks/useThemeColors';
 import { useFontSize } from './src/context/FontSizeContext';
-import * as Clipboard from 'expo-clipboard';
-import { Ionicons } from '@expo/vector-icons';
-import { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
-// Zoom聚会数据
-const zoomMeetings = [
-  {
-    id: 1,
-    title: '主日聚会',
-    time: '每主日上午 10:00am - 12:15pm',
-    meetingId: '865 7676 6857',
-    password: '603550',
-    link: 'https://us02web.zoom.us/j/86576766857?pwd=bXFRSW4wR3grQlFibDB1Ry9lVkZ0Zz09',
-    special: '10月主日爱宴是10月13日',
-  },
-  {
-    id: 2,
-    title: '李常受文集聚会',
-    time: '每主日下午 4:00 - 5:00pm',
-    meetingId: '865 7676 6857',
-    password: '603550',
-    link: 'https://us02web.zoom.us/j/86576766857?pwd=bXFRSW4wR3grQlFibDB1Ry9lVkZ0Zz09',
-  },
-];
+import meetingsZh from './src/data/zh/meetings.json';
+import meetingsZhHant from './src/data/zh-Hant/meetings.json';
 
 export default function MeetingScreen() {
+  const { t, i18n } = useTranslation();
   const colors = useThemeColors();
   const { getFontSizeValue } = useFontSize();
   const [modalVisible, setModalVisible] = useState(false);
   const [copiedMeeting, setCopiedMeeting] = useState<any>(null);
 
-  // 复制所有会议信息到剪贴板
+  // 根据当前语言加载对应会议数据
+  const zoomMeetings = useMemo(() => {
+    return i18n.resolvedLanguage === 'zh-Hant' ? meetingsZhHant : meetingsZh;
+  }, [i18n.resolvedLanguage]);
+
+  // 复制所有会议信息
   const copyAllMeetingInfo = async (meeting: any) => {
     try {
       const meetingInfo = [
-        `会议标题: ${meeting.title}`,
-        `会议ID: ${meeting.meetingId}`,
-        `会议密码: ${meeting.password}`,
-        `会议链接: ${meeting.link}`,
+        `${t('meeting.pageTitle')}: ${meeting.title}`,
+        `${t('meeting.id') || 'ID'}: ${meeting.meetingId}`,
+        `${t('meeting.password') || '密码'}: ${meeting.password}`,
+        `${t('meeting.link') || '链接'}: ${meeting.link}`,
       ].join('\n');
 
       await Clipboard.setStringAsync(meetingInfo);
       setCopiedMeeting(meeting);
       setModalVisible(true);
 
-      // 2秒后自动关闭模态框
-      setTimeout(() => {
-        setModalVisible(false);
-      }, 2000);
+      setTimeout(() => setModalVisible(false), 2000);
     } catch (error) {
-      Alert.alert('复制失败', '请重试');
+      Alert.alert(t('meeting.copyFail'), t('meeting.retry'));
     }
   };
 
@@ -83,17 +70,13 @@ export default function MeetingScreen() {
         await Linking.openURL(meeting.link);
       }
     } catch (error) {
-      Alert.alert(
-        '打开会议失败',
-        '请确保已安装 Zoom App 或使用网页版参加聚会',
-        [
-          {
-            text: '复制链接',
-            onPress: () => Clipboard.setStringAsync(meeting.link),
-          },
-          { text: '确定', style: 'cancel' },
-        ]
-      );
+      Alert.alert(t('meeting.openFail'), t('meeting.openFailTip'), [
+        {
+          text: t('meeting.copyLink'),
+          onPress: () => Clipboard.setStringAsync(meeting.link),
+        },
+        { text: t('meeting.ok'), style: 'cancel' },
+      ]);
     }
   };
 
@@ -102,14 +85,14 @@ export default function MeetingScreen() {
       style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
-          title: '聚会',
+          title: t('meeting.pageTitle'),
           headerShown: false,
           headerBackVisible: false,
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
           headerTitleStyle: {
             color: colors.text,
-            fontSize: getFontSizeValue(18), // 原 fontSize * 0.9
+            fontSize: getFontSizeValue(18),
           },
         }}
       />
@@ -126,24 +109,24 @@ export default function MeetingScreen() {
               {
                 color: colors.text,
                 fontSize: getFontSizeValue(20),
-                lineHeight: getFontSizeValue(28), // 原 fontSize * 1.4
+                lineHeight: getFontSizeValue(28),
               },
             ]}>
-            线上聚会
+            {t('meeting.onlineTitle')}
           </Text>
 
-          {/* 段落 */}
+          {/* 段落说明 */}
           <Text
             style={[
               styles.paragraph,
               {
                 color: colors.textSecondary,
                 fontSize: getFontSizeValue(20),
-                lineHeight: getFontSizeValue(30), // 原 fontSize * 1.5
+                lineHeight: getFontSizeValue(30),
                 marginBottom: getFontSizeValue(30),
               },
             ]}>
-            欢迎参加我们的线上聚会！以下是近期的Zoom会议信息。
+            {t('meeting.welcome')}
           </Text>
 
           {/* Zoom会议列表 */}
@@ -161,7 +144,6 @@ export default function MeetingScreen() {
                       : getFontSizeValue(18),
                 },
               ]}>
-              {/* 会议标题 */}
               <Text
                 style={[
                   styles.meetingTitle,
@@ -173,11 +155,11 @@ export default function MeetingScreen() {
                 {meeting.title}
               </Text>
 
-              {/* 会议时间 */}
+              {/* 时间 */}
               <View style={styles.infoRow}>
                 <Ionicons
                   name='time-outline'
-                  size={getFontSizeValue(16)} // 原 fontSize * 0.8
+                  size={getFontSizeValue(16)}
                   color={colors.textSecondary}
                 />
                 <Text
@@ -186,13 +168,13 @@ export default function MeetingScreen() {
                     {
                       color: colors.textSecondary,
                       fontSize: getFontSizeValue(14),
-                    }, // 原 fontSize * 0.7
+                    },
                   ]}>
                   {meeting.time}
                 </Text>
               </View>
 
-              {/* 会议ID */}
+              {/* ID */}
               <View style={styles.infoRow}>
                 <Ionicons
                   name='key-outline'
@@ -207,7 +189,7 @@ export default function MeetingScreen() {
                       fontSize: getFontSizeValue(14),
                     },
                   ]}>
-                  会议ID: {meeting.meetingId}
+                  {t('meeting.idLabel')}: {meeting.meetingId}
                 </Text>
               </View>
 
@@ -226,7 +208,7 @@ export default function MeetingScreen() {
                       fontSize: getFontSizeValue(14),
                     },
                   ]}>
-                  密码: {meeting.password}
+                  {t('meeting.passwordLabel') || '密码'}: {meeting.password}
                 </Text>
               </View>
 
@@ -253,9 +235,8 @@ export default function MeetingScreen() {
                 </View>
               )}
 
-              {/* 按钮容器 */}
+              {/* 按钮 */}
               <View style={styles.buttonsContainer}>
-                {/* 一键复制按钮 */}
                 <TouchableOpacity
                   onPress={() => copyAllMeetingInfo(meeting)}
                   style={[
@@ -272,11 +253,10 @@ export default function MeetingScreen() {
                       styles.actionButtonText,
                       { color: colors.primary, fontSize: getFontSizeValue(14) },
                     ]}>
-                    复制信息
+                    {t('meeting.copyInfo')}
                   </Text>
                 </TouchableOpacity>
 
-                {/* 前往聚会按钮 */}
                 <TouchableOpacity
                   onPress={() => openZoomMeeting(meeting)}
                   style={[
@@ -293,7 +273,7 @@ export default function MeetingScreen() {
                       styles.actionButtonText,
                       { color: '#FFFFFF', fontSize: getFontSizeValue(14) },
                     ]}>
-                    前往聚会
+                    {t('meeting.joinMeeting')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -305,14 +285,14 @@ export default function MeetingScreen() {
       {/* 复制成功模态框 */}
       <Modal
         animationType='fade'
-        transparent={true}
+        transparent
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
             <Ionicons
               name='checkmark-circle'
-              size={getFontSizeValue(48)} // 原 fontSize * 2.4
+              size={getFontSizeValue(48)}
               color={colors.primary}
             />
             <Text
@@ -320,21 +300,21 @@ export default function MeetingScreen() {
                 styles.modalTitle,
                 { color: colors.text, fontSize: getFontSizeValue(18) },
               ]}>
-              复制成功！
+              {t('meeting.copiedSuccess')}
             </Text>
             <Text
               style={[
                 styles.modalText,
                 { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
               ]}>
-              {copiedMeeting?.title} 的会议信息已复制到剪贴板
+              {t('meeting.copiedInfo', { title: copiedMeeting?.title })}
             </Text>
             <Text
               style={[
                 styles.modalSubText,
                 { color: colors.textTertiary, fontSize: getFontSizeValue(12) },
               ]}>
-              ID、密码和链接都已准备好分享
+              {t('meeting.copiedDetail')}
             </Text>
           </View>
         </View>
@@ -391,11 +371,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
     minWidth: '80%',
   },
   modalTitle: {

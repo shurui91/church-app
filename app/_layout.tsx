@@ -1,3 +1,4 @@
+import './src/i18n';
 import { Stack, usePathname } from 'expo-router';
 import CustomTabBar from './components/CustomTabBar';
 import { ThemeProvider } from './src/context/ThemeContext';
