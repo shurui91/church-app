@@ -42,5 +42,8 @@
     "bible": "讀經",
     "announcement": "通知",
     "profile": "設定"
+  },
+  "privacy": {
+    "title": "隱私條款"
   }
 }

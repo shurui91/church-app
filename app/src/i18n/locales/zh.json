@@ -42,5 +42,8 @@
     "bible": "读经",
     "announcement": "通知",
     "profile": "设置"
+  },
+  "privacy": {
+    "title": "隐私条款"
   }
 }
