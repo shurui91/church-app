@@ -1,8 +1,15 @@
-import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  Animated,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColors } from '../src/hooks/useThemeColors';
+import { useRef } from 'react';
 
 const tabs = [
   {
@@ -36,7 +43,42 @@ export default function CustomTabBar() {
   const pathname = usePathname();
   const colors = useThemeColors();
 
-  // 判断当前 tab 是否处于激活状态
+  // 为每个 tab 建立独立的动画值
+  const shakeAnimations = useRef(
+    tabs.reduce((acc, tab) => {
+      acc[tab.path] = new Animated.Value(0);
+      return acc;
+    }, {} as Record<string, Animated.Value>)
+  ).current;
+
+  // 抖动动画函数
+  const triggerShake = (tabPath: string) => {
+    const anim = shakeAnimations[tabPath];
+    anim.setValue(0);
+    Animated.sequence([
+      Animated.timing(anim, {
+        toValue: 1,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(anim, {
+        toValue: -1,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(anim, {
+        toValue: 1,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+      Animated.timing(anim, {
+        toValue: 0,
+        duration: 50,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  };
+
   const isTabActive = (tabPath: string) => pathname === tabPath;
 
   return (
@@ -51,20 +93,36 @@ export default function CustomTabBar() {
           const active = isTabActive(tab.path);
           const iconName = active ? tab.activeIcon : tab.icon;
 
+          // X轴位移随动画值变化（制造左右晃动）
+          const shakeStyle = {
+            transform: [
+              {
+                translateX: shakeAnimations[tab.path].interpolate({
+                  inputRange: [-1, 1],
+                  outputRange: [-4, 4],
+                }),
+              },
+            ],
+          };
+
           return (
             <TouchableOpacity
               key={tab.path}
               style={styles.tab}
               onPress={() => {
-                // ✅ 防止重复点击当前 tab 导致页面重新加载
-                if (pathname === tab.path) return;
+                if (pathname === tab.path) {
+                  triggerShake(tab.path); // ✅ 同 tab 点击触发抖动动画
+                  return;
+                }
                 router.push(tab.path as any);
               }}>
-              <Ionicons
-                name={iconName as any}
-                size={24}
-                color={active ? colors.primary : colors.textSecondary}
-              />
+              <Animated.View style={shakeStyle}>
+                <Ionicons
+                  name={iconName as any}
+                  size={24}
+                  color={active ? colors.primary : colors.textSecondary}
+                />
+              </Animated.View>
               <Text
                 style={[
                   styles.tabText,
