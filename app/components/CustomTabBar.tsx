@@ -36,6 +36,7 @@ export default function CustomTabBar() {
   const pathname = usePathname();
   const colors = useThemeColors();
 
+  // 判断当前 tab 是否处于激活状态
   const isTabActive = (tabPath: string) => pathname === tabPath;
 
   return (
@@ -54,7 +55,11 @@ export default function CustomTabBar() {
             <TouchableOpacity
               key={tab.path}
               style={styles.tab}
-              onPress={() => router.push(tab.path as any)}>
+              onPress={() => {
+                // ✅ 防止重复点击当前 tab 导致页面重新加载
+                if (pathname === tab.path) return;
+                router.push(tab.path as any);
+              }}>
               <Ionicons
                 name={iconName as any}
                 size={24}
@@ -82,7 +87,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     height: 60,
-    paddingBottom: 4, // ← 多留一点空间
+    paddingBottom: 4,
   },
   tab: {
     flex: 1,
