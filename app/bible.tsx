@@ -6,8 +6,8 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from 'react-native';
-import oldTestament from '../assets/old.json';
-import newTestament from '../assets/new.json';
+import oldTestament from '../assets/old_multilang.json';
+import newTestament from '../assets/new_multilang.json';
 import { useThemeColors } from './src/hooks/useThemeColors';
 import { useFontSize } from './src/context/FontSizeContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -85,10 +85,10 @@ export default function BibleScreen() {
 
     // 生成书签文本
     const oldLabel = selectedOld
-      .map((c) => `${c[0].book} ${c[0].chapter}`)
+      .map((c) => `${c[0].abbr_trad} ${c[0].chapter}`)
       .join('，');
     const newLabel = selectedNew
-      .map((c) => `${c[0].book} ${c[0].chapter}`)
+      .map((c) => `${c[0].abbr_trad} ${c[0].chapter}`)
       .join('，');
     setReadingPlan(`旧约：${oldLabel}\n新约：${newLabel}`);
 
@@ -119,7 +119,7 @@ export default function BibleScreen() {
           marginBottom: 8,
           textAlign: 'center',
         }}>
-        {label} {chapter[0].book} 第 {chapter[0].chapter} 章
+        {label} {chapter[0].book_trad} 第 {chapter[0].chapter} 章
       </Text>
       {chapter.map((verse) => (
         <Text
@@ -130,7 +130,7 @@ export default function BibleScreen() {
             color: colors.text,
             marginBottom: 4,
           }}>
-          {chapter[0].chapter}:{verse.verse} {verse.text}
+          {chapter[0].chapter}:{verse.verse} {verse.text.zh_tw}
         </Text>
       ))}
     </View>
@@ -149,6 +149,7 @@ export default function BibleScreen() {
             📖 今日读经
           </Text>
 
+		  {/* 日期，年月日星期几 */}
           <Text
             style={{
               color: colors.textSecondary,
@@ -159,6 +160,7 @@ export default function BibleScreen() {
             {formattedDate}
           </Text>
 
+	      {/* 今日读经进度 */}
           <View style={styles.planContainer}>
             <Text style={{ color: colors.primary, fontSize: fontSize * 0.8 }}>
               {readingPlan}
