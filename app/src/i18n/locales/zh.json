@@ -36,5 +36,11 @@
     "appSettings": "应用设置",
     "privacy": "隐私条款",
     "version": "版本号"
+  },
+  "tab": {
+    "meeting": "线上聚会",
+    "bible": "读经",
+    "announcement": "通知",
+    "profile": "设置"
   }
 }

@@ -10,28 +10,29 @@ import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColors } from '../src/hooks/useThemeColors';
 import { useRef } from 'react';
+import { useTranslation } from 'react-i18next'; // ✅ 加上这行
 
 const tabs = [
   {
-    name: '线上聚会',
+    key: 'meeting',
     path: '/meeting',
     icon: 'videocam-outline',
     activeIcon: 'videocam',
   },
   {
-    name: '读经',
+    key: 'bible',
     path: '/bible',
     icon: 'book-outline',
     activeIcon: 'book',
   },
   {
-    name: '通知',
+    key: 'announcement',
     path: '/announcement',
     icon: 'notifications-outline',
     activeIcon: 'notifications',
   },
   {
-    name: '设置',
+    key: 'profile',
     path: '/profile',
     icon: 'cog-outline',
     activeIcon: 'cog',
@@ -42,6 +43,7 @@ export default function CustomTabBar() {
   const router = useRouter();
   const pathname = usePathname();
   const colors = useThemeColors();
+  const { t } = useTranslation();
 
   // 为每个 tab 建立独立的动画值
   const shakeAnimations = useRef(
@@ -93,7 +95,6 @@ export default function CustomTabBar() {
           const active = isTabActive(tab.path);
           const iconName = active ? tab.activeIcon : tab.icon;
 
-          // X轴位移随动画值变化（制造左右晃动）
           const shakeStyle = {
             transform: [
               {
@@ -111,7 +112,7 @@ export default function CustomTabBar() {
               style={styles.tab}
               onPress={() => {
                 if (pathname === tab.path) {
-                  triggerShake(tab.path); // ✅ 同 tab 点击触发抖动动画
+                  triggerShake(tab.path);
                   return;
                 }
                 router.push(tab.path as any);
@@ -128,7 +129,7 @@ export default function CustomTabBar() {
                   styles.tabText,
                   { color: active ? colors.primary : colors.textSecondary },
                 ]}>
-                {tab.name}
+                {t(`tab.${tab.key}`)}
               </Text>
             </TouchableOpacity>
           );

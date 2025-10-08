@@ -36,5 +36,11 @@
     "appSettings": "應用設定",
     "privacy": "隱私條款",
     "version": "版本號"
+  },
+  "tab": {
+    "meeting": "線上聚會",
+    "bible": "讀經",
+    "announcement": "通知",
+    "profile": "設定"
   }
 }
