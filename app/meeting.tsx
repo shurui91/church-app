@@ -1,6 +1,5 @@
 // app/meeting.tsx
-// app/meeting.tsx
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -15,7 +14,6 @@ import { Stack } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import * as Clipboard from 'expo-clipboard';
-import * as Updates from 'expo-updates'; // ✅ 新增
 import { useTranslation } from 'react-i18next';
 
 import { useThemeColors } from './src/hooks/useThemeColors';
@@ -30,23 +28,6 @@ export default function MeetingScreen() {
   const { getFontSizeValue } = useFontSize();
   const [modalVisible, setModalVisible] = useState(false);
   const [copiedMeeting, setCopiedMeeting] = useState<any>(null);
-  const [commitId, setCommitId] = useState<string>(''); // ✅ 新增
-
-  // ✅ 读取当前 EAS 更新的 commit ID
-  useEffect(() => {
-    try {
-      if (Updates.manifest && 'updateId' in Updates.manifest) {
-        setCommitId(Updates.manifest.updateId);
-      } else if (Updates.updateId) {
-        setCommitId(Updates.updateId);
-      } else {
-        setCommitId('No update info');
-      }
-    } catch (e) {
-      console.log('获取 updateId 失败', e);
-      setCommitId('Error loading updateId');
-    }
-  }, []);
 
   // 根据当前语言加载对应会议数据
   const zoomMeetings = useMemo(() => {
@@ -298,17 +279,6 @@ export default function MeetingScreen() {
               </View>
             </View>
           ))}
-
-          {/* ✅ 显示当前 EAS commit ID */}
-          <Text
-            style={{
-              marginTop: 30,
-              textAlign: 'center',
-              fontSize: getFontSizeValue(12),
-              color: colors.textTertiary,
-            }}>
-            EAS Update ID: {commitId || 'Loading...'}
-          </Text>
         </View>
       </ScrollView>
 

@@ -84,17 +84,58 @@ export default function SettingsScreen() {
               {t('settings.sampleText') || '这是一个示例文字'}
             </Text>
 
-            <Slider
-              style={{ width: '100%', height: 40 }}
-              minimumValue={12}
-              maximumValue={40}
-              step={4}
-              value={fontSize}
-              onValueChange={setFontSize}
-              minimumTrackTintColor={colors.primary}
-              maximumTrackTintColor={colors.border}
-              thumbTintColor={colors.primary}
-            />
+            {/* 滑动条 */}
+            <View style={{ marginTop: 8, marginBottom: 4 }}>
+              <Slider
+                style={{ width: '100%', height: 40 }}
+                minimumValue={12}
+                maximumValue={40}
+                step={4}
+                value={fontSize}
+                onValueChange={setFontSize}
+                minimumTrackTintColor={colors.primary}
+                maximumTrackTintColor={colors.border}
+                thumbTintColor={colors.primary}
+              />
+
+              {/* 刻度线 */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginTop: 2,
+                }}>
+                {Array.from(
+                  { length: (40 - 12) / 4 + 1 },
+                  (_, i) => 12 + i * 4
+                ).map((size) => (
+                  <Text
+                    key={size}
+                    style={{
+                      fontSize: 12,
+                      color: colors.textSecondary,
+                      marginHorizontal: 1,
+                    }}>
+                    |
+                  </Text>
+                ))}
+              </View>
+
+              {/* 刻度文字 */}
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginTop: -4,
+                }}>
+                <Text style={{ fontSize: 12, color: colors.textSecondary }}>
+                  12
+                </Text>
+                <Text style={{ fontSize: 12, color: colors.textSecondary }}>
+                  40
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
 
