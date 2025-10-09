@@ -43,6 +43,12 @@
     "announcement": "通知",
     "profile": "設定"
   },
+  "announcement": {
+    "title": "召會通知與禱告事項",
+    "tabNotice": "召會通知",
+    "tabPrayer": "禱告事項",
+    "loadFail": "載入失敗，請稍後重試"
+  },
   "privacy": {
     "title": "隱私條款"
   }

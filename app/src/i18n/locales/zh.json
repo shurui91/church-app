@@ -43,6 +43,12 @@
     "announcement": "通知",
     "profile": "设置"
   },
+  "announcement": {
+    "title": "召会通知与祷告事项",
+    "tabNotice": "召会通知",
+    "tabPrayer": "祷告事项",
+    "loadFail": "加载失败，请稍后重试"
+  },
   "privacy": {
     "title": "隐私条款"
   }

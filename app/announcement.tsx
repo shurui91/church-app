@@ -1,4 +1,5 @@
 // app/announcement.tsx
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   ScrollView,
   Text,
@@ -10,17 +11,12 @@ import {
   RefreshControl,
 } from 'react-native';
 import { Stack } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 import { useThemeColors } from './src/hooks/useThemeColors';
 import { useFontSize } from './src/context/FontSizeContext';
-import { useState, useEffect, useCallback } from 'react';
-
-// 两个 Gist txt Raw 地址（基础地址）
-const ANNOUNCEMENT_URL =
-  'https://gist.githubusercontent.com/shurui91/1f4aa8bf7c23908c97c198e4b762f1f2/raw/annoucement_chinese.txt';
-const PRAYER_URL =
-  'https://gist.githubusercontent.com/shurui91/40ecf68fa147682428df8afc43abcebe/raw/prayer_item_chinese.txt';
 
 export default function AnnouncementScreen() {
+  const { t, i18n } = useTranslation();
   const colors = useThemeColors();
   const { getFontSizeValue } = useFontSize();
 
@@ -30,7 +26,28 @@ export default function AnnouncementScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  // ✅ 根据语言决定加载哪个 Gist
+  const getUrls = () => {
+    if (i18n.resolvedLanguage === 'zh-Hant') {
+      return {
+        ANNOUNCEMENT_URL:
+          'https://gist.githubusercontent.com/shurui91/1f4aa8bf7c23908c97c198e4b762f1f2/raw/5641a3fa2b55ffdc646f71c0ae181d81a15ee247/weekly_traditional_c.txt',
+        PRAYER_URL:
+          'https://gist.githubusercontent.com/shurui91/40ecf68fa147682428df8afc43abcebe/raw/c7af7f2664ce065675913cd6928faea008d5522e/prayer_item_traditional_c.txt',
+      };
+    } else {
+      return {
+        ANNOUNCEMENT_URL:
+          'https://gist.githubusercontent.com/shurui91/a0c5c416c79b9447dfebfb598b903c96/raw/dbe80f1db835319e36285ad922098c95ab35333a/weekly_simp_c.txt',
+        PRAYER_URL:
+          'https://gist.githubusercontent.com/shurui91/a501d661a50b7631d7d591524fbd5259/raw/e03c66140aa439da48efb442652bb7c519454d66/prayer_item_simp_c',
+      };
+    }
+  };
+
   const fetchData = useCallback(async () => {
+    const { ANNOUNCEMENT_URL, PRAYER_URL } = getUrls();
+
     if (!refreshing) setLoading(true);
     try {
       const [announcementRes, prayerRes] = await Promise.all([
@@ -40,13 +57,14 @@ export default function AnnouncementScreen() {
       setAnnouncement(announcementRes);
       setPrayer(prayerRes);
     } catch (e) {
+      console.error('加载公告失败:', e);
       setAnnouncement(null);
       setPrayer(null);
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [refreshing]);
+  }, [i18n.resolvedLanguage, refreshing]);
 
   useEffect(() => {
     fetchData();
@@ -63,7 +81,11 @@ export default function AnnouncementScreen() {
       );
     }
     if (!content) {
-      return <Text style={{ color: colors.error, padding: 20 }}>加载失败</Text>;
+      return (
+        <Text style={{ color: colors.error, padding: 20 }}>
+          {t('announcement.loadFail')}
+        </Text>
+      );
     }
     return (
       <ScrollView
@@ -92,15 +114,15 @@ export default function AnnouncementScreen() {
   };
 
   const sections = [
-    { title: '召会通知', content: announcement },
-    { title: '祷告事项', content: prayer },
+    { title: t('announcement.tabNotice'), content: announcement },
+    { title: t('announcement.tabPrayer'), content: prayer },
   ];
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <Stack.Screen
         options={{
-          title: '召会通知 & 祷告事项',
+          title: t('announcement.title'),
           headerShown: false,
           headerBackVisible: false,
         }}
