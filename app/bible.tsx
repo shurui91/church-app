@@ -1,10 +1,13 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import {
   View,
   Text,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
+  Animated,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 import oldTestament from '../assets/old_multilang.json';
 import newTestament from '../assets/new_multilang.json';
@@ -66,28 +69,77 @@ export default function BibleScreen() {
   const [readingPlan, setReadingPlan] = useState('');
   const [completed, setCompleted] = useState(false);
 
-  // 根据语言选择字段
-  const pickBookName = (verse: any) =>
-    lang === 'zh-Hant' ? verse.book_trad : verse.book_simp;
-  const pickAbbr = (verse: any) =>
-    lang === 'zh-Hant' ? verse.abbr_trad : verse.abbr_simp;
-  const pickVerseText = (verse: any) =>
-    lang === 'zh-Hant' ? verse.text.zh_tw : verse.text.zh_cn;
+  // 滚动进度
+  const [scrollProgress, setScrollProgress] = useState(new Animated.Value(0));
+  const [scrollPercent, setScrollPercent] = useState(0);
+  const [progressOpacity] = useState(new Animated.Value(0));
+  let fadeTimeout: NodeJS.Timeout;
 
-  // 👇 放在 BibleScreen 组件内
+  // ✅ 垂直滚动条状态
+  const [scrollThumbHeight, setScrollThumbHeight] = useState(0);
+  const [scrollThumbY] = useState(new Animated.Value(0));
+  const scrollViewRef = useRef<ScrollView>(null);
+
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
+    const totalHeight = contentSize.height - layoutMeasurement.height;
+    const progress = totalHeight > 0 ? contentOffset.y / totalHeight : 0;
+
+    // 顶部水平进度条
+    Animated.timing(scrollProgress, {
+      toValue: progress,
+      duration: 100,
+      useNativeDriver: false,
+    }).start();
+    setScrollPercent(Math.min(Math.round(progress * 100), 100));
+
+    // 顶部进度条淡入淡出
+    Animated.timing(progressOpacity, {
+      toValue: 1,
+      duration: 250,
+      useNativeDriver: false,
+    }).start();
+
+    if (fadeTimeout) clearTimeout(fadeTimeout);
+    fadeTimeout = setTimeout(() => {
+      Animated.timing(progressOpacity, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: false,
+      }).start();
+    }, 2000);
+
+    // ✅ 计算垂直滚动条高度和位置
+    const visibleRatio = layoutMeasurement.height / contentSize.height;
+    const thumbHeight = Math.max(visibleRatio * layoutMeasurement.height, 40); // 最小40
+    setScrollThumbHeight(thumbHeight);
+
+    Animated.timing(scrollThumbY, {
+      toValue: progress * (layoutMeasurement.height - thumbHeight),
+      duration: 50,
+      useNativeDriver: false,
+    }).start();
+
+    const today = new Date();
+    const dateKey = formatDateKey(today);
+    AsyncStorage.setItem(`scrollPos-${dateKey}`, contentOffset.y.toString());
+  };
+
+  const progressWidth = scrollProgress.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0%', '100%'],
+  });
+
   useEffect(() => {
-    const today = new Date(); // ✅ 每次语言切换重新计算
+    const today = new Date();
     const dateKey = formatDateKey(today);
 
     const groupedOld = groupByChapter(oldTestament as any[]);
     const groupedNew = groupByChapter(newTestament as any[]);
-
     const totalOld = groupedOld.length;
     const totalNew = groupedNew.length;
+    const dayOfYear = getDayOfYear(today);
 
-    const dayOfYear = getDayOfYear(today); // 1–366
-
-    // 📅 本地化日期与星期几
     try {
       const formatter = new Intl.DateTimeFormat(
         lang === 'zh-Hant' ? 'zh-Hant' : 'zh',
@@ -106,7 +158,6 @@ export default function BibleScreen() {
       setFormattedDate(`${datePart}   ${weekdayPart}`);
     }
 
-    // 📖 旧约：每天 3 章（循环）
     const oldStart = ((dayOfYear - 1) * 3) % totalOld;
     const selectedOld = [
       groupedOld[oldStart],
@@ -114,15 +165,12 @@ export default function BibleScreen() {
       groupedOld[(oldStart + 2) % totalOld],
     ];
 
-    // ✝️ 新约：每天 1 章（循环）
     const newIndex = (dayOfYear - 1) % totalNew;
     const selectedNew = [groupedNew[newIndex]];
 
-    // ✅ 深拷贝数据，避免 React 缓存旧引用
     setOldChapters(JSON.parse(JSON.stringify(selectedOld)));
     setNewChapters(JSON.parse(JSON.stringify(selectedNew)));
 
-    // 🪶 生成读经计划标题
     const oldLabel = selectedOld
       .map(
         (c) =>
@@ -145,13 +193,27 @@ export default function BibleScreen() {
       )}：${newLabel}`
     );
 
-    // 📍 检查当天是否已打卡
     AsyncStorage.getItem(`checkin-${dateKey}`).then((val) => {
       setCompleted(val === 'done');
     });
+
+    // 📍 恢复上次阅读位置
+    setTimeout(async () => {
+      const today = new Date();
+      const dateKey = formatDateKey(today);
+      const savedY = await AsyncStorage.getItem(`scrollPos-${dateKey}`);
+      if (savedY && scrollViewRef.current) {
+        scrollViewRef.current.scrollTo({
+          y: parseFloat(savedY),
+          animated: false,
+        });
+      }
+    }, 500); // 延迟半秒确保内容加载完毕
   }, [lang, i18n.language]);
 
   const handleCheckin = async () => {
+    const today = new Date();
+    const dateKey = formatDateKey(today);
     await AsyncStorage.setItem(`checkin-${dateKey}`, 'done');
     setCompleted(true);
   };
@@ -159,7 +221,7 @@ export default function BibleScreen() {
   const renderChapter = (
     chapter: any[],
     idx: number,
-    labelKey: 'old_testament' | 'new_testament'
+    labelKey: 'bible.old_testament' | 'bible.new_testament'
   ) => (
     <View
       key={idx}
@@ -167,7 +229,6 @@ export default function BibleScreen() {
         styles.card,
         { backgroundColor: colors.card, borderColor: colors.borderLight },
       ]}>
-      {/* 📘 章节标题，例如「旧约 马太福音 第1章」 */}
       <Text
         style={{
           fontWeight: 'bold',
@@ -181,7 +242,6 @@ export default function BibleScreen() {
         {chapter[0].chapter} {t('bible.chapter')}
       </Text>
 
-      {/* 📖 渲染每节经文 */}
       {chapter.map((verse) => (
         <Text
           key={`${verse.verse}-${lang}`}
@@ -201,66 +261,99 @@ export default function BibleScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}>
-      <ScrollView style={styles.scrollView}>
-        <View style={styles.content}>
-          <Text
+      {/* 顶部进度条 */}
+      <Animated.View
+        style={[styles.progressContainer, { opacity: progressOpacity }]}>
+        <View style={styles.progressBarBackground}>
+          <Animated.View
             style={[
-              styles.title,
-              { fontSize: fontSize * 1.2, color: colors.text },
-            ]}>
-            {t('bible.daily_reading')}
-          </Text>
-
-          {/* 日期（随语言本地化） */}
-          <Text
-            style={{
-              color: colors.textSecondary,
-              fontSize: fontSize * 0.9,
-              marginBottom: fontSize * 1.2,
-              textAlign: 'center',
-            }}>
-            {formattedDate}
-          </Text>
-
-          {/* 今日读经进度（随语言本地化） */}
-          <View style={styles.planContainer}>
-            <Text style={{ color: colors.primary, fontSize: fontSize * 0.8 }}>
-              {readingPlan}
-            </Text>
-          </View>
-
-          {oldChapters.map((chapter, idx) =>
-            renderChapter(chapter, idx, 'bible.old_testament')
-          )}
-          {newChapters.map((chapter, idx) =>
-            renderChapter(chapter, idx, 'bible.new_testament')
-          )}
-
-          {/* 打卡按钮（文本随语言本地化） */}
-          <TouchableOpacity
-            style={[
-              styles.checkinButton,
-              {
-                backgroundColor: completed
-                  ? colors.borderLight
-                  : colors.primary,
-              },
+              styles.progressBarFill,
+              { width: progressWidth, backgroundColor: colors.primary },
             ]}
-            onPress={handleCheckin}
-            disabled={completed}>
+          />
+        </View>
+        <Text style={[styles.progressText, { color: colors.textSecondary }]}>
+          {scrollPercent}%
+        </Text>
+      </Animated.View>
+
+      {/* ✅ 包裹 ScrollView 与垂直滚动条 */}
+      <View style={{ flex: 1 }}>
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.scrollView}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          showsVerticalScrollIndicator={false}>
+          <View style={styles.content}>
+            <Text
+              style={[
+                styles.title,
+                { fontSize: fontSize * 1.2, color: colors.text },
+              ]}>
+              {t('bible.daily_reading')}
+            </Text>
+
             <Text
               style={{
-                color: completed ? colors.textSecondary : '#fff',
-                fontSize: fontSize,
-                fontWeight: '600',
+                color: colors.textSecondary,
+                fontSize: fontSize * 0.9,
+                marginBottom: fontSize * 1.2,
+                textAlign: 'center',
               }}>
-              {completed
-                ? t('bible.checkin_done')
-                : t('bible.checkin_complete')}
+              {formattedDate}
             </Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
+
+            <View style={styles.planContainer}>
+              <Text style={{ color: colors.primary, fontSize: fontSize * 0.8 }}>
+                {readingPlan}
+              </Text>
+            </View>
+
+            {oldChapters.map((chapter, idx) =>
+              renderChapter(chapter, idx, 'bible.old_testament')
+            )}
+            {newChapters.map((chapter, idx) =>
+              renderChapter(chapter, idx, 'bible.new_testament')
+            )}
+
+            <TouchableOpacity
+              style={[
+                styles.checkinButton,
+                {
+                  backgroundColor: completed
+                    ? colors.borderLight
+                    : colors.primary,
+                },
+              ]}
+              onPress={handleCheckin}
+              disabled={completed}>
+              <Text
+                style={{
+                  color: completed ? colors.textSecondary : '#fff',
+                  fontSize: fontSize,
+                  fontWeight: '600',
+                }}>
+                {completed
+                  ? t('bible.checkin_done')
+                  : t('bible.checkin_complete')}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+
+        {/* ✅ 自定义垂直滚动条 */}
+        <Animated.View
+          style={[
+            styles.customScrollbar,
+            {
+              backgroundColor: colors.primary,
+              height: scrollThumbHeight,
+              transform: [{ translateY: scrollThumbY }],
+            },
+          ]}
+        />
+      </View>
     </SafeAreaView>
   );
 }
@@ -296,5 +389,38 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 8,
     alignItems: 'center',
+  },
+  progressContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingTop: 6,
+    paddingBottom: 6,
+  },
+  progressBarBackground: {
+    flex: 1,
+    height: 6,
+    backgroundColor: 'rgba(0,0,0,0.1)',
+    borderRadius: 3,
+    overflow: 'hidden',
+    marginRight: 8,
+  },
+  progressBarFill: {
+    height: 6,
+    borderRadius: 3,
+  },
+  progressText: {
+    fontSize: 12,
+    fontWeight: '500',
+    width: 40,
+    textAlign: 'right',
+  },
+  // ✅ 自定义垂直滚动条
+  customScrollbar: {
+    position: 'absolute',
+    right: 3,
+    width: 5,
+    borderRadius: 3,
+    opacity: 0.6, // 半透明常显
   },
 });
