@@ -51,5 +51,13 @@
   },
   "privacy": {
     "title": "隱私條款"
+  },
+  "bible": {
+    "daily_reading": "📖 今日讀經",
+    "old_testament": "舊約",
+    "new_testament": "新約",
+    "chapter": "章",
+    "checkin_done": "已打卡",
+    "checkin_complete": "打卡完成"
   }
 }

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -12,8 +12,9 @@ import { useThemeColors } from './src/hooks/useThemeColors';
 import { useFontSize } from './src/context/FontSizeContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTranslation } from 'react-i18next';
 
-// 获取当年的第几天 (1-365)
+// 获取当年的第几天 (1-366)
 function getDayOfYear(date: Date) {
   const start = new Date(date.getFullYear(), 0, 0);
   const diff = date.getTime() - start.getTime();
@@ -22,7 +23,7 @@ function getDayOfYear(date: Date) {
 
 // 格式化日期字符串 (YYYY-MM-DD)
 function formatDateKey(date: Date) {
-  return date.toISOString().split('T')[0]; // 2025-10-01
+  return date.toISOString().split('T')[0];
 }
 
 // 按 chapter_index 分组
@@ -37,38 +38,75 @@ function groupByChapter(data: any[]) {
   return Object.values(grouped);
 }
 
+// 归一化 i18n 语言到我们数据使用的键
+function normalizeLang(i18nLang: string) {
+  const l = i18nLang?.toLowerCase() || 'zh';
+  if (
+    l.includes('hant') ||
+    l.includes('tw') ||
+    l.includes('hk') ||
+    l.includes('zh-hant')
+  )
+    return 'zh-Hant';
+  if (l.startsWith('zh')) return 'zh';
+  return 'zh';
+}
+
 export default function BibleScreen() {
   const colors = useThemeColors();
   const { fontSize: rawFontSize } = useFontSize();
   const fontSize = rawFontSize || 16;
+
+  const { t, i18n } = useTranslation();
+  const lang = useMemo(() => normalizeLang(i18n.language), [i18n.language]);
+
   const [oldChapters, setOldChapters] = useState<any[]>([]);
   const [newChapters, setNewChapters] = useState<any[]>([]);
   const [formattedDate, setFormattedDate] = useState('');
   const [readingPlan, setReadingPlan] = useState('');
-  const [completed, setCompleted] = useState(false); // ✅ 打卡状态
+  const [completed, setCompleted] = useState(false);
 
-  const today = new Date();
-  const dateKey = formatDateKey(today);
+  // 根据语言选择字段
+  const pickBookName = (verse: any) =>
+    lang === 'zh-Hant' ? verse.book_trad : verse.book_simp;
+  const pickAbbr = (verse: any) =>
+    lang === 'zh-Hant' ? verse.abbr_trad : verse.abbr_simp;
+  const pickVerseText = (verse: any) =>
+    lang === 'zh-Hant' ? verse.text.zh_tw : verse.text.zh_cn;
 
+  // 👇 放在 BibleScreen 组件内
   useEffect(() => {
-    const groupedOld = groupByChapter(oldTestament);
-    const groupedNew = groupByChapter(newTestament);
+    const today = new Date(); // ✅ 每次语言切换重新计算
+    const dateKey = formatDateKey(today);
+
+    const groupedOld = groupByChapter(oldTestament as any[]);
+    const groupedNew = groupByChapter(newTestament as any[]);
 
     const totalOld = groupedOld.length;
     const totalNew = groupedNew.length;
 
-    const dayOfYear = getDayOfYear(today); // 1–365
+    const dayOfYear = getDayOfYear(today); // 1–366
 
-    // 日期 + 星期几
-    const datePart = today.toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-    const weekdayPart = today.toLocaleDateString('zh-CN', { weekday: 'long' });
-    setFormattedDate(`${datePart}   ${weekdayPart}`);
+    // 📅 本地化日期与星期几
+    try {
+      const formatter = new Intl.DateTimeFormat(
+        lang === 'zh-Hant' ? 'zh-Hant' : 'zh',
+        { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }
+      );
+      setFormattedDate(formatter.format(today));
+    } catch {
+      const datePart = today.toLocaleDateString(
+        lang === 'zh-Hant' ? 'zh-Hant' : 'zh',
+        { year: 'numeric', month: 'long', day: 'numeric' }
+      );
+      const weekdayPart = today.toLocaleDateString(
+        lang === 'zh-Hant' ? 'zh-Hant' : 'zh',
+        { weekday: 'long' }
+      );
+      setFormattedDate(`${datePart}   ${weekdayPart}`);
+    }
 
-    // 旧约：每天 3 章
+    // 📖 旧约：每天 3 章（循环）
     const oldStart = ((dayOfYear - 1) * 3) % totalOld;
     const selectedOld = [
       groupedOld[oldStart],
@@ -76,41 +114,60 @@ export default function BibleScreen() {
       groupedOld[(oldStart + 2) % totalOld],
     ];
 
-    // 新约：每天 1 章
+    // ✝️ 新约：每天 1 章（循环）
     const newIndex = (dayOfYear - 1) % totalNew;
     const selectedNew = [groupedNew[newIndex]];
 
-    setOldChapters(selectedOld);
-    setNewChapters(selectedNew);
+    // ✅ 深拷贝数据，避免 React 缓存旧引用
+    setOldChapters(JSON.parse(JSON.stringify(selectedOld)));
+    setNewChapters(JSON.parse(JSON.stringify(selectedNew)));
 
-    // 生成书签文本
+    // 🪶 生成读经计划标题
     const oldLabel = selectedOld
-      .map((c) => `${c[0].abbr_trad} ${c[0].chapter}`)
+      .map(
+        (c) =>
+          `${lang === 'zh-Hant' ? c[0].abbr_trad : c[0].abbr_simp} ${
+            c[0].chapter
+          }`
+      )
       .join('，');
     const newLabel = selectedNew
-      .map((c) => `${c[0].abbr_trad} ${c[0].chapter}`)
+      .map(
+        (c) =>
+          `${lang === 'zh-Hant' ? c[0].abbr_trad : c[0].abbr_simp} ${
+            c[0].chapter
+          }`
+      )
       .join('，');
-    setReadingPlan(`旧约：${oldLabel}\n新约：${newLabel}`);
+    setReadingPlan(
+      `${t('bible.old_testament')}：${oldLabel}\n${t(
+        'bible.new_testament'
+      )}：${newLabel}`
+    );
 
-    // ✅ 检查当天是否已打卡
+    // 📍 检查当天是否已打卡
     AsyncStorage.getItem(`checkin-${dateKey}`).then((val) => {
-      if (val === 'done') setCompleted(true);
+      setCompleted(val === 'done');
     });
-  }, []);
+  }, [lang, i18n.language]);
 
-  // ✅ 打卡
   const handleCheckin = async () => {
     await AsyncStorage.setItem(`checkin-${dateKey}`, 'done');
     setCompleted(true);
   };
 
-  const renderChapter = (chapter: any[], idx: number, label: string) => (
+  const renderChapter = (
+    chapter: any[],
+    idx: number,
+    labelKey: 'old_testament' | 'new_testament'
+  ) => (
     <View
       key={idx}
       style={[
         styles.card,
         { backgroundColor: colors.card, borderColor: colors.borderLight },
       ]}>
+      {/* 📘 章节标题，例如「旧约 马太福音 第1章」 */}
       <Text
         style={{
           fontWeight: 'bold',
@@ -119,18 +176,23 @@ export default function BibleScreen() {
           marginBottom: 8,
           textAlign: 'center',
         }}>
-        {label} {chapter[0].book_trad} 第 {chapter[0].chapter} 章
+        {t(`${labelKey}`)}{' '}
+        {lang === 'zh-Hant' ? chapter[0].book_trad : chapter[0].book_simp}{' '}
+        {chapter[0].chapter} {t('bible.chapter')}
       </Text>
+
+      {/* 📖 渲染每节经文 */}
       {chapter.map((verse) => (
         <Text
-          key={verse.verse}
+          key={`${verse.verse}-${lang}`}
           style={{
             fontSize,
             lineHeight: fontSize * 1.5,
             color: colors.text,
             marginBottom: 4,
           }}>
-          {chapter[0].chapter}:{verse.verse} {verse.text.zh_tw}
+          {chapter[0].chapter}:{verse.verse}{' '}
+          {lang === 'zh-Hant' ? verse.text.zh_tw : verse.text.zh_cn}
         </Text>
       ))}
     </View>
@@ -146,10 +208,10 @@ export default function BibleScreen() {
               styles.title,
               { fontSize: fontSize * 1.2, color: colors.text },
             ]}>
-            📖 今日读经
+            {t('bible.daily_reading')}
           </Text>
 
-		  {/* 日期，年月日星期几 */}
+          {/* 日期（随语言本地化） */}
           <Text
             style={{
               color: colors.textSecondary,
@@ -160,7 +222,7 @@ export default function BibleScreen() {
             {formattedDate}
           </Text>
 
-	      {/* 今日读经进度 */}
+          {/* 今日读经进度（随语言本地化） */}
           <View style={styles.planContainer}>
             <Text style={{ color: colors.primary, fontSize: fontSize * 0.8 }}>
               {readingPlan}
@@ -168,13 +230,13 @@ export default function BibleScreen() {
           </View>
 
           {oldChapters.map((chapter, idx) =>
-            renderChapter(chapter, idx, '旧约')
+            renderChapter(chapter, idx, 'bible.old_testament')
           )}
           {newChapters.map((chapter, idx) =>
-            renderChapter(chapter, idx, '新约')
+            renderChapter(chapter, idx, 'bible.new_testament')
           )}
 
-          {/* ✅ 打卡按钮 */}
+          {/* 打卡按钮（文本随语言本地化） */}
           <TouchableOpacity
             style={[
               styles.checkinButton,
@@ -192,7 +254,9 @@ export default function BibleScreen() {
                 fontSize: fontSize,
                 fontWeight: '600',
               }}>
-              {completed ? '已打卡' : '打卡完成'}
+              {completed
+                ? t('bible.checkin_done')
+                : t('bible.checkin_complete')}
             </Text>
           </TouchableOpacity>
         </View>

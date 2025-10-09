@@ -51,5 +51,13 @@
   },
   "privacy": {
     "title": "隐私条款"
+  },
+  "bible": {
+    "daily_reading": "📖 今日读经",
+    "old_testament": "旧约",
+    "new_testament": "新约",
+    "chapter": "章",
+    "checkin_done": "已打卡",
+    "checkin_complete": "打卡完成"
   }
 }
