@@ -21,7 +21,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
-import { useKeepAwake } from 'expo-keep-awake'; // ✅ 新版防休眠 Hook
+import { useKeepAwake } from 'expo-keep-awake';
+import { Audio } from 'expo-av';
 
 // 工具函数
 function getDayOfYear(date: Date) {
@@ -79,6 +80,25 @@ export default function BibleScreen() {
   const [scrollThumbY] = useState(new Animated.Value(0));
   const scrollViewRef = useRef<ScrollView>(null);
   let fadeTimeout: NodeJS.Timeout;
+
+  // ✅ 让语音在静音/震动模式下也能播放
+  useEffect(() => {
+    (async () => {
+      try {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          staysActiveInBackground: true,
+          interruptionModeIOS: 1, // 混合模式
+          playsInSilentModeIOS: true, // ✅ 核心：静音模式下也出声
+          shouldDuckAndroid: true,
+          interruptionModeAndroid: 1,
+          playThroughEarpieceAndroid: false,
+        });
+      } catch (e) {
+        console.log('Audio mode setup error', e);
+      }
+    })();
+  }, []);
 
   // ✅ 听书模式
   const [isListeningMode, setIsListeningMode] = useState(false);
@@ -300,16 +320,27 @@ export default function BibleScreen() {
     }
   };
   const playNext = () => {
+    isPlayingRef.current = false;
     Speech.stop();
+
     const next = Math.min(sentences.length - 1, currentIndexRef.current + 1);
-    isPlayingRef.current = true;
-    speakSentence(next);
+
+    setTimeout(() => {
+      isPlayingRef.current = true;
+      speakSentence(next);
+    }, 150);
   };
+
   const playPrev = () => {
+    isPlayingRef.current = false; // ✅ 阻止上一个 onDone()
     Speech.stop();
+
     const prev = Math.max(0, currentIndexRef.current - 1);
-    isPlayingRef.current = true;
-    speakSentence(prev);
+
+    setTimeout(() => {
+      isPlayingRef.current = true;
+      speakSentence(prev);
+    }, 150); // ✅ 稍微延迟启动，确保 stop 已完成
   };
 
   const handleCheckin = async () => {
