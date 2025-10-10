@@ -8,7 +8,11 @@ import {
   Animated,
   NativeSyntheticEvent,
   NativeScrollEvent,
+  UIManager,
+  findNodeHandle,
+  Platform,
 } from 'react-native';
+import * as Speech from 'expo-speech';
 import oldTestament from '../assets/old_multilang.json';
 import newTestament from '../assets/new_multilang.json';
 import { useThemeColors } from './src/hooks/useThemeColors';
@@ -16,32 +20,26 @@ import { useFontSize } from './src/context/FontSizeContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
+import { Ionicons } from '@expo/vector-icons';
+import { useKeepAwake } from 'expo-keep-awake'; // ✅ 新版防休眠 Hook
 
-// 获取当年的第几天 (1-366)
+// 工具函数
 function getDayOfYear(date: Date) {
   const start = new Date(date.getFullYear(), 0, 0);
   const diff = date.getTime() - start.getTime();
   return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
-
-// 格式化日期字符串 (YYYY-MM-DD)
 function formatDateKey(date: Date) {
   return date.toISOString().split('T')[0];
 }
-
-// 按 chapter_index 分组
 function groupByChapter(data: any[]) {
   const grouped: Record<number, any[]> = {};
   for (const verse of data) {
-    if (!grouped[verse.chapter_index]) {
-      grouped[verse.chapter_index] = [];
-    }
+    if (!grouped[verse.chapter_index]) grouped[verse.chapter_index] = [];
     grouped[verse.chapter_index].push(verse);
   }
   return Object.values(grouped);
 }
-
-// 归一化 i18n 语言到我们数据使用的键
 function normalizeLang(i18nLang: string) {
   const l = i18nLang?.toLowerCase() || 'zh';
   if (
@@ -54,12 +52,17 @@ function normalizeLang(i18nLang: string) {
   if (l.startsWith('zh')) return 'zh';
   return 'zh';
 }
+function splitToSentences(text: string): string[] {
+  return text
+    .split(/(?<=[。！？!?])/)
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+}
 
 export default function BibleScreen() {
   const colors = useThemeColors();
   const { fontSize: rawFontSize } = useFontSize();
   const fontSize = rawFontSize || 16;
-
   const { t, i18n } = useTranslation();
   const lang = useMemo(() => normalizeLang(i18n.language), [i18n.language]);
 
@@ -69,37 +72,54 @@ export default function BibleScreen() {
   const [readingPlan, setReadingPlan] = useState('');
   const [completed, setCompleted] = useState(false);
 
-  // 滚动进度
-  const [scrollProgress, setScrollProgress] = useState(new Animated.Value(0));
+  const [scrollProgress] = useState(new Animated.Value(0));
   const [scrollPercent, setScrollPercent] = useState(0);
   const [progressOpacity] = useState(new Animated.Value(0));
-  let fadeTimeout: NodeJS.Timeout;
-
-  // ✅ 垂直滚动条状态
   const [scrollThumbHeight, setScrollThumbHeight] = useState(0);
   const [scrollThumbY] = useState(new Animated.Value(0));
   const scrollViewRef = useRef<ScrollView>(null);
+  let fadeTimeout: NodeJS.Timeout;
 
+  // ✅ 听书模式
+  const [isListeningMode, setIsListeningMode] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+  const [sentences, setSentences] = useState<{ key: string; text: string }[]>(
+    []
+  );
+  const [activeSentence, setActiveSentence] = useState<string | null>(null);
+  const sentenceRefs = useRef<Map<string, any>>(new Map());
+  const currentIndexRef = useRef(0);
+  const isPlayingRef = useRef(false);
+
+  // ✅ 防止屏幕熄灭（只在听书模式启用）
+  useEffect(() => {
+    if (isListeningMode) {
+      const {
+        activateKeepAwakeAsync,
+        deactivateKeepAwake,
+      } = require('expo-keep-awake');
+      activateKeepAwakeAsync('bible-reading');
+      return () => deactivateKeepAwake('bible-reading');
+    }
+  }, [isListeningMode]);
+
+  // 滚动条逻辑
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset, contentSize, layoutMeasurement } = event.nativeEvent;
     const totalHeight = contentSize.height - layoutMeasurement.height;
-    const progress = totalHeight > 0 ? contentOffset.y / totalHeight : 0;
-
-    // 顶部水平进度条
+    const p = totalHeight > 0 ? contentOffset.y / totalHeight : 0;
     Animated.timing(scrollProgress, {
-      toValue: progress,
+      toValue: p,
       duration: 100,
       useNativeDriver: false,
     }).start();
-    setScrollPercent(Math.min(Math.round(progress * 100), 100));
+    setScrollPercent(Math.min(Math.round(p * 100), 100));
 
-    // 顶部进度条淡入淡出
     Animated.timing(progressOpacity, {
       toValue: 1,
       duration: 250,
       useNativeDriver: false,
     }).start();
-
     if (fadeTimeout) clearTimeout(fadeTimeout);
     fadeTimeout = setTimeout(() => {
       Animated.timing(progressOpacity, {
@@ -109,20 +129,20 @@ export default function BibleScreen() {
       }).start();
     }, 2000);
 
-    // ✅ 计算垂直滚动条高度和位置
     const visibleRatio = layoutMeasurement.height / contentSize.height;
-    const thumbHeight = Math.max(visibleRatio * layoutMeasurement.height, 40); // 最小40
+    const thumbHeight = Math.max(visibleRatio * layoutMeasurement.height, 40);
     setScrollThumbHeight(thumbHeight);
-
     Animated.timing(scrollThumbY, {
-      toValue: progress * (layoutMeasurement.height - thumbHeight),
+      toValue: p * (layoutMeasurement.height - thumbHeight),
       duration: 50,
       useNativeDriver: false,
     }).start();
 
     const today = new Date();
-    const dateKey = formatDateKey(today);
-    AsyncStorage.setItem(`scrollPos-${dateKey}`, contentOffset.y.toString());
+    AsyncStorage.setItem(
+      `scrollPos-${formatDateKey(today)}`,
+      contentOffset.y.toString()
+    );
   };
 
   const progressWidth = scrollProgress.interpolate({
@@ -130,33 +150,26 @@ export default function BibleScreen() {
     outputRange: ['0%', '100%'],
   });
 
+  // 初始化每日经文
   useEffect(() => {
     const today = new Date();
     const dateKey = formatDateKey(today);
-
     const groupedOld = groupByChapter(oldTestament as any[]);
     const groupedNew = groupByChapter(newTestament as any[]);
     const totalOld = groupedOld.length;
     const totalNew = groupedNew.length;
     const dayOfYear = getDayOfYear(today);
 
-    try {
-      const formatter = new Intl.DateTimeFormat(
-        lang === 'zh-Hant' ? 'zh-Hant' : 'zh',
-        { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }
-      );
-      setFormattedDate(formatter.format(today));
-    } catch {
-      const datePart = today.toLocaleDateString(
-        lang === 'zh-Hant' ? 'zh-Hant' : 'zh',
-        { year: 'numeric', month: 'long', day: 'numeric' }
-      );
-      const weekdayPart = today.toLocaleDateString(
-        lang === 'zh-Hant' ? 'zh-Hant' : 'zh',
-        { weekday: 'long' }
-      );
-      setFormattedDate(`${datePart}   ${weekdayPart}`);
-    }
+    const formatter = new Intl.DateTimeFormat(
+      lang === 'zh-Hant' ? 'zh-Hant' : 'zh',
+      {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        weekday: 'long',
+      }
+    );
+    setFormattedDate(formatter.format(today));
 
     const oldStart = ((dayOfYear - 1) * 3) % totalOld;
     const selectedOld = [
@@ -164,12 +177,10 @@ export default function BibleScreen() {
       groupedOld[(oldStart + 1) % totalOld],
       groupedOld[(oldStart + 2) % totalOld],
     ];
-
     const newIndex = (dayOfYear - 1) % totalNew;
     const selectedNew = [groupedNew[newIndex]];
-
-    setOldChapters(JSON.parse(JSON.stringify(selectedOld)));
-    setNewChapters(JSON.parse(JSON.stringify(selectedNew)));
+    setOldChapters(selectedOld);
+    setNewChapters(selectedNew);
 
     const oldLabel = selectedOld
       .map(
@@ -192,37 +203,122 @@ export default function BibleScreen() {
         'bible.new_testament'
       )}：${newLabel}`
     );
+    AsyncStorage.getItem(`checkin-${dateKey}`).then((val) =>
+      setCompleted(val === 'done')
+    );
 
-    AsyncStorage.getItem(`checkin-${dateKey}`).then((val) => {
-      setCompleted(val === 'done');
-    });
-
-    // 📍 恢复上次阅读位置
     setTimeout(async () => {
-      const today = new Date();
-      const dateKey = formatDateKey(today);
       const savedY = await AsyncStorage.getItem(`scrollPos-${dateKey}`);
-      if (savedY && scrollViewRef.current) {
+      if (savedY && scrollViewRef.current)
         scrollViewRef.current.scrollTo({
           y: parseFloat(savedY),
           animated: false,
         });
-      }
-    }, 500); // 延迟半秒确保内容加载完毕
+    }, 500);
   }, [lang, i18n.language]);
+
+  // 构建句子队列
+  useEffect(() => {
+    const all: { key: string; text: string }[] = [];
+    [...oldChapters, ...newChapters].forEach((chapter) => {
+      chapter.forEach((verse: any) => {
+        const vtext = lang === 'zh-Hant' ? verse.text.zh_tw : verse.text.zh_cn;
+        splitToSentences(vtext).forEach((p, idx) =>
+          all.push({ key: `${verse.chapter}-${verse.verse}-${idx}`, text: p })
+        );
+      });
+    });
+    setSentences(all);
+  }, [oldChapters, newChapters, lang]);
+
+  // ✅ 朗读逻辑
+  const speakSentence = (index: number) => {
+    if (index >= sentences.length || !isPlayingRef.current) {
+      setActiveSentence(null);
+      setIsListeningMode(false);
+      return;
+    }
+
+    const current = sentences[index];
+    setActiveSentence(current.key);
+    currentIndexRef.current = index;
+
+    const element = sentenceRefs.current.get(current.key);
+    if (element && scrollViewRef.current) {
+      if (Platform.OS === 'web') {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        const scrollNode = findNodeHandle(scrollViewRef.current);
+        const elementNode = findNodeHandle(element);
+        if (scrollNode && elementNode) {
+          UIManager.measureLayout(
+            elementNode,
+            scrollNode,
+            () => {},
+            (_x, y) => {
+              scrollViewRef.current?.scrollTo({
+                y: Math.max(0, y - 250),
+                animated: true,
+              });
+            }
+          );
+        }
+      }
+    }
+
+    Speech.speak(current.text, {
+      language: lang === 'zh-Hant' ? 'zh-TW' : 'zh-CN',
+      rate: 1.0,
+      pitch: 1.0,
+      onDone: () => {
+        if (isPlayingRef.current) speakSentence(index + 1);
+      },
+    });
+  };
+
+  // 控制函数
+  const startListening = () => {
+    setIsListeningMode(true);
+    isPlayingRef.current = true;
+    speakSentence(currentIndexRef.current);
+  };
+  const stopListening = () => {
+    Speech.stop();
+    isPlayingRef.current = false;
+    setIsListeningMode(false);
+    setActiveSentence(null);
+  };
+  const pauseOrResume = () => {
+    if (isPaused) {
+      setIsPaused(false);
+      isPlayingRef.current = true;
+      speakSentence(currentIndexRef.current);
+    } else {
+      Speech.stop();
+      setIsPaused(true);
+      isPlayingRef.current = false;
+    }
+  };
+  const playNext = () => {
+    Speech.stop();
+    const next = Math.min(sentences.length - 1, currentIndexRef.current + 1);
+    isPlayingRef.current = true;
+    speakSentence(next);
+  };
+  const playPrev = () => {
+    Speech.stop();
+    const prev = Math.max(0, currentIndexRef.current - 1);
+    isPlayingRef.current = true;
+    speakSentence(prev);
+  };
 
   const handleCheckin = async () => {
     const today = new Date();
-    const dateKey = formatDateKey(today);
-    await AsyncStorage.setItem(`checkin-${dateKey}`, 'done');
+    await AsyncStorage.setItem(`checkin-${formatDateKey(today)}`, 'done');
     setCompleted(true);
   };
 
-  const renderChapter = (
-    chapter: any[],
-    idx: number,
-    labelKey: 'bible.old_testament' | 'bible.new_testament'
-  ) => (
+  const renderChapter = (chapter: any[], idx: number, labelKey: string) => (
     <View
       key={idx}
       style={[
@@ -237,31 +333,43 @@ export default function BibleScreen() {
           marginBottom: 8,
           textAlign: 'center',
         }}>
-        {t(`${labelKey}`)}{' '}
+        {t(labelKey)}{' '}
         {lang === 'zh-Hant' ? chapter[0].book_trad : chapter[0].book_simp}{' '}
         {chapter[0].chapter} {t('bible.chapter')}
       </Text>
-
-      {chapter.map((verse) => (
-        <Text
-          key={`${verse.verse}-${lang}`}
-          style={{
-            fontSize,
-            lineHeight: fontSize * 1.5,
-            color: colors.text,
-            marginBottom: 4,
-          }}>
-          {chapter[0].chapter}:{verse.verse}{' '}
-          {lang === 'zh-Hant' ? verse.text.zh_tw : verse.text.zh_cn}
-        </Text>
-      ))}
+      {chapter.map((verse) => {
+        const vtext = lang === 'zh-Hant' ? verse.text.zh_tw : verse.text.zh_cn;
+        return (
+          <View key={`${verse.verse}-${lang}`} style={{ marginBottom: 4 }}>
+            {splitToSentences(vtext).map((s, idx2) => {
+              const key = `${verse.chapter}-${verse.verse}-${idx2}`;
+              const isActive = key === activeSentence;
+              return (
+                <Text
+                  key={key}
+                  ref={(ref) => ref && sentenceRefs.current.set(key, ref)}
+                  style={{
+                    fontSize,
+                    lineHeight: fontSize * 1.5,
+                    color: isActive ? colors.primary : colors.text,
+                    backgroundColor: isActive
+                      ? 'rgba(0,122,255,0.1)'
+                      : 'transparent',
+                  }}>
+                  {chapter[0].chapter}:{verse.verse} {s}
+                </Text>
+              );
+            })}
+          </View>
+        );
+      })}
     </View>
   );
 
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}>
-      {/* 顶部进度条 */}
+      {/* 阅读进度条 */}
       <Animated.View
         style={[styles.progressContainer, { opacity: progressOpacity }]}>
         <View style={styles.progressBarBackground}>
@@ -277,14 +385,15 @@ export default function BibleScreen() {
         </Text>
       </Animated.View>
 
-      {/* ✅ 包裹 ScrollView 与垂直滚动条 */}
+      {/* 主体内容 */}
       <View style={{ flex: 1 }}>
         <ScrollView
           ref={scrollViewRef}
           style={styles.scrollView}
           onScroll={handleScroll}
           scrollEventThrottle={16}
-          showsVerticalScrollIndicator={false}>
+          showsVerticalScrollIndicator={false}
+          scrollEnabled={!isListeningMode}>
           <View style={styles.content}>
             <Text
               style={[
@@ -293,7 +402,6 @@ export default function BibleScreen() {
               ]}>
               {t('bible.daily_reading')}
             </Text>
-
             <Text
               style={{
                 color: colors.textSecondary,
@@ -303,7 +411,6 @@ export default function BibleScreen() {
               }}>
               {formattedDate}
             </Text>
-
             <View style={styles.planContainer}>
               <Text style={{ color: colors.primary, fontSize: fontSize * 0.8 }}>
                 {readingPlan}
@@ -331,7 +438,7 @@ export default function BibleScreen() {
               <Text
                 style={{
                   color: completed ? colors.textSecondary : '#fff',
-                  fontSize: fontSize,
+                  fontSize,
                   fontWeight: '600',
                 }}>
                 {completed
@@ -342,7 +449,7 @@ export default function BibleScreen() {
           </View>
         </ScrollView>
 
-        {/* ✅ 自定义垂直滚动条 */}
+        {/* 自定义滚动条 */}
         <Animated.View
           style={[
             styles.customScrollbar,
@@ -353,6 +460,50 @@ export default function BibleScreen() {
             },
           ]}
         />
+
+        {/* 🎧 悬浮按钮 */}
+        {!isListeningMode && (
+          <TouchableOpacity
+            style={[styles.floatingButton, { backgroundColor: colors.primary }]}
+            onPress={startListening}>
+            <Text style={{ color: 'white', fontSize: 22 }}>🎧</Text>
+          </TouchableOpacity>
+        )}
+
+        {/* ⏮⏸⏭ 控制栏（底部） */}
+        {isListeningMode && (
+          <View
+            style={[styles.audioControls, { backgroundColor: colors.card }]}>
+            <TouchableOpacity onPress={playPrev}>
+              <Ionicons
+                name='play-skip-back'
+                size={26}
+                color={colors.primary}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={pauseOrResume}>
+              <Ionicons
+                name={isPaused ? 'play' : 'pause'}
+                size={28}
+                color={colors.primary}
+              />
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={playNext}>
+              <Ionicons
+                name='play-skip-forward'
+                size={26}
+                color={colors.primary}
+              />
+            </TouchableOpacity>
+
+            {/* ⏻ Power Button → 退出听书模式 */}
+            <TouchableOpacity onPress={stopListening}>
+              <Ionicons name='power' size={26} color={colors.primary} />
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -361,21 +512,9 @@ export default function BibleScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollView: { flex: 1 },
-  content: {
-    padding: 20,
-    paddingBottom: 80,
-  },
-  title: {
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  card: {
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    marginBottom: 16,
-  },
+  content: { padding: 20, paddingBottom: 120 },
+  title: { fontWeight: 'bold', textAlign: 'center', marginBottom: 12 },
+  card: { padding: 16, borderRadius: 12, borderWidth: 1, marginBottom: 16 },
   planContainer: {
     marginBottom: 16,
     paddingVertical: 6,
@@ -405,22 +544,46 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginRight: 8,
   },
-  progressBarFill: {
-    height: 6,
-    borderRadius: 3,
-  },
+  progressBarFill: { height: 6, borderRadius: 3 },
   progressText: {
     fontSize: 12,
     fontWeight: '500',
     width: 40,
     textAlign: 'right',
   },
-  // ✅ 自定义垂直滚动条
   customScrollbar: {
     position: 'absolute',
     right: 3,
     width: 5,
     borderRadius: 3,
-    opacity: 0.6, // 半透明常显
+    opacity: 0.6,
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 25,
+    right: 25,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 5,
+  },
+  audioControls: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: 65,
+    borderTopWidth: 1,
+    borderColor: '#ccc',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 25,
   },
 });
