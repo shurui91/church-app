@@ -31,14 +31,14 @@ export default function AnnouncementScreen() {
     if (i18n.resolvedLanguage === 'zh-Hant') {
       return {
         ANNOUNCEMENT_URL:
-          'https://gist.githubusercontent.com/shurui91/1f4aa8bf7c23908c97c198e4b762f1f2/raw/5641a3fa2b55ffdc646f71c0ae181d81a15ee247/weekly_traditional_c.txt',
+          'https://gist.githubusercontent.com/shurui91/1f4aa8bf7c23908c97c198e4b762f1f2/raw/9338e01665789b2d7b5abad9265a4a51a2ea1b67/weekly_traditional_c.txt',
         PRAYER_URL:
           'https://gist.githubusercontent.com/shurui91/40ecf68fa147682428df8afc43abcebe/raw/c7af7f2664ce065675913cd6928faea008d5522e/prayer_item_traditional_c.txt',
       };
     } else {
       return {
         ANNOUNCEMENT_URL:
-          'https://gist.githubusercontent.com/shurui91/a0c5c416c79b9447dfebfb598b903c96/raw/dbe80f1db835319e36285ad922098c95ab35333a/weekly_simp_c.txt',
+          'https://gist.githubusercontent.com/shurui91/a0c5c416c79b9447dfebfb598b903c96/raw/ae9ae7954e10d034ea74c2294ccdb6383ba5cc8d/weekly_simp_c.txt',
         PRAYER_URL:
           'https://gist.githubusercontent.com/shurui91/a501d661a50b7631d7d591524fbd5259/raw/b0d4c7bb82d24f85d37c193f1f4cb5735ba84303/prayer_item_simp_c.txt',
       };
