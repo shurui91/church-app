@@ -8,6 +8,7 @@
     "scheme": "churchincerritos",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+	"jsEngine": "hermes",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.cerritos.bible",
