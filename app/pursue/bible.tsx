@@ -1,4 +1,6 @@
 import { useEffect, useMemo, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Stack } from 'expo-router';
 import {
   View,
   Text,
@@ -19,10 +21,10 @@ import { useThemeColors } from '../src/hooks/useThemeColors';
 import { useFontSize } from '../src/context/FontSizeContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTranslation } from 'react-i18next';
 import { Ionicons } from '@expo/vector-icons';
 import { useKeepAwake } from 'expo-keep-awake';
 import { Audio } from 'expo-av';
+import BackButton from '../components/BackButton';
 
 // 工具函数
 function getDayOfYear(date: Date) {
@@ -400,6 +402,19 @@ export default function BibleScreen() {
   return (
     <SafeAreaView
       style={[styles.container, { backgroundColor: colors.background }]}>
+      {/* ✅ 顶部导航栏，带返回按钮 */}
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: t('titles.bible_one_year'), // ✅ 使用多语言 key
+          headerStyle: { backgroundColor: colors.card },
+          headerTintColor: colors.text, // 返回箭头颜色
+          headerTitleStyle: { color: colors.text },
+          headerBackTitleVisible: false, // ✅ 隐藏返回文字
+          headerLeft: () => <BackButton />, // ✅ 使用统一的返回按钮组件
+        }}
+      />
+
       {/* 阅读进度条 */}
       <Animated.View
         style={[styles.progressContainer, { opacity: progressOpacity }]}>
@@ -564,7 +579,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingTop: 6,
+    paddingTop: Platform.OS === 'ios' ? 0 : 4, // ✅ iOS不加padding，Android稍微留点
     paddingBottom: 6,
   },
   progressBarBackground: {

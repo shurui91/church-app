@@ -11,7 +11,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
-import { useThemeColors } from './src/hooks/useThemeColors';
+import { useThemeColors } from '../src/hooks/useThemeColors';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -40,12 +40,12 @@ export default function ProfileScreen() {
           <MenuItem
             icon='settings-outline'
             title={t('profile.appSettings') || '应用设置'}
-            onPress={() => router.push('/settings')}
+            onPress={() => router.push('/profile/settings')}
           />
           <MenuItem
             icon='shield-checkmark-outline'
             title={t('profile.privacy') || '隐私条款'}
-            onPress={() => router.push('/privacy')}
+            onPress={() => router.push('/profile/privacy')}
             isLast
           />
         </View>

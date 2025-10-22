@@ -52,12 +52,22 @@
   "privacy": {
     "title": "隐私条款"
   },
+  "pursue": {
+    "title": "追求中心",
+    "bible_one_year": "读经一年一遍",
+    "life_study": "生命读经",
+    "witness_lee": "李常受文集",
+	"hymns": "诗歌"
+  },
   "bible": {
-    "daily_reading": "📖 今日读经",
+    "daily_reading": "📖 每日读经",
     "old_testament": "旧约",
     "new_testament": "新约",
     "chapter": "章",
     "checkin_done": "已打卡",
     "checkin_complete": "打卡完成"
+  },
+  "titles": {
+    "bible_one_year": "读经一年一遍"
   }
 }

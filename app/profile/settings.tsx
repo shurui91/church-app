@@ -12,11 +12,12 @@ import {
 import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useTranslation } from 'react-i18next';
-import { setAppLanguage } from './src/i18n';
-import { useTheme } from './src/context/ThemeContext';
-import { useThemeColors } from './src/hooks/useThemeColors';
-import { useFontSize } from './src/context/FontSizeContext';
+import { setAppLanguage } from '../src/i18n';
+import { useTheme } from '../src/context/ThemeContext';
+import { useThemeColors } from '../src/hooks/useThemeColors';
+import { useFontSize } from '../src/context/FontSizeContext';
 import Slider from '@react-native-assets/slider';
+import BackButton from '../components/BackButton';
 
 export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
@@ -41,13 +42,7 @@ export default function SettingsScreen() {
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
           headerTitleStyle: { color: colors.text },
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.push('/profile')}
-              style={{ paddingHorizontal: 12 }}>
-              <Ionicons name='chevron-back' size={24} color={colors.text} />
-            </TouchableOpacity>
-          ),
+          headerLeft: () => <BackButton />, // ✅ 统一风格
         }}
       />
 

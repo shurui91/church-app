@@ -2,14 +2,15 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
 import { Stack } from 'expo-router';
-import { useThemeColors } from './src/hooks/useThemeColors';
-import { useFontSize } from './src/context/FontSizeContext';
+import { useThemeColors } from '../src/hooks/useThemeColors';
+import { useFontSize } from '../src/context/FontSizeContext';
 import { useTranslation } from 'react-i18next';
 import Markdown from 'react-native-markdown-display';
+import BackButton from '../components/BackButton';
 
 // ✅ 导入本地 JS 文件（导出字符串）
-import { policyZh } from './src/data/policy/zh';
-import { policyZhHant } from './src/data/policy/zh-Hant';
+import { policyZh } from '../src/data/policy/zh';
+import { policyZhHant } from '../src/data/policy/zh-Hant';
 
 export default function PrivacyScreen() {
   const colors = useThemeColors();
@@ -34,10 +35,7 @@ export default function PrivacyScreen() {
           headerShown: true,
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
-          headerTitleStyle: {
-            color: colors.text,
-            fontSize: getFontSizeValue(18),
-          },
+          headerLeft: () => <BackButton />, // ✅ 使用同一个组件
         }}
       />
 

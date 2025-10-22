@@ -7,6 +7,7 @@ import { useThemeColors } from './src/hooks/useThemeColors';
 import { useEffect } from 'react';
 import { Alert } from 'react-native';
 import * as Updates from 'expo-updates';
+import { useTranslation } from 'react-i18next';
 
 // 定义需要显示底部导航栏的路由白名单
 const TAB_BAR_ROUTES = [
@@ -21,6 +22,9 @@ function ThemedLayout() {
   const pathname = usePathname();
   const colors = useThemeColors();
   const { getFontSizeValue } = useFontSize();
+
+  // 简中/繁中切换
+  const { t } = useTranslation();
 
   // 更健壮的 Tab 显示逻辑
   const shouldShowTabBar = TAB_BAR_ROUTES.some((route) =>
@@ -38,6 +42,7 @@ function ThemedLayout() {
       color: colors.text,
       fontSize: getFontSizeValue(18), // ✅ 使用 context 并保证整数
     },
+	headerLeft: () => <BackButton />, // ✅ 全局统一后退按钮
   });
 
   return (
@@ -54,13 +59,19 @@ function ThemedLayout() {
         <Stack.Screen name='announcement' />
         <Stack.Screen name='pursue' />
 
+        {/* ✅ 示例：将 title 改为多语言 */}
+        <Stack.Screen
+          name='bible_one_year'
+          options={defaultHeaderOptions('titles.bible_one_year')}
+        />
+
         <Stack.Screen
           name='settings'
-          options={defaultHeaderOptions('应用设置')}
+          options={defaultHeaderOptions('titles.settings')}
         />
         <Stack.Screen
           name='privacy'
-          options={defaultHeaderOptions('隐私条款')}
+          options={defaultHeaderOptions('titles.privacy')}
         />
       </Stack>
       {shouldShowTabBar && <CustomTabBar />}
