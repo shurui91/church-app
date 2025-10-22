@@ -1,6 +1,6 @@
 {
   "settings": {
-    "title": "應用設定",
+    "title": "我的",
     "display": "顯示設定",
     "darkMode": "深色模式",
     "fontSize": "字體大小",
@@ -32,7 +32,7 @@
     "ok": "確定"
   },
   "profile": {
-    "pageTitle": "設定",
+    "pageTitle": "我的",
     "appSettings": "應用設定",
     "privacy": "隱私條款",
     "version": "版本號"
@@ -41,7 +41,7 @@
     "meeting": "線上聚會",
     "bible": "讀經",
     "announcement": "通知",
-    "profile": "設定"
+    "profile": "我的"
   },
   "announcement": {
     "title": "召會通知與禱告事項",

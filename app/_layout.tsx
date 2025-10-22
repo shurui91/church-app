@@ -11,9 +11,9 @@ import * as Updates from 'expo-updates';
 // 定义需要显示底部导航栏的路由白名单
 const TAB_BAR_ROUTES = [
   '/home',
-  '/profile',
   '/meeting',
   '/announcement',
+  '/profile',
   '/bible',
 ];
 

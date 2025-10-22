@@ -32,7 +32,7 @@
     "ok": "确定"
   },
   "profile": {
-    "pageTitle": "设置",
+    "pageTitle": "我的",
     "appSettings": "应用设置",
     "privacy": "隐私条款",
     "version": "版本号"
@@ -41,7 +41,7 @@
     "meeting": "线上聚会",
     "bible": "读经",
     "announcement": "通知",
-    "profile": "设置"
+    "profile": "我的"
   },
   "announcement": {
     "title": "召会通知与祷告事项",
