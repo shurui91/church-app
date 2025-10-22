@@ -14,7 +14,7 @@ const TAB_BAR_ROUTES = [
   '/meeting',
   '/announcement',
   '/profile',
-  '/bible',
+  '/pursue', // 原来是bible页面
 ];
 
 function ThemedLayout() {
@@ -52,7 +52,7 @@ function ThemedLayout() {
         <Stack.Screen name='profile' />
         <Stack.Screen name='meeting' />
         <Stack.Screen name='announcement' />
-        <Stack.Screen name='bible' />
+        <Stack.Screen name='pursue' />
 
         <Stack.Screen
           name='settings'

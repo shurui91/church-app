@@ -20,10 +20,10 @@ const tabs = [
     activeIcon: 'videocam',
   },
   {
-    key: 'bible',
-    path: '/bible',
-    icon: 'book-outline',
-    activeIcon: 'book',
+    key: 'pursue',
+    path: '/pursue',
+    icon: 'library-outline', // 📚 图标更贴近“追求”或“灵修中心”
+    activeIcon: 'library',
   },
   {
     key: 'announcement',

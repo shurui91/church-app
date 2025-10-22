@@ -13,10 +13,10 @@ import {
   Platform,
 } from 'react-native';
 import * as Speech from 'expo-speech';
-import oldTestament from '../assets/old_multilang.json';
-import newTestament from '../assets/new_multilang.json';
-import { useThemeColors } from './src/hooks/useThemeColors';
-import { useFontSize } from './src/context/FontSizeContext';
+import oldTestament from '../../assets/old_multilang.json';
+import newTestament from '../../assets/new_multilang.json';
+import { useThemeColors } from '../src/hooks/useThemeColors';
+import { useFontSize } from '../src/context/FontSizeContext';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useTranslation } from 'react-i18next';
