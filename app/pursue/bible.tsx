@@ -417,7 +417,18 @@ export default function BibleScreen() {
 
       {/* 阅读进度条 */}
       <Animated.View
-        style={[styles.progressContainer, { opacity: progressOpacity }]}>
+        style={[
+          styles.progressContainer,
+          {
+            opacity: progressOpacity,
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 10, // ✅ 确保浮在内容之上
+            backgroundColor: colors.background, // ✅ 避免半透明导致的叠色问题
+          },
+        ]}>
         <View style={styles.progressBarBackground}>
           <Animated.View
             style={[
@@ -558,7 +569,7 @@ export default function BibleScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollView: { flex: 1 },
-  content: { padding: 20, paddingBottom: 120 },
+  content: { paddingHorizontal: 5, paddingTop: 10, paddingBottom: 60 },
   title: { fontWeight: 'bold', textAlign: 'center', marginBottom: 12 },
   card: { padding: 16, borderRadius: 12, borderWidth: 1, marginBottom: 16 },
   planContainer: {
