@@ -15,7 +15,7 @@ const TAB_BAR_ROUTES = [
   '/meeting',
   '/announcement',
   '/profile',
-  '/pursue', // 原来是bible页面
+  '/pursue',
 ];
 
 function ThemedLayout() {

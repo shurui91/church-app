@@ -54,11 +54,10 @@ export default function PursueHome() {
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={[styles.card, styles.disabledCard]}
-          onPress={handleComingSoon}
-          activeOpacity={0.7}>
-          <Text style={[styles.cardText, styles.disabledText]}>
-            🎵 {t('pursue.hymns')}（开发中）
+          style={[styles.card, { backgroundColor: colors.card }]}
+          onPress={() => router.push('/pursue/hymns')}>
+          <Text style={[styles.cardText, { color: colors.text }]}>
+            🎵 {t('pursue.hymns')}
           </Text>
         </TouchableOpacity>
       </View>
