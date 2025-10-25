@@ -34,7 +34,7 @@ export default function PursueHome() {
           </Text>
         </TouchableOpacity>
 
-        {/* 🚧 开发中模块 */}
+        {/* 🚧 生命读经（开发中） */}
         <TouchableOpacity
           style={[styles.card, styles.disabledCard]}
           onPress={handleComingSoon}
