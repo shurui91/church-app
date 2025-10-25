@@ -122,10 +122,14 @@ export default function HymnsScreen() {
             )}
           </View>
 
-		  {/* ✅ 仅在大本诗歌时显示这一段 */}
-          {selectedBook === 'ch' && (
-            <Text style={[styles.note, { color: colors.text }]}>注：附1 - 附5请输入 1001 - 1005</Text>
-          )}
+          {/* ✅ 保持布局稳定 */}
+          <View style={{ height: 28, justifyContent: 'center', marginBottom: 10 }}>
+  {selectedBook === 'ch' && (
+    <Text style={[styles.note, { color: colors.text }]}>
+      注：附1 - 附5请输入 1001 - 1005
+    </Text>
+  )}
+</View>
 
           {/* 底部操作 */}
           <View style={styles.actions}>
@@ -224,6 +228,7 @@ const styles = StyleSheet.create({
   },
   note: {
     fontSize: 16,
-    marginBottom: 10,
+    lineHeight: 22, // ✅ 动态行高
+    marginBottom: 5,
   },
 });
