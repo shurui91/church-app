@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState , useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter, Stack } from 'expo-router';
+import { useRouter, Stack, useFocusEffect } from 'expo-router';
 import { useThemeColors } from '../src/hooks/useThemeColors';
 import chSongs from '../../assets/ch_songs.json'; // 大本诗歌
 import tsSongs from '../../assets/ts_songs.json'; // 补充本诗歌
@@ -14,6 +14,13 @@ export default function HymnsScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const { t, i18n } = useTranslation(); // ✅ 获取翻译函数与当前语言
+
+  // ✅ 当页面重新获得焦点时，清空输入框
+  useFocusEffect(
+    useCallback(() => {
+      setInput('');
+    }, [])
+  );
 
   const handlePress = (digit: string) => {
     if (input.length < 4) setInput((prev) => prev + digit);
