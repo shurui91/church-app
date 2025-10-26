@@ -69,5 +69,17 @@
   },
   "titles": {
     "bible_one_year": "讀經一年一遍"
+  },
+  "common": {
+    "tip": "提示",
+    "clear": "清空"
+  },
+  "hymns": {
+    "title": "詩歌",
+    "main": "大本詩歌",
+    "supplement": "補充本詩歌",
+    "enterNumber": "請輸入詩歌編號",
+    "appendixNote": "註：附1 - 附5請輸入 1001 - 1005",
+    "notFound": "中找不到編號為"
   }
 }

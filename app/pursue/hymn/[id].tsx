@@ -1,15 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, Stack } from 'expo-router';
 import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import chSongs from '../../../assets/ch_songs.json';
 import tsSongs from '../../../assets/ts_songs.json';
 import { useThemeColors } from '../../src/hooks/useThemeColors';
-import { useFontSize } from '../../src/context/FontSizeContext'; // ✅ 引入字体大小 Context
+import { useFontSize } from '../../src/context/FontSizeContext';
+import { useTranslation } from 'react-i18next'; // ✅ 引入 i18n
 
 export default function HymnDetail() {
   const { id, book } = useLocalSearchParams();
   const colors = useThemeColors();
-  const { getFontSizeValue } = useFontSize(); // ✅ 使用动态字号函数
+  const { getFontSizeValue } = useFontSize();
+  const { i18n } = useTranslation(); // ✅ 获取语言状态
+
+  // ✅ 当前语言判断（zh = 简中, zh-Hant = 繁中）
+  const [isTraditional, setIsTraditional] = useState(
+    i18n.language === 'zh-Hant'
+  );
+
+  // ✅ 当全局语言切换时，自动刷新
+  useEffect(() => {
+    const handleLangChange = () => {
+      setIsTraditional(i18n.language === 'zh-Hant');
+    };
+    i18n.on('languageChanged', handleLangChange);
+    return () => {
+      i18n.off('languageChanged', handleLangChange);
+    };
+  }, [i18n]);
 
   // ✅ 选择数据源
   const songsData = book === 'ts' ? tsSongs : chSongs;
@@ -19,7 +37,9 @@ export default function HymnDetail() {
     return (
       <View style={[styles.center, { backgroundColor: colors.background }]}>
         <Text style={{ color: colors.text, fontSize: getFontSizeValue(18) }}>
-          找不到该诗歌（{book === 'ts' ? '补充本' : '大本'} {id}）。
+          {isTraditional
+            ? `找不到詩歌（${book === 'ts' ? '補充本' : '大本'} ${id}）。`
+            : `找不到该诗歌（${book === 'ts' ? '补充本' : '大本'} ${id}）。`}
         </Text>
       </View>
     );
@@ -28,11 +48,16 @@ export default function HymnDetail() {
   // ✅ 自动识别 verses / lyrics
   const sections = hymn.verses || hymn.lyrics;
 
+  // ✅ 根据语言切换标题
+  const titleText = isTraditional
+    ? `${book === 'ts' ? '補充本詩歌' : '大本詩歌'} ${id}`
+    : `${book === 'ts' ? '补充本诗歌' : '大本诗歌'} ${id}`;
+
   return (
     <>
       <Stack.Screen
         options={{
-          title: `${book === 'ts' ? '补充本诗歌' : '大本诗歌'} ${id}`,
+          title: titleText,
         }}
       />
 
@@ -46,44 +71,50 @@ export default function HymnDetail() {
             {
               color: colors.text,
               fontSize: getFontSizeValue(24),
-              lineHeight: getFontSizeValue(24) * 1.3, // ✅ 稍小比例
+              lineHeight: getFontSizeValue(24) * 1.3,
             },
           ]}>
           {hymn.title}
         </Text>
 
-        {/* 遍历歌词 */}
+        {/* ✅ 遍历歌词并根据语言选择 lines_simp / lines_trad */}
         {Array.isArray(sections) ? (
-          sections.map((section: any, idx: number) => (
-            <View key={idx} style={{ marginBottom: 20 }}>
-              {/* 节编号 */}
-              <Text
-                style={[
-                  styles.sectionTitle,
-                  { color: colors.text, fontSize: getFontSizeValue(18) },
-                ]}>
-                {section.number || section.label || idx + 1}
-              </Text>
+          sections.map((section: any, idx: number) => {
+            const lines = isTraditional
+              ? section.lines_trad || section.lines // fallback
+              : section.lines_simp || section.lines; // fallback
 
-              {/* 每行歌词 */}
-              {section.lines?.map((line: string, i: number) => (
+            return (
+              <View key={idx} style={{ marginBottom: 20 }}>
+                {/* 节编号 */}
                 <Text
-                  key={i}
-                  style={{
-                    color: colors.text,
-                    fontSize: getFontSizeValue(20),
-                    lineHeight: getFontSizeValue(20) * 1.6, // ✅ 动态行高
-                    textAlign: 'center',
-                  }}
-                  selectable>
-                  {line}
+                  style={[
+                    styles.sectionTitle,
+                    { color: colors.text, fontSize: getFontSizeValue(18) },
+                  ]}>
+                  {section.number || section.label || idx + 1}
                 </Text>
-              ))}
-            </View>
-          ))
+
+                {/* 每行歌词 */}
+                {lines?.map((line: string, i: number) => (
+                  <Text
+                    key={i}
+                    style={{
+                      color: colors.text,
+                      fontSize: getFontSizeValue(20),
+                      lineHeight: getFontSizeValue(20) * 1.6,
+                      textAlign: 'center',
+                    }}
+                    selectable>
+                    {line}
+                  </Text>
+                ))}
+              </View>
+            );
+          })
         ) : (
           <Text style={{ color: colors.text, fontSize: getFontSizeValue(18) }}>
-            暂无歌词内容。
+            {isTraditional ? '暫無歌詞內容。' : '暂无歌词内容。'}
           </Text>
         )}
       </ScrollView>

@@ -6,12 +6,14 @@ import { useThemeColors } from '../src/hooks/useThemeColors';
 import chSongs from '../../assets/ch_songs.json'; // 大本诗歌
 import tsSongs from '../../assets/ts_songs.json'; // 补充本诗歌
 import { Ionicons } from '@expo/vector-icons';
+import { useTranslation } from 'react-i18next'; // ✅ 引入多语言钩子
 
 export default function HymnsScreen() {
   const [input, setInput] = useState('');
-  const [selectedBook, setSelectedBook] = useState<'ch' | 'ts'>('ch'); // ✅ 当前选中的歌本
+  const [selectedBook, setSelectedBook] = useState<'ch' | 'ts'>('ch');
   const router = useRouter();
   const colors = useThemeColors();
+  const { t, i18n } = useTranslation(); // ✅ 获取翻译函数与当前语言
 
   const handlePress = (digit: string) => {
     if (input.length < 4) setInput((prev) => prev + digit);
@@ -22,27 +24,24 @@ export default function HymnsScreen() {
   const handleConfirm = () => {
     if (!input) return;
 
-    // ✅ 根据当前 tab 选择数据源
     const currentSongs = selectedBook === 'ch' ? chSongs : tsSongs;
-    // ✅ 强制类型转为字符串，兼容数字 id
     const hymn = currentSongs.find(
       (song: any) => String(song.id) === String(input)
     );
 
     if (!hymn) {
       Alert.alert(
-        '提示',
-        `在${
-          selectedBook === 'ch' ? '大本诗歌' : '补充本诗歌'
-        }中找不到编号为 ${input} 的诗歌`
+        t('common.tip'), // ✅ “提示”
+        `${t(selectedBook === 'ch' ? 'hymns.main' : 'hymns.supplement')} ${t(
+          'hymns.notFound'
+        )} ${input}`
       );
       return;
     }
 
-    // ✅ 跳转到详情页，并传递参数
     router.push({
       pathname: '/pursue/hymn/[id]',
-      params: { id: input, book: selectedBook }, // 传入 book 参数
+      params: { id: input, book: selectedBook },
     });
   };
 
@@ -50,7 +49,7 @@ export default function HymnsScreen() {
     <>
       <Stack.Screen
         options={{
-          title: '诗歌',
+          title: t('hymns.title'), // ✅ “诗歌”
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
           headerTitleStyle: { color: colors.text },
@@ -80,7 +79,7 @@ export default function HymnsScreen() {
                   styles.tabText,
                   { color: selectedBook === 'ch' ? 'white' : colors.text },
                 ]}>
-                大本诗歌
+                {t('hymns.main')}
               </Text>
             </TouchableOpacity>
 
@@ -95,14 +94,14 @@ export default function HymnsScreen() {
                   styles.tabText,
                   { color: selectedBook === 'ts' ? 'white' : colors.text },
                 ]}>
-                补充本诗歌
+                {t('hymns.supplement')}
               </Text>
             </TouchableOpacity>
           </View>
 
           {/* 显示当前输入 */}
           <Text style={[styles.display, { color: colors.text }]}>
-            {input || '请输入诗歌编号'}
+            {input || t('hymns.enterNumber')}
           </Text>
 
           {/* 数字键盘 */}
@@ -122,21 +121,26 @@ export default function HymnsScreen() {
             )}
           </View>
 
-          {/* ✅ 保持布局稳定 */}
-          <View style={{ height: 28, justifyContent: 'center', marginBottom: 10 }}>
-  {selectedBook === 'ch' && (
-    <Text style={[styles.note, { color: colors.text }]}>
-      注：附1 - 附5请输入 1001 - 1005
-    </Text>
-  )}
-</View>
+          {/* ✅ 说明文字（仅大本） */}
+          <View
+            style={{
+              height: 28,
+              justifyContent: 'center',
+              marginBottom: 10,
+            }}>
+            {selectedBook === 'ch' && (
+              <Text style={[styles.note, { color: colors.text }]}>
+                {t('hymns.appendixNote')}
+              </Text>
+            )}
+          </View>
 
           {/* 底部操作 */}
           <View style={styles.actions}>
             <TouchableOpacity
               style={[styles.actionBtn, styles.clearBtn]}
               onPress={handleClear}>
-              <Text style={styles.clearText}>清空</Text>
+              <Text style={styles.clearText}>{t('common.clear')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -204,10 +208,10 @@ const styles = StyleSheet.create({
     gap: 40,
   },
   actionBtn: {
-    paddingVertical: 18, // ✅ 原本是 12，改大一点
-    paddingHorizontal: 50, // ✅ 原本是 30
-    borderRadius: 12, // ✅ 稍微圆润一点
-    minWidth: 140, // ✅ 增加按钮宽度，保证大小一致
+    paddingVertical: 18,
+    paddingHorizontal: 50,
+    borderRadius: 12,
+    minWidth: 140,
     alignItems: 'center',
   },
   clearBtn: {
@@ -215,20 +219,20 @@ const styles = StyleSheet.create({
   },
   clearText: {
     color: '#333',
-    fontSize: 18, // ✅ 原本是 16
-    fontWeight: '600', // ✅ 字体加粗
+    fontSize: 18,
+    fontWeight: '600',
   },
   confirmBtn: {
     backgroundColor: '#007AFF',
   },
   okText: {
     color: 'white',
-    fontSize: 18, // ✅ 原本是 16
+    fontSize: 18,
     fontWeight: '700',
   },
   note: {
     fontSize: 16,
-    lineHeight: 22, // ✅ 动态行高
+    lineHeight: 22,
     marginBottom: 5,
   },
 });
