@@ -86,16 +86,17 @@ export default function HymnDetail() {
 
             return (
               <View key={idx} style={{ marginBottom: 20 }}>
-                {/* 节编号 */}
+                {/* ✅ 如果是 chorus，显示“副” */}
                 <Text
                   style={[
                     styles.sectionTitle,
                     { color: colors.text, fontSize: getFontSizeValue(18) },
                   ]}>
-                  {section.number || section.label || idx + 1}
+                  {section.type === 'chorus'
+                    ? '副'
+                    : section.number || section.label || idx + 1}
                 </Text>
 
-                {/* 每行歌词 */}
                 {lines?.map((line: string, i: number) => (
                   <Text
                     key={i}
