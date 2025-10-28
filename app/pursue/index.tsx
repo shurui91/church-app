@@ -1,35 +1,60 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context'; // ✅ 加上这行
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useThemeColors } from '../src/hooks/useThemeColors';
 import { useTranslation } from 'react-i18next';
+import { useFontSize } from '../src/context/FontSizeContext'; // ✅ 引入全局字体钩子
 
 export default function PursueHome() {
   const router = useRouter();
   const colors = useThemeColors();
   const { t } = useTranslation();
+  const { getFontSizeValue } = useFontSize(); // ✅ 获取动态字号函数
 
-  // 通用“开发中”提示
   const handleComingSoon = () => {
     Alert.alert('提示', '功能开发中，敬请期待！');
   };
 
+  const getMondayYmd = (now = new Date()) => {
+    const d = new Date(now);
+    const w = d.getDay() === 0 ? 7 : d.getDay();
+    d.setDate(d.getDate() - (w - 1));
+    d.setHours(12, 0, 0, 0);
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  };
+
   return (
-    // ✅ 使用 SafeAreaView 包裹整个内容
     <SafeAreaView
       style={[styles.safeArea, { backgroundColor: colors.background }]}
       edges={['top', 'left', 'right']}>
       <View style={styles.container}>
-        <Text style={[styles.title, { color: colors.text }]}>
+        <Text
+          style={[
+            styles.title,
+            {
+              color: colors.text,
+              fontSize: getFontSizeValue(20), // ✅ 全局控制
+            },
+          ]}>
           {t('pursue.title')}
         </Text>
 
-        {/* ✅ 可用模块 */}
+        {/* 📖 一年读经 */}
         <TouchableOpacity
           style={[styles.card, { backgroundColor: colors.card }]}
           onPress={() => router.push('/pursue/bible')}>
-          <Text style={[styles.cardText, { color: colors.text }]}>
+          <Text
+            style={[
+              styles.cardText,
+              {
+                color: colors.text,
+                fontSize: getFontSizeValue(16), // ✅ 全局控制
+              },
+            ]}>
             📖 {t('pursue.bible_one_year')}
           </Text>
         </TouchableOpacity>
@@ -39,24 +64,48 @@ export default function PursueHome() {
           style={[styles.card, styles.disabledCard]}
           onPress={handleComingSoon}
           activeOpacity={0.7}>
-          <Text style={[styles.cardText, styles.disabledText]}>
+          <Text
+            style={[
+              styles.cardText,
+              styles.disabledText,
+              { fontSize: getFontSizeValue(16) }, // ✅ 全局控制
+            ]}>
             📚 {t('pursue.life_study')}（开发中）
           </Text>
         </TouchableOpacity>
 
+        {/* 🕊️ 李常受文集 */}
         <TouchableOpacity
-          style={[styles.card, styles.disabledCard]}
-          onPress={handleComingSoon}
-          activeOpacity={0.7}>
-          <Text style={[styles.cardText, styles.disabledText]}>
-            🕊️ {t('pursue.witness_lee')}（开发中）
+          style={[styles.card, { backgroundColor: colors.card }]}
+          onPress={() => {
+            const mondayStr = getMondayYmd();
+            router.push(`/pursue/lee/week/${mondayStr}`);
+          }}
+          activeOpacity={0.8}>
+          <Text
+            style={[
+              styles.cardText,
+              {
+                color: colors.text,
+                fontSize: getFontSizeValue(16), // ✅ 全局控制
+              },
+            ]}>
+            🕊️ {t('pursue.witness_lee')}
           </Text>
         </TouchableOpacity>
 
+        {/* 🎵 诗歌 */}
         <TouchableOpacity
           style={[styles.card, { backgroundColor: colors.card }]}
           onPress={() => router.push('/pursue/hymns')}>
-          <Text style={[styles.cardText, { color: colors.text }]}>
+          <Text
+            style={[
+              styles.cardText,
+              {
+                color: colors.text,
+                fontSize: getFontSizeValue(16), // ✅ 全局控制
+              },
+            ]}>
             🎵 {t('pursue.hymns')}
           </Text>
         </TouchableOpacity>
@@ -75,7 +124,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    fontSize: 20,
     fontWeight: 'bold',
     marginVertical: 20,
   },
@@ -88,7 +136,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   cardText: {
-    fontSize: 16,
+    // fontSize 已由动态计算决定
   },
   disabledCard: {
     opacity: 0.5,

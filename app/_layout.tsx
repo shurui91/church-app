@@ -19,31 +19,34 @@ const TAB_BAR_ROUTES = [
 ];
 
 function ThemedLayout() {
-  const pathname = usePathname();
+  const pathname = usePathname(); // ✅ 提前在组件顶层调用
   const colors = useThemeColors();
   const { getFontSizeValue } = useFontSize();
-
-  // 简中/繁中切换
   const { t } = useTranslation();
 
-  // 更健壮的 Tab 显示逻辑
   const shouldShowTabBar = TAB_BAR_ROUTES.some((route) =>
     pathname.startsWith(route)
   );
 
-  // 公共 header 配置函数
-  const defaultHeaderOptions = (title: string) => ({
-    headerShown: true,
-    title,
-    headerBackTitle: '返回',
-    headerStyle: { backgroundColor: colors.card },
-    headerTintColor: colors.text,
-    headerTitleStyle: {
-      color: colors.text,
-      fontSize: getFontSizeValue(18), // ✅ 使用 context 并保证整数
-    },
-	headerLeft: () => <BackButton />, // ✅ 全局统一后退按钮
-  });
+  // ✅ 把 pathname 当作参数传入
+  const defaultHeaderOptions = (title: string, pathname: string) => {
+    const isTabRoot = TAB_BAR_ROUTES.some((route) =>
+      pathname.startsWith(route)
+    );
+
+    return {
+      headerShown: true,
+      title,
+      headerBackTitle: '返回',
+      headerStyle: { backgroundColor: colors.card },
+      headerTintColor: colors.text,
+      headerTitleStyle: {
+        color: colors.text,
+        fontSize: getFontSizeValue(18),
+      },
+      headerLeft: isTabRoot ? undefined : () => <BackButton />, // ✅ 条件显示
+    };
+  };
 
   return (
     <>
@@ -59,19 +62,18 @@ function ThemedLayout() {
         <Stack.Screen name='announcement' />
         <Stack.Screen name='pursue' />
 
-        {/* ✅ 示例：将 title 改为多语言 */}
+        {/* ✅ 调用时传入 pathname */}
         <Stack.Screen
           name='bible_one_year'
-          options={defaultHeaderOptions('titles.bible_one_year')}
+          options={defaultHeaderOptions('titles.bible_one_year', pathname)}
         />
-
         <Stack.Screen
           name='settings'
-          options={defaultHeaderOptions('titles.settings')}
+          options={defaultHeaderOptions('titles.settings', pathname)}
         />
         <Stack.Screen
           name='privacy'
-          options={defaultHeaderOptions('titles.privacy')}
+          options={defaultHeaderOptions('titles.privacy', pathname)}
         />
       </Stack>
       {shouldShowTabBar && <CustomTabBar />}
