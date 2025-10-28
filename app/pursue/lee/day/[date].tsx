@@ -49,7 +49,7 @@ function getLineHeight(fontSize: number) {
 export default function LeeDayPage() {
   const { date } = useLocalSearchParams();
   const colors = useThemeColors();
-  const { getFontSizeValue } = useFontSize();
+  const { getFontSizeValue } = useFontSize(); // ✅ 全局字体钩子
 
   const [scrollPercent, setScrollPercent] = useState(0);
   const scrollProgress = useRef(new Animated.Value(0)).current;
@@ -65,7 +65,13 @@ export default function LeeDayPage() {
   if (!article) {
     return (
       <View style={[styles.center, { backgroundColor: colors.background }]}>
-        <Text style={{ color: colors.text }}>❌ 没有找到 {date} 的内容</Text>
+        <Text
+          style={{
+            color: colors.text,
+            fontSize: getFontSizeValue(16), // ✅ 全局控制
+          }}>
+          ❌ 没有找到 {date} 的内容
+        </Text>
       </View>
     );
   }
@@ -118,7 +124,6 @@ export default function LeeDayPage() {
     }).start();
     setScrollPercent(percent);
 
-    // ✅ 保存阅读位置
     try {
       await AsyncStorage.setItem(storageKey, contentOffset.y.toString());
     } catch (err) {
@@ -168,7 +173,14 @@ export default function LeeDayPage() {
             ]}
           />
         </View>
-        <Text style={[styles.progressText, { color: colors.textSecondary }]}>
+        <Text
+          style={[
+            styles.progressText,
+            {
+              color: colors.textSecondary,
+              fontSize: getFontSizeValue(12), // ✅ 全局控制
+            },
+          ]}>
           {scrollPercent}%
         </Text>
       </Animated.View>
@@ -259,7 +271,6 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   progressText: {
-    fontSize: 12,
     fontWeight: '500',
     width: 40,
     textAlign: 'right',
