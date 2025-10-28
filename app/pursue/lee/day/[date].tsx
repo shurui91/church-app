@@ -14,6 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemeColors } from '../../../src/hooks/useThemeColors';
 import { useFontSize } from '../../../src/context/FontSizeContext';
 import leeArchive from '../../../../assets/lee_archive.json';
+import BackButton from '@/app/components/BackButton';
 
 // ✅ 去除 HTML 标签与常见实体
 function stripHTML(html: string) {
@@ -154,7 +155,17 @@ export default function LeeDayPage() {
 
   return (
     <View style={[styles.container, { backgroundColor: colors.background }]}>
-      <Stack.Screen options={{ title: article.reading_date || '每日信息' }} />
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: article.reading_date || '每日信息',
+          headerStyle: { backgroundColor: colors.card },
+          headerTintColor: colors.text,
+          headerTitleStyle: { color: colors.text },
+          headerBackVisible: false,
+          headerLeft: () => <BackButton />, // ✅ 显示返回按钮
+        }}
+      />
 
       {/* ✅ 顶部进度条 + 百分比 */}
       <Animated.View

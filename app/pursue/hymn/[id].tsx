@@ -6,6 +6,7 @@ import tsSongs from '../../../assets/ts_songs.json';
 import { useThemeColors } from '../../src/hooks/useThemeColors';
 import { useFontSize } from '../../src/context/FontSizeContext';
 import { useTranslation } from 'react-i18next'; // ✅ 引入 i18n
+import BackButton from '@/app/components/BackButton';
 
 export default function HymnDetail() {
   const { id, book } = useLocalSearchParams();
@@ -57,7 +58,13 @@ export default function HymnDetail() {
     <>
       <Stack.Screen
         options={{
-          title: titleText,
+          headerShown: true, // ✅ 关键：启用 header
+          title: titleText, // ✅ 动态标题（如 “大本诗歌 23”）
+          headerStyle: { backgroundColor: colors.card },
+          headerTintColor: colors.text,
+          headerTitleStyle: { color: colors.text },
+          headerBackVisible: false, // ✅ 隐藏系统默认箭头
+          headerLeft: () => <BackButton />, // ✅ 使用统一自定义返回按钮
         }}
       />
 

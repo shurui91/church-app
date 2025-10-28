@@ -1,4 +1,4 @@
-import React, { useState , useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, Stack, useFocusEffect } from 'expo-router';
@@ -6,7 +6,7 @@ import { useThemeColors } from '../src/hooks/useThemeColors';
 import chSongs from '../../assets/ch_songs.json'; // 大本诗歌
 import tsSongs from '../../assets/ts_songs.json'; // 补充本诗歌
 import { Ionicons } from '@expo/vector-icons';
-import BackButton from '../components/BackButton';
+import BackButton from '@/app/components/BackButton';
 import { useTranslation } from 'react-i18next'; // ✅ 引入多语言钩子
 
 export default function HymnsScreen() {
@@ -57,11 +57,13 @@ export default function HymnsScreen() {
     <>
       <Stack.Screen
         options={{
-          title: t('hymns.title'), // ✅ “诗歌”
+          headerShown: true, // ✅ 必须加这一行
+          title: t('hymns.title'),
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
           headerTitleStyle: { color: colors.text },
-          headerLeft: () => <BackButton />, // ✅ 使用统一的返回按钮组件
+          headerBackVisible: false,
+          headerLeft: () => <BackButton />,
         }}
       />
 

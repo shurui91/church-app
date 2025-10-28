@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'; // ✅ 加上这行
 
 const tabs = [
   {
-    key: 'meeting',
+    key: 'meeting', // 线上聚会
     path: '/meeting',
     icon: 'videocam-outline',
     activeIcon: 'videocam',
@@ -22,20 +22,20 @@ const tabs = [
   {
     key: 'pursue',
     path: '/pursue',
-    icon: 'library-outline', // 📚 图标更贴近“追求”或“灵修中心”
+    icon: 'library-outline', // 追求
     activeIcon: 'library',
   },
   {
-    key: 'announcement',
+    key: 'announcement', // 通知
     path: '/announcement',
     icon: 'notifications-outline',
     activeIcon: 'notifications',
   },
   {
-    key: 'profile',
+    key: 'profile', // 我的
     path: '/profile',
-    icon: 'cog-outline',
-    activeIcon: 'cog',
+    icon: 'person-outline', // 👤 未选中
+    activeIcon: 'person', // 👤 选中
   },
 ];
 

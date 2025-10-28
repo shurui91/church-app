@@ -68,7 +68,8 @@
     "checkin_complete": "打卡完成"
   },
   "titles": {
-    "bible_one_year": "读经一年一遍"
+    "bible_one_year": "读经一年一遍",
+	"lee": "李常受文集"
   },
   "common": {
     "tip": "提示",

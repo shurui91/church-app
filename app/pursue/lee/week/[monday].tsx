@@ -8,8 +8,10 @@ import {
 } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { useThemeColors } from '../../../src/hooks/useThemeColors';
-import { useFontSize } from '../../../src/context/FontSizeContext'; // ✅ 引入字体 Hook
+import { useFontSize } from '../../../src/context/FontSizeContext';
+import { useTranslation } from 'react-i18next';
 import leeArchive from '../../../../assets/lee_archive.json';
+import BackButton from '@/app/components/BackButton';
 
 function parseYMD(ymd: string) {
   const [y, m, d] = ymd.split('-').map(Number);
@@ -45,6 +47,7 @@ export default function WeekPage() {
   const router = useRouter();
   const colors = useThemeColors();
   const { getFontSizeValue } = useFontSize();
+  const { t } = useTranslation();
 
   if (!monday)
     return (
@@ -67,6 +70,19 @@ export default function WeekPage() {
 
   return (
     <>
+      <Stack.Screen
+        options={{
+          headerShown: true,
+          title: t('titles.lee'), // ✅ 读取你词典中定义的 "李常受文集"
+          headerStyle: { backgroundColor: colors.card },
+          headerTintColor: colors.text,
+          headerTitleStyle: { color: colors.text },
+          headerBackTitleVisible: false, // ✅ 隐藏返回文字
+          headerBackVisible: false, // ✅ 隐藏系统默认返回箭头
+          headerLeft: () => <BackButton />, // ✅ 只保留自定义返回按钮
+        }}
+      />
+
       <ScrollView
         style={{ flex: 1, backgroundColor: colors.background }}
         contentContainerStyle={styles.container}>

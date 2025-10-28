@@ -8,7 +8,7 @@ export default function SplashScreen() {
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    // 先等待3.5秒，然后用0.5秒做淡出动画
+    // 先等待2.5秒，然后用0.5秒做淡出动画
     const timer = setTimeout(() => {
       Animated.timing(fadeAnim, {
         toValue: 0,
@@ -18,7 +18,7 @@ export default function SplashScreen() {
         // 动画完成后跳转
         router.replace('/meeting');
       });
-    }, 3500);
+    }, 2500);
 
     return () => clearTimeout(timer);
   }, []);
