@@ -42,7 +42,7 @@ export default function SettingsScreen() {
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
           headerTitleStyle: { color: colors.text },
-          headerLeft: () => <BackButton />, // ✅ 统一风格
+          headerLeft: () => <BackButton />, // ✅ 使用统一的返回按钮组件
         }}
       />
 

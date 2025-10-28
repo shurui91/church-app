@@ -67,8 +67,6 @@ export default function WeekPage() {
 
   return (
     <>
-      <Stack.Screen options={{ title: '李常受文集' }} />
-
       <ScrollView
         style={{ flex: 1, backgroundColor: colors.background }}
         contentContainerStyle={styles.container}>

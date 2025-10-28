@@ -6,6 +6,7 @@ import { useThemeColors } from '../src/hooks/useThemeColors';
 import chSongs from '../../assets/ch_songs.json'; // 大本诗歌
 import tsSongs from '../../assets/ts_songs.json'; // 补充本诗歌
 import { Ionicons } from '@expo/vector-icons';
+import BackButton from '../components/BackButton';
 import { useTranslation } from 'react-i18next'; // ✅ 引入多语言钩子
 
 export default function HymnsScreen() {
@@ -60,13 +61,7 @@ export default function HymnsScreen() {
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
           headerTitleStyle: { color: colors.text },
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{ marginLeft: 10 }}>
-              <Ionicons name='arrow-back' size={24} color={colors.text} />
-            </TouchableOpacity>
-          ),
+          headerLeft: () => <BackButton />, // ✅ 使用统一的返回按钮组件
         }}
       />
 
