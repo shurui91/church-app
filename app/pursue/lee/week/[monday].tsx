@@ -44,7 +44,7 @@ export default function WeekPage() {
   const { monday } = useLocalSearchParams();
   const router = useRouter();
   const colors = useThemeColors();
-  const { getFontSizeValue } = useFontSize(); // ✅ 获取动态字号函数
+  const { getFontSizeValue } = useFontSize();
 
   if (!monday)
     return (
@@ -60,6 +60,10 @@ export default function WeekPage() {
   const validDates = new Set(
     (leeArchive.articles || []).map((a) => a.reading_date)
   );
+
+  // ✅ 动态盒子尺寸
+  const baseFont = getFontSizeValue(16);
+  const boxSize = baseFont * 5.5; // 原本大约90px，字体变大时也扩大
 
   return (
     <>
@@ -108,7 +112,12 @@ export default function WeekPage() {
                 <View
                   style={[
                     styles.dayBox,
-                    { backgroundColor: boxColor, opacity },
+                    {
+                      backgroundColor: boxColor,
+                      opacity,
+                      width: boxSize,
+                      height: boxSize,
+                    },
                   ]}>
                   <Text
                     style={[
@@ -175,8 +184,6 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   dayBox: {
-    width: 90,
-    height: 90,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
