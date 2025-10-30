@@ -59,18 +59,17 @@ export default function PursueHome() {
           </Text>
         </TouchableOpacity>
 
-        {/* 🚧 生命读经（开发中） */}
+        {/* 📚 生命读经 */}
         <TouchableOpacity
-          style={[styles.card, styles.disabledCard]}
-          onPress={handleComingSoon}
-          activeOpacity={0.7}>
+          style={[styles.card, { backgroundColor: colors.card }]}
+          onPress={() => router.push('/pursue/life-study')}
+          activeOpacity={0.8}>
           <Text
             style={[
               styles.cardText,
-              styles.disabledText,
-              { fontSize: getFontSizeValue(16) }, // ✅ 全局控制
+              { color: colors.text, fontSize: getFontSizeValue(16) },
             ]}>
-            📚 {t('pursue.life_study')}（开发中）
+            📚 {t('pursue.life_study')}
           </Text>
         </TouchableOpacity>
 
