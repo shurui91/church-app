@@ -2,12 +2,12 @@ import React from 'react';
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   StyleSheet,
+  ScrollView,
+  Dimensions,
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
 import { useThemeColors } from '../../src/hooks/useThemeColors';
 import { useTranslation } from 'react-i18next';
 import BackButton from '@/app/components/BackButton';
@@ -21,12 +21,9 @@ const oldTestamentBooks = [
   '书',
   '士',
   '得',
-  '撒上',
-  '撒下',
-  '王上',
-  '王下',
-  '代上',
-  '代下',
+  '撒',
+  '王',
+  '代',
   '拉',
   '尼',
   '斯',
@@ -89,13 +86,40 @@ export default function LifeStudyIndex() {
   const { t } = useTranslation();
   const router = useRouter();
 
-  const renderGridItem = (book: string) => (
-    <TouchableOpacity
-      key={book}
-      style={[styles.item, { backgroundColor: colors.card }]}
-      onPress={() => router.push(`/pursue/life-study/${book}`)}>
-      <Text style={[styles.text, { color: colors.text }]}>{book}</Text>
-    </TouchableOpacity>
+  // ✅ 响应式列数
+  const screenWidth = Dimensions.get('window').width;
+  const numColumns = screenWidth < 400 ? 4 : 5;
+
+  // ✅ 每个宫格之间的间距（px）
+  const spacing = 10;
+  const horizontalPadding = 16;
+
+  // ✅ 计算每个 item 的宽度
+  const itemWidth =
+    (screenWidth - horizontalPadding * 2 - spacing * (numColumns - 1)) /
+    numColumns;
+
+  const renderGrid = (data: string[]) => (
+    <View style={styles.grid}>
+      {data.map((book, index) => (
+        <TouchableOpacity
+          key={index}
+          activeOpacity={0.8}
+          onPress={() => router.push(`/pursue/life-study/${book}`)}
+          style={[
+            styles.item,
+            {
+              backgroundColor: colors.card,
+              width: itemWidth,
+              height: itemWidth,
+              marginRight: (index + 1) % numColumns === 0 ? 0 : spacing, // ✅ 右边距控制
+              marginBottom: spacing,
+            },
+          ]}>
+          <Text style={[styles.text, { color: colors.text }]}>{book}</Text>
+        </TouchableOpacity>
+      ))}
+    </View>
   );
 
   return (
@@ -106,31 +130,22 @@ export default function LifeStudyIndex() {
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
           headerTitleStyle: { color: colors.text },
-          // ✅ 使用统一的自定义返回按钮
           headerLeft: () => <BackButton />,
         }}
       />
 
-      <Text style={[styles.sectionTitle, { color: colors.text }]}>旧约</Text>
-      <FlatList
-        data={oldTestamentBooks}
-        numColumns={5}
-        renderItem={({ item }) => renderGridItem(item)}
-        keyExtractor={(item) => item}
-        scrollEnabled={false}
-      />
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{ paddingBottom: 32 }}>
+        <Text style={[styles.sectionTitle, { color: colors.text }]}>旧约</Text>
+        {renderGrid(oldTestamentBooks)}
 
-      <Text
-        style={[styles.sectionTitle, { color: colors.text, marginTop: 20 }]}>
-        新约
-      </Text>
-      <FlatList
-        data={newTestamentBooks}
-        numColumns={5}
-        renderItem={({ item }) => renderGridItem(item)}
-        keyExtractor={(item) => item}
-        scrollEnabled={false}
-      />
+        <Text
+          style={[styles.sectionTitle, { color: colors.text, marginTop: 20 }]}>
+          新约
+        </Text>
+        {renderGrid(newTestamentBooks)}
+      </ScrollView>
     </View>
   );
 }
@@ -146,20 +161,21 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginVertical: 8,
   },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
   item: {
-    flex: 1,
-    margin: 6,
-    aspectRatio: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: 14,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 3,
   },
   text: {
-    fontSize: 18,
-    fontWeight: 'bold',
+    fontSize: 20,
+    fontWeight: '700',
   },
 });
