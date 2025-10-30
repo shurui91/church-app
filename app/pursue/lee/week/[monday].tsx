@@ -73,13 +73,12 @@ export default function WeekPage() {
       <Stack.Screen
         options={{
           headerShown: true,
-          title: t('titles.lee'), // ✅ 读取你词典中定义的 "李常受文集"
+          title: t('titles.lee'),
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
           headerTitleStyle: { color: colors.text },
-          headerBackTitleVisible: false, // ✅ 隐藏返回文字
-          headerBackVisible: false, // ✅ 隐藏系统默认返回箭头
-          headerLeft: () => <BackButton />, // ✅ 只保留自定义返回按钮
+          headerBackVisible: false,
+          headerLeft: () => <BackButton />, // ✅ 使用你自己的按钮
         }}
       />
 
