@@ -60,7 +60,7 @@ export default function PursueHome() {
         </TouchableOpacity>
 
         {/* 📚 生命读经 */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={[styles.card, { backgroundColor: colors.card }]}
           onPress={() => router.push('/pursue/life-study')}
           activeOpacity={0.8}>
@@ -70,6 +70,20 @@ export default function PursueHome() {
               { color: colors.text, fontSize: getFontSizeValue(16) },
             ]}>
             📚 {t('pursue.life_study')}
+          </Text>
+        </TouchableOpacity> */}
+
+        {/* 🚧 开发中 */}
+        <TouchableOpacity
+          style={[styles.card, { backgroundColor: colors.card }]}
+          onPress={() => alert('此功能正在开发中，敬请期待！')}
+          activeOpacity={0.8}>
+          <Text
+            style={[
+              styles.cardText,
+              { color: colors.text, fontSize: getFontSizeValue(16) },
+            ]}>
+            🚧 生命读经（开发中）
           </Text>
         </TouchableOpacity>
 
