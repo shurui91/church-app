@@ -10,7 +10,7 @@ import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColors } from '../src/hooks/useThemeColors';
 import { useRef } from 'react';
-import { useTranslation } from 'react-i18next'; // ✅ 加上这行
+import { useTranslation } from 'react-i18next';
 
 const tabs = [
   {
@@ -20,9 +20,9 @@ const tabs = [
     activeIcon: 'videocam',
   },
   {
-    key: 'pursue',
+    key: 'pursue', // 追求
     path: '/pursue',
-    icon: 'library-outline', // 追求
+    icon: 'library-outline',
     activeIcon: 'library',
   },
   {
@@ -34,8 +34,8 @@ const tabs = [
   {
     key: 'profile', // 我的
     path: '/profile',
-    icon: 'person-outline', // 👤 未选中
-    activeIcon: 'person', // 👤 选中
+    icon: 'person-outline',
+    activeIcon: 'person',
   },
 ];
 
@@ -58,26 +58,10 @@ export default function CustomTabBar() {
     const anim = shakeAnimations[tabPath];
     anim.setValue(0);
     Animated.sequence([
-      Animated.timing(anim, {
-        toValue: 1,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-      Animated.timing(anim, {
-        toValue: -1,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-      Animated.timing(anim, {
-        toValue: 1,
-        duration: 50,
-        useNativeDriver: true,
-      }),
-      Animated.timing(anim, {
-        toValue: 0,
-        duration: 50,
-        useNativeDriver: true,
-      }),
+      Animated.timing(anim, { toValue: 1, duration: 50, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: -1, duration: 50, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 1, duration: 50, useNativeDriver: true }),
+      Animated.timing(anim, { toValue: 0, duration: 50, useNativeDriver: true }),
     ]).start();
   };
 
@@ -88,7 +72,13 @@ export default function CustomTabBar() {
       edges={['bottom']}
       style={[
         styles.safeArea,
-        { backgroundColor: colors.tabBar, borderTopColor: colors.tabBarBorder },
+        {
+          backgroundColor: colors.tabBar,
+          borderTopColor: colors.tabBarBorder,
+          shadowColor: colors.isDark ? 'rgba(255, 220, 150, 0.08)' : 'rgba(0,0,0,0.05)',
+          shadowOpacity: 1,
+          shadowRadius: 8,
+        },
       ]}>
       <View style={styles.container}>
         {tabs.map((tab) => {
@@ -110,6 +100,7 @@ export default function CustomTabBar() {
             <TouchableOpacity
               key={tab.path}
               style={styles.tab}
+              activeOpacity={0.85}
               onPress={() => {
                 if (pathname === tab.path) {
                   triggerShake(tab.path);
@@ -127,7 +118,15 @@ export default function CustomTabBar() {
               <Text
                 style={[
                   styles.tabText,
-                  { color: active ? colors.primary : colors.textSecondary },
+                  {
+                    color: active ? colors.primary : colors.textSecondary,
+                    textShadowColor: active
+                      ? colors.isDark
+                        ? 'rgba(212,166,89,0.25)'
+                        : 'rgba(0,0,0,0.1)'
+                      : 'transparent',
+                    textShadowRadius: 4,
+                  },
                 ]}>
                 {t(`tab.${tab.key}`)}
               </Text>
@@ -142,6 +141,8 @@ export default function CustomTabBar() {
 const styles = StyleSheet.create({
   safeArea: {
     borderTopWidth: 1,
+    shadowOffset: { width: 0, height: -2 },
+    elevation: 8,
   },
   container: {
     flexDirection: 'row',
@@ -157,5 +158,6 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 12,
     marginTop: 4,
+    fontWeight: '500',
   },
 });
