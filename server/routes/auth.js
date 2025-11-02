@@ -156,8 +156,10 @@ router.post('/verify-code', async (req, res) => {
     const normalizedPhone = normalizePhoneNumber(phoneNumber);
 
     // Development mode: allow fixed verification code (123456)
+    // For testing: use 123456 when NODE_ENV is not production OR when explicitly set to allow dev code
     const DEV_MODE_CODE = '123456';
-    const isDevMode = process.env.NODE_ENV !== 'production';
+    const ALLOW_DEV_CODE = process.env.ALLOW_DEV_CODE !== 'false'; // Default to true unless explicitly set to false
+    const isDevMode = process.env.NODE_ENV !== 'production' || ALLOW_DEV_CODE;
 
     // Check if using dev mode fixed code
     if (isDevMode && code === DEV_MODE_CODE) {

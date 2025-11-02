@@ -33,10 +33,13 @@
 在 Railway 项目的 "Variables" 标签页中添加：
 
 ```env
-NODE_ENV=production
-PORT=3000
 JWT_SECRET=your-very-secret-jwt-key-change-this-to-random-string
 ```
+
+**注意**：
+- ⚠️ **不要设置 `NODE_ENV=production`**（测试阶段），这样开发模式验证码 `123456` 才能工作
+- ⚠️ `PORT` 由 Railway 自动设置，无需手动配置
+- ✅ **必须设置 `JWT_SECRET`**：用于签名 JWT token，必须是一个强随机字符串
 
 **重要**：
 - `JWT_SECRET` 必须是一个强随机字符串，用于签名 JWT token

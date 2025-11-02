@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import { initDatabase } from './database/init.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
+import debugRoutes from './routes/debug-env.js';
 
 // Load environment variables
 dotenv.config();
@@ -39,6 +40,7 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api', debugRoutes); // Temporary debug route
 
 // Start server
 const server = app.listen(PORT, () => {
