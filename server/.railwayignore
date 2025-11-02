@@ -1,0 +1,32 @@
+# Railway ignore file
+# Files/folders to exclude from deployment
+
+# Development files
+node_modules/
+.env
+.env.local
+
+# Scripts (not needed in production)
+scripts/
+test-*.js
+*.test.js
+
+# Documentation
+README.md
+API_ENDPOINTS.md
+*.md
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+

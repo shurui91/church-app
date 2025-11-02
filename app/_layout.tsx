@@ -1,8 +1,11 @@
 import './src/i18n';
 import { Stack, usePathname } from 'expo-router';
 import CustomTabBar from './components/CustomTabBar';
+import BackButton from './components/BackButton';
+import AuthGuard from './components/AuthGuard';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { FontSizeProvider, useFontSize } from './src/context/FontSizeContext';
+import { AuthProvider } from './src/context/AuthContext';
 import { useThemeColors } from './src/hooks/useThemeColors';
 import { useEffect } from 'react';
 import { Alert } from 'react-native';
@@ -24,9 +27,11 @@ function ThemedLayout() {
   const { getFontSizeValue } = useFontSize();
   const { t } = useTranslation();
 
-  const shouldShowTabBar = TAB_BAR_ROUTES.some((route) =>
-    pathname.startsWith(route)
-  );
+  // Don't show tab bar on login or index (splash) page
+  const shouldShowTabBar =
+    pathname !== '/login' &&
+    pathname !== '/' &&
+    TAB_BAR_ROUTES.some((route) => pathname.startsWith(route));
 
   // ✅ 把 pathname 当作参数传入
   const defaultHeaderOptions = (title: string, pathname: string) => {
@@ -56,6 +61,7 @@ function ThemedLayout() {
           contentStyle: { backgroundColor: colors.background },
         }}>
         <Stack.Screen name='index' />
+        <Stack.Screen name='login' options={{ headerShown: false }} />
         <Stack.Screen name='home' />
         <Stack.Screen name='profile' />
         <Stack.Screen name='meeting' />
@@ -101,7 +107,11 @@ export default function RootLayout() {
   return (
     <ThemeProvider>
       <FontSizeProvider>
-        <ThemedLayout />
+        <AuthProvider>
+          <AuthGuard>
+            <ThemedLayout />
+          </AuthGuard>
+        </AuthProvider>
       </FontSizeProvider>
     </ThemeProvider>
   );

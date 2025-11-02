@@ -35,7 +35,18 @@
     "pageTitle": "我的",
     "appSettings": "應用設定",
     "privacy": "隱私條款",
-    "version": "版本號"
+    "version": "版本號",
+    "phoneNumber": "手機號",
+    "name": "姓名",
+    "role": "角色",
+    "role.super_admin": "超級管理員",
+    "role.admin": "管理員",
+    "role.leader": "組長",
+    "role.member": "成員",
+    "logout": "登出",
+    "loggingOut": "登出中...",
+    "logoutConfirm": "確認登出",
+    "logoutConfirmMessage": "確定要登出嗎？"
   },
   "tab": {
     "meeting": "線上聚會",
@@ -73,7 +84,8 @@
   },
   "common": {
     "tip": "提示",
-    "clear": "清空"
+    "clear": "清空",
+    "cancel": "取消"
   },
   "hymns": {
     "title": "詩歌",
@@ -82,5 +94,24 @@
     "enterNumber": "請輸入詩歌編號",
     "appendixNote": "註：附1 - 附5請輸入 1001 - 1005",
     "notFound": "中找不到編號為"
+  },
+  "login": {
+    "title": "登入",
+    "subtitle": "請輸入您的手機號以繼續",
+    "phoneNumber": "手機號",
+    "phonePlaceholder": "(123) 456-7890",
+    "sendCode": "發送驗證碼",
+    "resendIn": "重新發送",
+    "verificationCode": "驗證碼",
+    "codePlaceholder": "請輸入6位驗證碼",
+    "login": "登入",
+    "invalidPhone": "請輸入10位手機號",
+    "invalidCode": "請輸入6位驗證碼",
+    "sendCodeFailed": "發送驗證碼失敗",
+    "loginFailed": "登入失敗",
+    "codeSent": "驗證碼已發送",
+    "codeSentMessage": "驗證碼已發送到您的手機，請在5分鐘內輸入。",
+    "helpText": "如果您無法收到驗證碼，請聯繫負責弟兄",
+    "phoneNotWhitelisted": "該手機號未在邀請列表中，請聯繫負責弟兄"
   }
 }

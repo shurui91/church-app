@@ -35,7 +35,18 @@
     "pageTitle": "我的",
     "appSettings": "应用设置",
     "privacy": "隐私条款",
-    "version": "版本号"
+    "version": "版本号",
+    "phoneNumber": "手机号",
+    "name": "姓名",
+    "role": "角色",
+    "role.super_admin": "超级管理员",
+    "role.admin": "管理员",
+    "role.leader": "组长",
+    "role.member": "成员",
+    "logout": "登出",
+    "loggingOut": "登出中...",
+    "logoutConfirm": "确认登出",
+    "logoutConfirmMessage": "确定要登出吗？"
   },
   "tab": {
     "meeting": "线上聚会",
@@ -73,7 +84,8 @@
   },
   "common": {
     "tip": "提示",
-    "clear": "清空"
+    "clear": "清空",
+    "cancel": "取消"
   },
   "hymns": {
     "title": "诗歌",
@@ -82,5 +94,24 @@
     "enterNumber": "请输入诗歌编号",
     "appendixNote": "注：附1 - 附5请输入 1001 - 1005",
     "notFound": "中找不到编号为"
+  },
+  "login": {
+    "title": "登录",
+    "subtitle": "请输入您的手机号以继续",
+    "phoneNumber": "手机号",
+    "phonePlaceholder": "(123) 456-7890",
+    "sendCode": "发送验证码",
+    "resendIn": "重新发送",
+    "verificationCode": "验证码",
+    "codePlaceholder": "请输入6位验证码",
+    "login": "登录",
+    "invalidPhone": "请输入10位手机号",
+    "invalidCode": "请输入6位验证码",
+    "sendCodeFailed": "发送验证码失败",
+    "loginFailed": "登录失败",
+    "codeSent": "验证码已发送",
+    "codeSentMessage": "验证码已发送到您的手机，请在5分钟内输入。",
+    "helpText": "如果您无法收到验证码，请联系负责弟兄",
+    "phoneNotWhitelisted": "该手机号未在邀请列表中，请联系负责弟兄"
   }
 }
