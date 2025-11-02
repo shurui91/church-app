@@ -1,7 +1,17 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Constants from 'expo-constants';
 
 // API base URL - 可以根据环境配置
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
+// Try multiple sources: expo-constants extra, env var, or default
+const API_BASE_URL = 
+  Constants.expoConfig?.extra?.apiUrl || 
+  process.env.EXPO_PUBLIC_API_URL || 
+  'http://localhost:3000';
+
+// Debug: Log the API URL being used
+console.log('🔗 API_BASE_URL:', API_BASE_URL);
+console.log('🔗 From expo-constants:', Constants.expoConfig?.extra?.apiUrl);
+console.log('🔗 From env var:', process.env.EXPO_PUBLIC_API_URL);
 
 // Storage keys
 const TOKEN_KEY = '@auth_token';

@@ -9,6 +9,8 @@ import {
   Platform,
   ActivityIndicator,
   Alert,
+  ScrollView,
+  Keyboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
@@ -36,6 +38,8 @@ export default function LoginScreen() {
   const [checkingPhone, setCheckingPhone] = useState(false);
   const [phoneWhitelisted, setPhoneWhitelisted] = useState<boolean | null>(null);
   const phoneInputRef = useRef<TextInput>(null);
+  const codeInputRef = useRef<TextInput>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -43,6 +47,36 @@ export default function LoginScreen() {
       router.replace('/meeting');
     }
   }, [isAuthenticated]);
+
+  // Handle keyboard events to scroll content
+  useEffect(() => {
+    const keyboardWillShowListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      (e) => {
+        // Scroll to input when keyboard appears
+        setTimeout(() => {
+          if (phoneInputRef.current?.isFocused()) {
+            scrollViewRef.current?.scrollTo({ y: 100, animated: true });
+          } else if (codeInputRef.current?.isFocused()) {
+            scrollViewRef.current?.scrollTo({ y: 300, animated: true });
+          }
+        }, 100);
+      }
+    );
+
+    const keyboardWillHideListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => {
+        // Optionally scroll back when keyboard hides
+        // scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+      }
+    );
+
+    return () => {
+      keyboardWillShowListener.remove();
+      keyboardWillHideListener.remove();
+    };
+  }, []);
 
   // Countdown timer
   useEffect(() => {
@@ -230,9 +264,16 @@ export default function LoginScreen() {
 
       <KeyboardAvoidingView
         style={styles.keyboardView}
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}>
-        <View style={styles.content}>
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
+        <ScrollView
+          ref={scrollViewRef}
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          bounces={false}>
+          <View style={styles.content}>
           {/* App Title */}
           <View style={styles.appTitleContainer}>
             <Text
@@ -308,6 +349,11 @@ export default function LoginScreen() {
                     setError(null);
                     setPhoneWhitelisted(null);
                   }
+                }}
+                onFocus={() => {
+                  setTimeout(() => {
+                    scrollViewRef.current?.scrollTo({ y: 100, animated: true });
+                  }, 100);
                 }}
                 onBlur={() => {
                   if (phoneNumber.replace(/\D/g, '').length >= 10) {
@@ -428,6 +474,7 @@ export default function LoginScreen() {
                   style={styles.inputIcon}
                 />
                 <TextInput
+                  ref={codeInputRef}
                   style={[
                     styles.input,
                     { color: colors.text, fontSize: getFontSizeValue(16) },
@@ -443,6 +490,11 @@ export default function LoginScreen() {
                   }}
                   keyboardType="number-pad"
                   maxLength={6}
+                  onFocus={() => {
+                    setTimeout(() => {
+                      scrollViewRef.current?.scrollTo({ y: 300, animated: true });
+                    }, 100);
+                  }}
                 />
               </View>
             </View>
@@ -486,7 +538,8 @@ export default function LoginScreen() {
               )}
             </TouchableOpacity>
           )}
-        </View>
+          </View>
+        </ScrollView>
 
         {/* Language Switcher */}
         <View style={styles.languageContainer}>
@@ -554,10 +607,18 @@ const styles = StyleSheet.create({
   keyboardView: {
     flex: 1,
   },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 100,
+  },
   content: {
     flex: 1,
     paddingHorizontal: 24,
     paddingTop: 40,
+    paddingBottom: 20,
     justifyContent: 'flex-start',
   },
   appTitleContainer: {
