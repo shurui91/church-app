@@ -14,17 +14,39 @@ export class User {
    * @param {string} [nameEn] - User's English name (optional)
    * @param {string} [district] - User's district (optional)
    * @param {string} [groupNum] - User's group number (optional)
+   * @param {string} [email] - User's email (optional)
+   * @param {string} [status] - User status (default: 'active')
+   * @param {string} [gender] - User gender (optional)
+   * @param {string} [birthdate] - User birthdate (optional)
+   * @param {string} [joinDate] - User join date (optional)
+   * @param {string} [preferredLanguage] - Preferred language (default: 'zh')
+   * @param {string} [notes] - Admin notes (optional)
    * @returns {Promise<Object>} Created user object
    */
-  static async create(phoneNumber, role = 'member', name = null, nameZh = null, nameEn = null, district = null, groupNum = null) {
+  static async create(
+    phoneNumber,
+    role = 'member',
+    name = null,
+    nameZh = null,
+    nameEn = null,
+    district = null,
+    groupNum = null,
+    email = null,
+    status = 'active',
+    gender = null,
+    birthdate = null,
+    joinDate = null,
+    preferredLanguage = 'zh',
+    notes = null
+  ) {
     const db = await getDatabase();
     const now = getCurrentTimestamp();
 
     try {
       const result = await db.run(
-        `INSERT INTO users (phoneNumber, name, nameZh, nameEn, role, district, groupNum, createdAt, updatedAt)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        [phoneNumber, name, nameZh, nameEn, role, district, groupNum, now, now]
+        `INSERT INTO users (phoneNumber, name, nameZh, nameEn, role, district, groupNum, email, status, gender, birthdate, joinDate, preferredLanguage, notes, createdAt, updatedAt)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [phoneNumber, name, nameZh, nameEn, role, district, groupNum, email, status, gender, birthdate, joinDate, preferredLanguage, notes, now, now]
       );
 
       return {
@@ -36,6 +58,13 @@ export class User {
         role,
         district,
         groupNum,
+        email,
+        status,
+        gender,
+        birthdate,
+        joinDate,
+        preferredLanguage,
+        notes,
         createdAt: now,
         updatedAt: now,
       };
@@ -191,6 +220,31 @@ export class User {
       const result = await db.run(
         'UPDATE users SET district = ?, groupNum = ?, updatedAt = ? WHERE id = ?',
         [district, groupNum, now, id]
+      );
+
+      if (result.changes === 0) {
+        return null;
+      }
+
+      return await this.findById(id);
+    } finally {
+      await db.close();
+    }
+  }
+
+  /**
+   * Update user last login time
+   * @param {number} id - User ID
+   * @returns {Promise<Object|null>} Updated user object or null if not found
+   */
+  static async updateLastLogin(id) {
+    const db = await getDatabase();
+    const now = getCurrentTimestamp();
+
+    try {
+      const result = await db.run(
+        'UPDATE users SET lastLoginAt = ?, updatedAt = ? WHERE id = ?',
+        [now, now, id]
       );
 
       if (result.changes === 0) {

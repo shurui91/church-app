@@ -72,6 +72,64 @@ export function initDatabase() {
           console.error('Error adding groupNum column:', err);
         }
       });
+      
+      // Add new columns: email, lastLoginAt, status, gender, birthdate, joinDate, preferredLanguage, notes
+      db.run(`ALTER TABLE users ADD COLUMN email TEXT`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+          console.error('Error adding email column:', err);
+        }
+      });
+      
+      db.run(`ALTER TABLE users ADD COLUMN lastLoginAt TEXT`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+          console.error('Error adding lastLoginAt column:', err);
+        }
+      });
+      
+      db.run(`ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'suspended'))`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+          console.error('Error adding status column:', err);
+        }
+      });
+      
+      db.run(`ALTER TABLE users ADD COLUMN gender TEXT CHECK(gender IN ('male', 'female', 'other'))`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+          console.error('Error adding gender column:', err);
+        }
+      });
+      
+      db.run(`ALTER TABLE users ADD COLUMN birthdate TEXT`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+          console.error('Error adding birthdate column:', err);
+        }
+      });
+      
+      db.run(`ALTER TABLE users ADD COLUMN joinDate TEXT`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+          console.error('Error adding joinDate column:', err);
+        }
+      });
+      
+      db.run(`ALTER TABLE users ADD COLUMN preferredLanguage TEXT DEFAULT 'zh'`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+          console.error('Error adding preferredLanguage column:', err);
+        }
+      });
+      
+      db.run(`ALTER TABLE users ADD COLUMN notes TEXT`, (err) => {
+        if (err && !err.message.includes('duplicate column')) {
+          console.error('Error adding notes column:', err);
+        }
+      });
+      
+      // Create indexes for new columns
+      db.run(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`, (err) => {
+        if (err) console.error('Error creating index on email:', err);
+      });
+      
+      db.run(`CREATE INDEX IF NOT EXISTS idx_users_status ON users(status)`, (err) => {
+        if (err) console.error('Error creating index on status:', err);
+      });
     });
 
     // Create indexes for users table

@@ -1,12 +1,12 @@
 import express from 'express';
 import { User } from '../database/models/User.js';
 import { VerificationCode } from '../database/models/VerificationCode.js';
-import { generateToken, authenticate } from '../middleware/auth.js';
+import { authenticate, generateToken } from '../middleware/auth.js';
 import {
-  sendVerificationCode,
-  generateVerificationCode,
-  validatePhoneNumber,
-  normalizePhoneNumber,
+	generateVerificationCode,
+	normalizePhoneNumber,
+	sendVerificationCode,
+	validatePhoneNumber,
 } from '../services/sms.js';
 
 const router = express.Router();
@@ -195,6 +195,12 @@ router.post('/verify-code', async (req, res) => {
       });
     }
 
+    // Update last login time
+    await User.updateLastLogin(user.id);
+    
+    // Refresh user to get updated lastLoginAt
+    user = await User.findById(user.id);
+
     // Generate JWT token
     const token = generateToken(user);
 
@@ -212,6 +218,16 @@ router.post('/verify-code', async (req, res) => {
           role: user.role,
           district: user.district,
           groupNum: user.groupNum,
+          email: user.email,
+          status: user.status,
+          gender: user.gender,
+          birthdate: user.birthdate,
+          joinDate: user.joinDate,
+          preferredLanguage: user.preferredLanguage,
+          notes: user.notes,
+          lastLoginAt: user.lastLoginAt,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
         },
         token,
       },
@@ -246,7 +262,15 @@ router.get('/me', authenticate, async (req, res) => {
           nameEn: user.nameEn,
           role: user.role,
           district: user.district,
-          group: user.group,
+          groupNum: user.groupNum,
+          email: user.email,
+          status: user.status,
+          gender: user.gender,
+          birthdate: user.birthdate,
+          joinDate: user.joinDate,
+          preferredLanguage: user.preferredLanguage,
+          notes: user.notes,
+          lastLoginAt: user.lastLoginAt,
           createdAt: user.createdAt,
           updatedAt: user.updatedAt,
         },

@@ -5,7 +5,19 @@ export interface User {
   id: number;
   phoneNumber: string;
   name: string | null;
+  nameZh?: string | null;
+  nameEn?: string | null;
   role: 'super_admin' | 'admin' | 'leader' | 'member';
+  district?: string | null;
+  groupNum?: string | null;
+  email?: string | null;
+  status?: 'active' | 'inactive' | 'suspended';
+  gender?: 'male' | 'female' | 'other' | null;
+  birthdate?: string | null;
+  joinDate?: string | null;
+  preferredLanguage?: string;
+  notes?: string | null;
+  lastLoginAt?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
