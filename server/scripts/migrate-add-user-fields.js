@@ -3,12 +3,13 @@ import sqlite3 from 'sqlite3';
 import { fileURLToPath } from 'url';
 import { initDatabase } from '../database/init.js';
 
+// Use the same DB_PATH logic as init.js and db.js
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
-const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../../database.sqlite');
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../database.sqlite');
 
 async function migrate() {
+  // Use the same database connection method as the rest of the app
   return new Promise((resolve, reject) => {
     const db = new sqlite3.Database(DB_PATH, (err) => {
       if (err) {
@@ -16,8 +17,34 @@ async function migrate() {
         reject(err);
         return;
       }
-      console.log('Connected to SQLite database');
+      console.log(`Connected to SQLite database at: ${DB_PATH}`);
+      
+      // Check if users table exists first
+      db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='users'", (err, row) => {
+        if (err) {
+          console.error('Error checking users table:', err);
+          reject(err);
+          return;
+        }
+        
+        if (!row) {
+          console.error(`\n❌ Error: users table does not exist in database at ${DB_PATH}`);
+          console.error('   Please make sure initDatabase() completed successfully before running migration.');
+          db.close();
+          reject(new Error('users table does not exist'));
+          return;
+        }
+        
+        console.log('✓ Users table exists, proceeding with migration...\n');
+        
+        // Continue with migration
+        startMigration(db, resolve, reject);
+      });
     });
+  });
+}
+
+function startMigration(db, resolve, reject) {
 
     const newColumns = [
       { name: 'email', sql: 'ALTER TABLE users ADD COLUMN email TEXT' },
@@ -79,7 +106,6 @@ async function migrate() {
         }
       });
     });
-  });
 }
 
 // Run migration
