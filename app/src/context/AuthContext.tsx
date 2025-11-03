@@ -138,12 +138,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
    */
   const refreshUser = async () => {
     try {
+      // 检查是否有 token，如果没有则跳过（可能是登出后调用）
+      const token = await getStoredToken();
+      if (!token) {
+        // 没有 token，可能是用户已登出，不执行刷新
+        return;
+      }
+
       const response = await api.getCurrentUser();
       if (response.success && response.data.user) {
         setUser(response.data.user);
       }
-    } catch (error) {
-      console.error('Refresh user failed:', error);
+    } catch (error: any) {
+      // 只在非 token 缺失错误时记录日志
+      // token 缺失错误（401）在登出时是正常的，不需要记录
+      if (error.message && !error.message.includes('未提供认证令牌') && !error.message.includes('无效或过期的令牌')) {
+        console.error('Refresh user failed:', error);
+      }
     }
   };
 

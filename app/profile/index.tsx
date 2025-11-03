@@ -1,5 +1,5 @@
 // app/profile.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -20,14 +20,23 @@ export default function ProfileScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const { t } = useTranslation();
-  const { user, logout, refreshUser } = useAuth();
+  const { user, logout, refreshUser, isAuthenticated } = useAuth();
   const { getFontSizeValue } = useFontSize();
   const [loggingOut, setLoggingOut] = useState(false);
+  const isMountedRef = useRef(true);
 
-  // 页面加载时刷新用户信息
+  // 页面加载时刷新用户信息（仅在已认证时）
   useEffect(() => {
-    refreshUser();
-  }, [refreshUser]);
+    // 只在用户已认证时才刷新用户信息
+    if (isAuthenticated) {
+      refreshUser();
+    }
+    
+    // 组件卸载时标记
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [refreshUser, isAuthenticated]);
 
   const handleLogout = () => {
     Alert.alert(
@@ -42,11 +51,22 @@ export default function ProfileScreen() {
           text: t('profile.logout') || '登出',
           style: 'destructive',
           onPress: async () => {
-            setLoggingOut(true);
-            await logout();
-            setLoggingOut(false);
-            // AuthGuard will redirect to login page
-            router.replace('/login');
+            try {
+              setLoggingOut(true);
+              
+              // 执行登出（这会设置 user = null，触发 AuthGuard 自动导航）
+              await logout();
+              
+              // AuthGuard 会自动检测到 isAuthenticated = false 并导航到登录页
+              // 不需要手动导航，避免双重导航冲突导致的 crash
+            } catch (error) {
+              console.error('Logout error:', error);
+            } finally {
+              // 只在组件仍然挂载时更新状态
+              if (isMountedRef.current) {
+                setLoggingOut(false);
+              }
+            }
           },
         },
       ]
