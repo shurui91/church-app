@@ -171,6 +171,49 @@ export default function ProfileScreen() {
                 </View>
               </View>
             )}
+            {/* 显示角色（仅 super_admin 和 admin） */}
+            {(() => {
+              const getRoleDisplay = () => {
+                // 使用 trim() 和 toLowerCase() 来确保匹配准确
+                const role = String(user.role || '').trim().toLowerCase();
+                
+                if (role === 'super_admin') {
+                  return t('profile.role.super_admin') || '超级管理员';
+                }
+                if (role === 'admin') {
+                  return t('profile.role.admin') || '管理员';
+                }
+                
+                // 调试：如果 role 存在但不匹配，打印出来
+                if (user.role && role !== 'super_admin' && role !== 'admin') {
+                  console.log('Profile - Unexpected role value:', user.role, 'Normalized:', role);
+                }
+                
+                return null;
+              };
+
+              const roleDisplay = getRoleDisplay();
+              if (!roleDisplay) return null;
+
+              return (
+                <View style={styles.userInfoRow}>
+                  <Ionicons
+                    name="shield-checkmark-outline"
+                    size={24}
+                    color={colors.primary}
+                  />
+                  <View style={styles.userInfoText}>
+                    <Text
+                      style={[
+                        styles.userInfoValue,
+                        { color: colors.text, fontSize: getFontSizeValue(16) },
+                      ]}>
+                      {roleDisplay}
+                    </Text>
+                  </View>
+                </View>
+              );
+            })()}
           </View>
         )}
 

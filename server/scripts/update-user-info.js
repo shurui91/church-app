@@ -39,7 +39,7 @@ const USER_UPDATES = [
     // 设置
     status: 'active',      // 'active', 'inactive', 'suspended'
     preferredLanguage: 'zh', // 'zh', 'en'
-    notes: '超级管理员',
+    notes: '',
   },
   {
     phoneNumber: '+15625199698',
@@ -49,6 +49,7 @@ const USER_UPDATES = [
     district: 'Other',
     groupNum: null,
     email: 'pan@example.com',
+	role: 'member',   // 角色
     
     // 个人信息
     gender: 'female',        // 'male', 'female', 'other'
@@ -62,6 +63,8 @@ const USER_UPDATES = [
   },
   {
     phoneNumber: '+16262274460',
+    // 角色
+    role: 'admin',         // 角色
     nameZh: '刘云涛',
     nameEn: 'Kevin Liu',
 	name: 'Kevin Liu',          // 兼容字段（可选）
@@ -87,6 +90,7 @@ const USER_UPDATES = [
     district: 'D',
     groupNum: '亲子',
     email: 'yutaowu@example.com',
+	role: 'member',   // 角色
 
 	// 个人信息
     gender: 'male',        // 'male', 'female', 'other'
@@ -106,6 +110,7 @@ const USER_UPDATES = [
     district: 'D',
     groupNum: '亲子',
     email: 'bo.ma@example.com',
+	role: 'member',   // 角色
 
 	// 个人信息
     gender: 'male',        // 'male', 'female', 'other'
@@ -125,6 +130,7 @@ const USER_UPDATES = [
     district: 'D',
     groupNum: '亲子',
     email: 'sunny.chen@example.com',
+	role: 'member',   // 角色
 
 	// 个人信息
     gender: 'female',        // 'male', 'female', 'other'
