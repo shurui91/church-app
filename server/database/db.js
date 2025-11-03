@@ -9,6 +9,12 @@ const __dirname = path.dirname(__filename);
 // Database path
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../database.sqlite');
 
+// Log database path on startup (helpful for debugging Railway deployment)
+if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
+  console.log(`[Database] Using database at: ${DB_PATH}`);
+  console.log(`[Database] DB_PATH env var: ${process.env.DB_PATH || '(not set, using default)'}`);
+}
+
 /**
  * Get database connection
  * Returns a promise-based database instance
