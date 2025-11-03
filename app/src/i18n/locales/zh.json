@@ -38,6 +38,7 @@
     "version": "版本号",
     "phoneNumber": "手机号",
     "name": "姓名",
+    "districtGroup": "大区/小组",
     "role": "角色",
     "role.super_admin": "超级管理员",
     "role.admin": "管理员",

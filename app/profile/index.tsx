@@ -1,5 +1,5 @@
 // app/profile.tsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -20,9 +20,14 @@ export default function ProfileScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
   const { getFontSizeValue } = useFontSize();
   const [loggingOut, setLoggingOut] = useState(false);
+
+  // 页面加载时刷新用户信息
+  useEffect(() => {
+    refreshUser();
+  }, [refreshUser]);
 
   const handleLogout = () => {
     Alert.alert(
@@ -108,7 +113,7 @@ export default function ProfileScreen() {
                 </Text>
               </View>
             </View>
-            {user.name && (
+            {(user.nameZh || user.nameEn || user.name) && (
               <View style={styles.userInfoRow}>
                 <Ionicons
                   name="person-outline"
@@ -131,7 +136,37 @@ export default function ProfileScreen() {
                       styles.userInfoValue,
                       { color: colors.text, fontSize: getFontSizeValue(16) },
                     ]}>
-                    {user.name}
+                    {user.nameZh || user.nameEn || user.name || 'N/A'}
+                  </Text>
+                </View>
+              </View>
+            )}
+            {(user.district || user.groupNum) && (
+              <View style={styles.userInfoRow}>
+                <Ionicons
+                  name="people-outline"
+                  size={24}
+                  color={colors.primary}
+                />
+                <View style={styles.userInfoText}>
+                  <Text
+                    style={[
+                      styles.userInfoLabel,
+                      {
+                        color: colors.textSecondary,
+                        fontSize: getFontSizeValue(12),
+                      },
+                    ]}>
+                    {t('profile.districtGroup') || '大区/小组'}
+                  </Text>
+                  <Text
+                    style={[
+                      styles.userInfoValue,
+                      { color: colors.text, fontSize: getFontSizeValue(16) },
+                    ]}>
+                    {user.district && user.groupNum
+                      ? `${user.district} - ${user.groupNum}`
+                      : user.district || user.groupNum || 'N/A'}
                   </Text>
                 </View>
               </View>
