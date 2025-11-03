@@ -16,6 +16,9 @@ import { User } from '../database/models/User.js';
 const USER_UPDATES = [
   {
     phoneNumber: '+15676983308',
+    // 角色
+    role: 'super_admin',   // 角色
+    
     // 姓名相关
     nameZh: '刘书睿',        // 中文名
     nameEn: 'Aaron Liu',   // 英文名
@@ -190,7 +193,13 @@ async function updateUsers() {
           console.log(`  ✓ Updated district/group: district="${fields.district || '(unchanged)'}", groupNum="${fields.groupNum || '(unchanged)'}"`);
         }
 
-        // 3. 更新其他字段（直接使用 SQL）
+        // 3. 更新角色（使用现有的方法）
+        if (fields.role !== undefined) {
+          await User.updateRole(user.id, fields.role);
+          console.log(`  ✓ Updated role: "${fields.role}"`);
+        }
+
+        // 4. 更新其他字段（直接使用 SQL）
         const otherFields = ['email', 'gender', 'birthdate', 'joinDate', 'status', 'preferredLanguage', 'notes'];
         const updates = [];
         const values = [];
