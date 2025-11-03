@@ -302,6 +302,48 @@ export function initDatabase() {
       if (err) console.error('Error creating index on token:', err);
     });
 
+    // Create attendance table
+    db.run(`
+      CREATE TABLE IF NOT EXISTS attendance (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        date TEXT NOT NULL,
+        meetingType TEXT NOT NULL CHECK(meetingType IN ('table', 'homeMeeting', 'prayer')),
+        adultCount INTEGER NOT NULL CHECK(adultCount >= 0),
+        youthChildCount INTEGER NOT NULL CHECK(youthChildCount >= 0),
+        createdBy INTEGER NOT NULL,
+        district TEXT,
+        notes TEXT,
+        createdAt TEXT NOT NULL,
+        updatedAt TEXT NOT NULL,
+        UNIQUE(date, meetingType, createdBy),
+        FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `, (err) => {
+      if (err) {
+        console.error('Error creating attendance table:', err);
+        reject(err);
+        return;
+      }
+      console.log('Attendance table created or already exists');
+    });
+
+    // Create indexes for attendance table
+    db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(date)`, (err) => {
+      if (err) console.error('Error creating index on date:', err);
+    });
+
+    db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_meetingType ON attendance(meetingType)`, (err) => {
+      if (err) console.error('Error creating index on meetingType:', err);
+    });
+
+    db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_createdBy ON attendance(createdBy)`, (err) => {
+      if (err) console.error('Error creating index on createdBy:', err);
+    });
+
+    db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_date_type_creator ON attendance(date, meetingType, createdBy)`, (err) => {
+      if (err) console.error('Error creating composite index:', err);
+    });
+
     // Close database connection after initialization
     db.close((err) => {
       if (err) {

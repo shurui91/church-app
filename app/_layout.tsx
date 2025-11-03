@@ -67,6 +67,7 @@ function ThemedLayout() {
         <Stack.Screen name='meeting' />
         <Stack.Screen name='announcement' />
         <Stack.Screen name='pursue' />
+        <Stack.Screen name='attendance' />
 
         {/* ✅ 调用时传入 pathname */}
         <Stack.Screen

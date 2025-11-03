@@ -20,7 +20,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const { t } = useTranslation();
-  const { user, logout, refreshUser, isAuthenticated } = useAuth();
+  const { user, logout, refreshUser, isAuthenticated, hasRole } = useAuth();
   const { getFontSizeValue } = useFontSize();
   const [loggingOut, setLoggingOut] = useState(false);
   const isMountedRef = useRef(true);
@@ -239,6 +239,14 @@ export default function ProfileScreen() {
 
         {/* 菜单 */}
         <View style={[styles.menuContainer, { backgroundColor: colors.card }]}>
+          {/* 出席数据上传 - 仅对有权限的用户显示 */}
+          {hasRole(['super_admin', 'admin', 'leader']) && user?.role !== 'member' && user?.role !== 'other' && (
+            <MenuItem
+              icon='clipboard-outline'
+              title={t('attendance.title') || '出席数据上传'}
+              onPress={() => router.push('/attendance')}
+            />
+          )}
           <MenuItem
             icon='settings-outline'
             title={t('profile.appSettings') || '应用设置'}

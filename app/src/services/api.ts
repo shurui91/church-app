@@ -255,4 +255,51 @@ export const api = {
     });
     return parseResponse(response);
   },
+
+  /**
+   * Create or update attendance record
+   */
+  async createOrUpdateAttendance(data: {
+    date: string;
+    meetingType: 'table' | 'homeMeeting' | 'prayer';
+    adultCount: number;
+    youthChildCount: number;
+    notes?: string;
+  }) {
+    const response = await apiRequest('/api/attendance', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return parseResponse<{
+      success: boolean;
+      message: string;
+      data: { attendance: any };
+    }>(response);
+  },
+
+  /**
+   * Get attendance records
+   */
+  async getAttendanceRecords(limit?: number, offset?: number) {
+    const params = new URLSearchParams();
+    if (limit !== undefined) params.append('limit', limit.toString());
+    if (offset !== undefined) params.append('offset', offset.toString());
+    const query = params.toString();
+    const url = query ? `/api/attendance?${query}` : '/api/attendance';
+    const response = await apiRequest(url);
+    return parseResponse<{
+      success: boolean;
+      data: { records: any[]; count: number };
+    }>(response);
+  },
+
+  /**
+   * Delete attendance record
+   */
+  async deleteAttendance(id: number) {
+    const response = await apiRequest(`/api/attendance/${id}`, {
+      method: 'DELETE',
+    });
+    return parseResponse(response);
+  },
 };
