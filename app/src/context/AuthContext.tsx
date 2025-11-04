@@ -123,13 +123,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
    * Logout
    */
   const logout = async () => {
+    // 先清除本地状态，确保立即触发 AuthGuard 导航
+    setUser(null);
+    
+    // 然后尝试调用 API 登出（不阻塞，即使失败也继续）
     try {
-      await api.logout();
-      setUser(null);
+      // 添加超时，避免 API 调用卡住
+      const logoutPromise = api.logout();
+      const timeoutPromise = new Promise((resolve) => {
+        setTimeout(() => resolve(null), 2000); // 2秒超时
+      });
+      await Promise.race([logoutPromise, timeoutPromise]);
     } catch (error) {
-      console.error('Logout error:', error);
-      // Even if logout fails, clear local state
-      setUser(null);
+      // 忽略错误，本地状态已清除
+      console.log('Logout API call failed (ignored):', error);
     }
   };
 

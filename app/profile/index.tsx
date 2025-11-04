@@ -54,18 +54,27 @@ export default function ProfileScreen() {
             try {
               setLoggingOut(true);
               
+              // 添加超时机制，确保不会永远等待
+              const logoutPromise = logout();
+              const timeoutPromise = new Promise((resolve) => {
+                setTimeout(() => resolve(null), 3000); // 3秒超时
+              });
+              
               // 执行登出（这会设置 user = null，触发 AuthGuard 自动导航）
-              await logout();
+              await Promise.race([logoutPromise, timeoutPromise]);
               
               // AuthGuard 会自动检测到 isAuthenticated = false 并导航到登录页
               // 不需要手动导航，避免双重导航冲突导致的 crash
             } catch (error) {
               console.error('Logout error:', error);
             } finally {
-              // 只在组件仍然挂载时更新状态
-              if (isMountedRef.current) {
-                setLoggingOut(false);
-              }
+              // 重置登出状态，即使组件可能即将卸载
+              // 使用 setTimeout 确保状态更新不会阻塞导航
+              setTimeout(() => {
+                if (isMountedRef.current) {
+                  setLoggingOut(false);
+                }
+              }, 100);
             }
           },
         },
@@ -206,7 +215,7 @@ export default function ProfileScreen() {
                 
                 // 调试：如果 role 存在但不匹配，打印出来
                 if (user.role && role !== 'super_admin' && role !== 'admin') {
-                  console.log('Profile - Unexpected role value:', user.role, 'Normalized:', role);
+                //   console.log('Profile - Unexpected role value:', user.role, 'Normalized:', role);
                 }
                 
                 return null;
@@ -239,8 +248,8 @@ export default function ProfileScreen() {
 
         {/* 菜单 */}
         <View style={[styles.menuContainer, { backgroundColor: colors.card }]}>
-          {/* 出席数据上传 - 仅对有权限的用户显示 */}
-          {hasRole(['super_admin', 'admin', 'leader']) && user?.role !== 'member' && user?.role !== 'other' && (
+          {/* 出席数据上传 - 仅 super_admin、admin、leader 可见，member 不可见 */}
+          {hasRole(['super_admin', 'admin', 'leader']) && user?.role !== 'member' && (
             <MenuItem
               icon='clipboard-outline'
               title={t('attendance.title') || '出席数据上传'}
