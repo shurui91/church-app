@@ -16,6 +16,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { useAuth } from '../src/context/AuthContext';
+import BackButton from '../components/BackButton';
 import { useThemeColors } from '../src/hooks/useThemeColors';
 import { useFontSize } from '../src/context/FontSizeContext';
 import { useTranslation } from 'react-i18next';
@@ -70,27 +71,34 @@ export default function AttendanceScreen() {
   const [meetingType, setMeetingType] = useState<MeetingType | null>(null);
   const [showMeetingTypePicker, setShowMeetingTypePicker] = useState(false);
   const [scope, setScope] = useState<Scope | null>(null);
-  const [showScopePicker, setShowScopePicker] = useState(false);
   const [scopeValue, setScopeValue] = useState<string | null>(null);
-  const [showScopeValuePicker, setShowScopeValuePicker] = useState(false);
+  const [selectedDistrict, setSelectedDistrict] = useState<string | null>(null);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [showDistrictPicker, setShowDistrictPicker] = useState(false);
+  const [showGroupPicker, setShowGroupPicker] = useState(false);
   const [adultCount, setAdultCount] = useState<string>('');
   const [youthChildCount, setYouthChildCount] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
 
-  // Data state
-  const [districts, setDistricts] = useState<string[]>([]);
-  const [groups, setGroups] = useState<string[]>([]);
-  const [loadingDistrictsGroups, setLoadingDistrictsGroups] = useState(false);
+  // Data state - hard-coded districts and groups
+  const districts = ['A', 'B', 'C', 'D', 'E'];
+  
+  // Get groups based on selected district
+  const getGroupsForDistrict = (district: string | null): string[] => {
+    if (district === 'D') {
+      return ['1', '2', '亲子'];
+    }
+    return ['1', '2', '3', '4', '5'];
+  };
 
   // Records state
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [loadingRecords, setLoadingRecords] = useState(false);
   const [editingRecord, setEditingRecord] = useState<AttendanceRecord | null>(null);
 
-  // Load districts and groups on mount
+  // Load records on mount
   useEffect(() => {
     if (canAccess) {
-      loadDistrictsAndGroups();
       loadRecords();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -102,36 +110,43 @@ export default function AttendanceScreen() {
       // 主日聚会 → 默认"全会众"
       setScope('full_congregation');
       setScopeValue(null);
-    } else if (meetingType === 'homeMeeting') {
-      // 小排聚会 → "小排"
+      setSelectedDistrict(null);
+      setSelectedGroup(null);
+    } else if (meetingType === 'homeMeeting' || meetingType === 'prayer') {
+      // 小排聚会和祷告聚会 → 都需要选择大区+小排
       setScope('small_group');
       setScopeValue(null);
-    } else if (meetingType === 'prayer') {
-      // 祷告聚会 → 允许用户选择"大区"或"小排"
-      // Don't auto-set, let user choose
-      setScope(null);
-      setScopeValue(null);
+      setSelectedDistrict(null);
+      setSelectedGroup(null);
     } else {
       setScope(null);
       setScopeValue(null);
+      setSelectedDistrict(null);
+      setSelectedGroup(null);
     }
   }, [meetingType]);
 
-  const loadDistrictsAndGroups = async () => {
-    try {
-      setLoadingDistrictsGroups(true);
-      const response = await api.getDistrictsAndGroups();
-      if (response.success) {
-        setDistricts(response.data.districts);
-        setGroups(response.data.groups);
-      }
-    } catch (error: any) {
-      console.error('Failed to load districts and groups:', error);
-      Alert.alert(t('common.tip') || '提示', error.message || '加载大区和小组列表失败');
-    } finally {
-      setLoadingDistrictsGroups(false);
+  // Update scopeValue when district or group changes
+  useEffect(() => {
+    if (selectedDistrict && selectedGroup) {
+      setScopeValue(`${selectedDistrict}${selectedGroup}`);
+    } else {
+      setScopeValue(null);
     }
-  };
+  }, [selectedDistrict, selectedGroup]);
+
+  // Reset group selection when district changes
+  useEffect(() => {
+    if (selectedDistrict) {
+      const availableGroups = getGroupsForDistrict(selectedDistrict);
+      // If current selected group is not in the new list, reset it
+      if (selectedGroup && !availableGroups.includes(selectedGroup)) {
+        setSelectedGroup(null);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedDistrict]);
+
 
   const loadRecords = async () => {
     try {
@@ -155,31 +170,9 @@ export default function AttendanceScreen() {
     return `${year}-${month}-${day}`;
   };
 
-  // Get available scopes based on meeting type
-  const getAvailableScopes = (): Scope[] => {
-    if (meetingType === 'table') {
-      return ['full_congregation'];
-    } else if (meetingType === 'homeMeeting') {
-      return ['small_group'];
-    } else if (meetingType === 'prayer') {
-      return ['district', 'small_group'];
-    }
-    return [];
-  };
-
-  // Get scope value options based on selected scope
-  const getScopeValueOptions = (): string[] => {
-    if (scope === 'district') {
-      return districts;
-    } else if (scope === 'small_group') {
-      return groups;
-    }
-    return [];
-  };
-
-  // Check if scope value selector should be shown
-  const shouldShowScopeValue = (): boolean => {
-    return scope !== null && scope !== 'full_congregation';
+  // Check if district and group selectors should be shown
+  const shouldShowDistrictAndGroup = (): boolean => {
+    return meetingType === 'homeMeeting' || meetingType === 'prayer';
   };
 
   const validateForm = (): boolean => {
@@ -188,12 +181,13 @@ export default function AttendanceScreen() {
       return false;
     }
 
-    // Check if date is in the future
+    // Check if date is in the future (compare date strings to avoid timezone issues)
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const selectedDate = new Date(date);
-    selectedDate.setHours(0, 0, 0, 0);
-    if (selectedDate > today) {
+    const todayStr = formatDate(today);
+    const selectedDateStr = formatDate(date);
+    
+    // Allow today and past dates, only block future dates
+    if (selectedDateStr > todayStr) {
       Alert.alert(t('common.tip') || '提示', t('attendance.futureDateNotAllowed') || '不能选择未来日期');
       return false;
     }
@@ -208,9 +202,15 @@ export default function AttendanceScreen() {
       return false;
     }
 
-    if (shouldShowScopeValue() && !scopeValue) {
-      Alert.alert(t('common.tip') || '提示', t('attendance.invalidScopeValue') || '请选择分区/小组');
-      return false;
+    if (shouldShowDistrictAndGroup()) {
+      if (!selectedDistrict) {
+        Alert.alert(t('common.tip') || '提示', t('attendance.invalidDistrict') || '请选择大区');
+        return false;
+      }
+      if (!selectedGroup) {
+        Alert.alert(t('common.tip') || '提示', t('attendance.invalidGroup') || '请选择小排');
+        return false;
+      }
     }
 
     const adultCountNum = parseInt(adultCount);
@@ -249,6 +249,8 @@ export default function AttendanceScreen() {
         setMeetingType(null);
         setScope(null);
         setScopeValue(null);
+        setSelectedDistrict(null);
+        setSelectedGroup(null);
         setAdultCount('');
         setYouthChildCount('');
         setEditingRecord(null);
@@ -272,6 +274,18 @@ export default function AttendanceScreen() {
     setMeetingType(record.meetingType);
     setScope(record.scope);
     setScopeValue(record.scopeValue);
+    
+    // Parse scopeValue to extract district and group
+    if (record.scopeValue && record.scopeValue.length >= 2) {
+      const district = record.scopeValue[0];
+      const group = record.scopeValue.substring(1);
+      setSelectedDistrict(district);
+      setSelectedGroup(group);
+    } else {
+      setSelectedDistrict(null);
+      setSelectedGroup(null);
+    }
+    
     setAdultCount(record.adultCount.toString());
     setYouthChildCount(record.youthChildCount.toString());
   };
@@ -311,18 +325,6 @@ export default function AttendanceScreen() {
     return t(`attendance.meetingType.${type}`) || type;
   };
 
-  const getScopeLabel = (scopeValue: Scope): string => {
-    return t(`attendance.scope.${scopeValue}`) || scopeValue;
-  };
-
-  const getScopeValueLabel = (): string => {
-    if (scope === 'district') {
-      return t('attendance.selectDistrict') || '选择大区';
-    } else if (scope === 'small_group') {
-      return t('attendance.selectGroup') || '选择小排';
-    }
-    return t('attendance.selectScopeValue') || '选择分区/小组';
-  };
 
   if (!canAccess) {
     return (
@@ -339,8 +341,11 @@ export default function AttendanceScreen() {
       <Stack.Screen
         options={{
           title: t('attendance.title') || '出席数据上传',
+          headerShown: true,
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
+          headerTitleStyle: { color: colors.text },
+          headerLeft: () => <BackButton />, // 使用统一的返回按钮组件
         }}
       />
       <KeyboardAvoidingView
@@ -353,9 +358,29 @@ export default function AttendanceScreen() {
           showsVerticalScrollIndicator={false}>
           {/* Form Section */}
           <View style={[styles.formSection, { backgroundColor: colors.card }]}>
-            <Text style={[styles.sectionTitle, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
-              {editingRecord ? '编辑记录' : '新增记录'}
-            </Text>
+            <View style={styles.sectionHeader}>
+              <Text style={[styles.sectionTitle, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
+                {editingRecord ? '编辑记录' : '新增记录'}
+              </Text>
+              {(editingRecord || meetingType || selectedDistrict || selectedGroup || adultCount || youthChildCount) && (
+                <TouchableOpacity
+                  onPress={() => {
+                    // Clear form
+                    setDate(new Date());
+                    setMeetingType(null);
+                    setScope(null);
+                    setScopeValue(null);
+                    setSelectedDistrict(null);
+                    setSelectedGroup(null);
+                    setAdultCount('');
+                    setYouthChildCount('');
+                    setEditingRecord(null);
+                  }}
+                  style={styles.clearButton}>
+                  <Ionicons name="close-circle-outline" size={24} color={colors.textSecondary} />
+                </TouchableOpacity>
+              )}
+            </View>
 
             {/* Date Picker */}
             <View style={styles.inputContainer}>
@@ -399,53 +424,45 @@ export default function AttendanceScreen() {
               </TouchableOpacity>
             </View>
 
-            {/* Scope Picker (only show if meetingType is prayer) */}
-            {meetingType === 'prayer' && (
-              <View style={styles.inputContainer}>
-                <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
-                  {t('attendance.scope') || '统计层级'} *
-                </Text>
-                <TouchableOpacity
-                  style={[
-                    styles.inputWrapper,
-                    { backgroundColor: colors.background, borderColor: colors.border },
-                  ]}
-                  onPress={() => setShowScopePicker(true)}>
-                  <Text style={[styles.inputText, { color: scope ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
-                    {scope ? getScopeLabel(scope) : t('attendance.selectScope') || '选择统计层级'}
+            {/* District and Group Pickers (for homeMeeting and prayer) */}
+            {shouldShowDistrictAndGroup() && (
+              <>
+                {/* District Picker */}
+                <View style={styles.inputContainer}>
+                  <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
+                    {t('attendance.selectDistrict') || '选择大区'} *
                   </Text>
-                  <Ionicons name="chevron-down-outline" size={20} color={colors.textSecondary} />
-                </TouchableOpacity>
-              </View>
-            )}
-
-            {/* Scope Value Picker (only show if not full_congregation) */}
-            {shouldShowScopeValue() && (
-              <View style={styles.inputContainer}>
-                <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
-                  {t('attendance.scopeValue') || '分区/小组'} *
-                </Text>
-                {loadingDistrictsGroups ? (
-                  <View style={[styles.inputWrapper, { backgroundColor: colors.background, borderColor: colors.border, justifyContent: 'center' }]}>
-                    <ActivityIndicator size="small" color={colors.primary} />
-                    <Text style={[styles.inputText, { color: colors.textTertiary, fontSize: getFontSizeValue(16), marginLeft: 8 }]}>
-                      {t('attendance.loadingDistrictsGroups') || '加载中...'}
-                    </Text>
-                  </View>
-                ) : (
                   <TouchableOpacity
                     style={[
                       styles.inputWrapper,
                       { backgroundColor: colors.background, borderColor: colors.border },
                     ]}
-                    onPress={() => setShowScopeValuePicker(true)}>
-                    <Text style={[styles.inputText, { color: scopeValue ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
-                      {scopeValue || getScopeValueLabel()}
+                    onPress={() => setShowDistrictPicker(true)}>
+                    <Text style={[styles.inputText, { color: selectedDistrict ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
+                      {selectedDistrict || t('attendance.selectDistrict') || '选择大区'}
                     </Text>
                     <Ionicons name="chevron-down-outline" size={20} color={colors.textSecondary} />
                   </TouchableOpacity>
-                )}
-              </View>
+                </View>
+
+                {/* Group Picker */}
+                <View style={styles.inputContainer}>
+                  <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
+                    {t('attendance.selectGroup') || '选择小排'} *
+                  </Text>
+                  <TouchableOpacity
+                    style={[
+                      styles.inputWrapper,
+                      { backgroundColor: colors.background, borderColor: colors.border },
+                    ]}
+                    onPress={() => setShowGroupPicker(true)}>
+                    <Text style={[styles.inputText, { color: selectedGroup ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
+                      {selectedGroup || t('attendance.selectGroup') || '选择小排'}
+                    </Text>
+                    <Ionicons name="chevron-down-outline" size={20} color={colors.textSecondary} />
+                  </TouchableOpacity>
+                </View>
+              </>
             )}
 
             {/* Adult Count */}
@@ -550,8 +567,9 @@ export default function AttendanceScreen() {
                       </View>
                     </View>
                     <Text style={[styles.recordType, { color: colors.textSecondary, fontSize: getFontSizeValue(14) }]}>
-                      {getMeetingTypeLabel(item.meetingType)} - {getScopeLabel(item.scope)}
-                      {item.scopeValue && ` (${item.scopeValue})`}
+                      {getMeetingTypeLabel(item.meetingType)}
+                      {item.scope === 'full_congregation' && ' - 全会众'}
+                      {item.scope === 'small_group' && item.scopeValue && ` - ${item.scopeValue}`}
                     </Text>
                     <View style={styles.recordCounts}>
                       <Text style={[styles.recordCount, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
@@ -683,53 +701,60 @@ export default function AttendanceScreen() {
         </View>
       </Modal>
 
-      {/* Scope Picker Modal (for prayer meetings) */}
+      {/* District Picker Modal */}
       <Modal
-        visible={showScopePicker}
+        visible={showDistrictPicker}
         transparent
         animationType="slide"
-        onRequestClose={() => setShowScopePicker(false)}>
+        onRequestClose={() => setShowDistrictPicker(false)}>
         <View style={styles.modalOverlay}>
           <TouchableOpacity
             style={StyleSheet.absoluteFill}
             activeOpacity={1}
-            onPress={() => setShowScopePicker(false)}
+            onPress={() => setShowDistrictPicker(false)}
           />
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
-                {t('attendance.selectScope') || '选择统计层级'}
+                {t('attendance.selectDistrict') || '选择大区'}
               </Text>
               <TouchableOpacity
-                onPress={() => setShowScopePicker(false)}
+                onPress={() => setShowDistrictPicker(false)}
                 style={styles.modalCloseButton}>
                 <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
             </View>
-            {getAvailableScopes().map((scopeOption) => (
-              <TouchableOpacity
-                key={scopeOption}
-                style={[
-                  styles.modalOption,
-                  { borderBottomColor: colors.border },
-                  scope === scopeOption && { backgroundColor: colors.background },
-                ]}
-                onPress={() => {
-                  setScope(scopeOption);
-                  setScopeValue(null); // Reset scope value when scope changes
-                  setShowScopePicker(false);
-                }}>
-                <Text style={[styles.modalOptionText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
-                  {getScopeLabel(scopeOption)}
+            {districts.length === 0 ? (
+              <View style={styles.modalOption}>
+                <Text style={[styles.modalOptionText, { color: colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
+                  {t('attendance.noRecords') || '暂无选项'}
                 </Text>
-                {scope === scopeOption && (
-                  <Ionicons name="checkmark" size={24} color={colors.primary} />
-                )}
-              </TouchableOpacity>
-            ))}
+              </View>
+            ) : (
+              districts.map((district) => (
+                <TouchableOpacity
+                  key={district}
+                  style={[
+                    styles.modalOption,
+                    { borderBottomColor: colors.border },
+                    selectedDistrict === district && { backgroundColor: colors.background },
+                  ]}
+                  onPress={() => {
+                    setSelectedDistrict(district);
+                    setShowDistrictPicker(false);
+                  }}>
+                  <Text style={[styles.modalOptionText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+                    {district}
+                  </Text>
+                  {selectedDistrict === district && (
+                    <Ionicons name="checkmark" size={24} color={colors.primary} />
+                  )}
+                </TouchableOpacity>
+              ))
+            )}
             <TouchableOpacity
               style={[styles.modalCancelButton, { borderTopColor: colors.border }]}
-              onPress={() => setShowScopePicker(false)}>
+              onPress={() => setShowDistrictPicker(false)}>
               <Text style={[styles.modalCancelText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
                 {t('common.cancel') || '取消'}
               </Text>
@@ -738,52 +763,52 @@ export default function AttendanceScreen() {
         </View>
       </Modal>
 
-      {/* Scope Value Picker Modal */}
+      {/* Group Picker Modal */}
       <Modal
-        visible={showScopeValuePicker}
+        visible={showGroupPicker}
         transparent
         animationType="slide"
-        onRequestClose={() => setShowScopeValuePicker(false)}>
+        onRequestClose={() => setShowGroupPicker(false)}>
         <View style={styles.modalOverlay}>
           <TouchableOpacity
             style={StyleSheet.absoluteFill}
             activeOpacity={1}
-            onPress={() => setShowScopeValuePicker(false)}
+            onPress={() => setShowGroupPicker(false)}
           />
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
             <View style={styles.modalHeader}>
               <Text style={[styles.modalTitle, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
-                {getScopeValueLabel()}
+                {t('attendance.selectGroup') || '选择小排'}
               </Text>
               <TouchableOpacity
-                onPress={() => setShowScopeValuePicker(false)}
+                onPress={() => setShowGroupPicker(false)}
                 style={styles.modalCloseButton}>
                 <Ionicons name="close" size={24} color={colors.text} />
               </TouchableOpacity>
             </View>
-            {getScopeValueOptions().length === 0 ? (
+            {getGroupsForDistrict(selectedDistrict).length === 0 ? (
               <View style={styles.modalOption}>
                 <Text style={[styles.modalOptionText, { color: colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
-                  {t('attendance.noRecords') || '暂无选项'}
+                  {selectedDistrict ? (t('attendance.selectDistrictFirst') || '请先选择大区') : (t('attendance.noRecords') || '暂无选项')}
                 </Text>
               </View>
             ) : (
-              getScopeValueOptions().map((value) => (
+              getGroupsForDistrict(selectedDistrict).map((group) => (
                 <TouchableOpacity
-                  key={value}
+                  key={group}
                   style={[
                     styles.modalOption,
                     { borderBottomColor: colors.border },
-                    scopeValue === value && { backgroundColor: colors.background },
+                    selectedGroup === group && { backgroundColor: colors.background },
                   ]}
                   onPress={() => {
-                    setScopeValue(value);
-                    setShowScopeValuePicker(false);
+                    setSelectedGroup(group);
+                    setShowGroupPicker(false);
                   }}>
                   <Text style={[styles.modalOptionText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
-                    {value}
+                    {group}
                   </Text>
-                  {scopeValue === value && (
+                  {selectedGroup === group && (
                     <Ionicons name="checkmark" size={24} color={colors.primary} />
                   )}
                 </TouchableOpacity>
@@ -791,7 +816,7 @@ export default function AttendanceScreen() {
             )}
             <TouchableOpacity
               style={[styles.modalCancelButton, { borderTopColor: colors.border }]}
-              onPress={() => setShowScopeValuePicker(false)}>
+              onPress={() => setShowGroupPicker(false)}>
               <Text style={[styles.modalCancelText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
                 {t('common.cancel') || '取消'}
               </Text>
@@ -830,9 +855,18 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 16,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   sectionTitle: {
     fontWeight: 'bold',
-    marginBottom: 16,
+    flex: 1,
+  },
+  clearButton: {
+    padding: 4,
   },
   inputContainer: {
     marginBottom: 16,

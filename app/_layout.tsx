@@ -67,7 +67,13 @@ function ThemedLayout() {
         <Stack.Screen name='meeting' />
         <Stack.Screen name='announcement' />
         <Stack.Screen name='pursue' />
-        <Stack.Screen name='attendance' />
+        <Stack.Screen 
+          name='attendance' 
+          options={{
+            headerShown: true,
+            presentation: 'card',
+          }}
+        />
 
         {/* ✅ 调用时传入 pathname */}
         <Stack.Screen

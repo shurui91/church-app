@@ -1,8 +1,6 @@
 import express from 'express';
 import { Attendance } from '../database/models/Attendance.js';
-import { User } from '../database/models/User.js';
-import { authenticate, authorize } from '../middleware/auth.js';
-import { getDatabase } from '../database/db.js';
+import { authenticate } from '../middleware/auth.js';
 
 const router = express.Router();
 
@@ -45,38 +43,35 @@ function authorizeAttendance(req, res, next) {
 /**
  * GET /api/attendance/districts-groups
  * Get list of available districts and groups
+ * Districts: A, B, C, D, E
+ * Groups: 1, 2, 3, 4, 5
  */
-router.get('/districts-groups', authenticate, authorizeAttendance, async (req, res) => {
-  try {
-    const db = await getDatabase();
-    
-    // Get distinct districts
-    const districts = await db.all(
-      'SELECT DISTINCT district FROM users WHERE district IS NOT NULL AND district != "" ORDER BY district'
-    );
-    
-    // Get distinct groups
-    const groups = await db.all(
-      'SELECT DISTINCT groupNum FROM users WHERE groupNum IS NOT NULL AND groupNum != "" ORDER BY groupNum'
-    );
-    
-    await db.close();
+router.get(
+  '/districts-groups',
+  authenticate,
+  authorizeAttendance,
+  async (req, res) => {
+    try {
+      // Hard-coded districts and groups
+      const districts = ['A', 'B', 'C', 'D', 'E'];
+      const groups = ['1', '2', '3', '4', '5'];
 
-    res.json({
-      success: true,
-      data: {
-        districts: districts.map(row => row.district),
-        groups: groups.map(row => row.groupNum),
-      },
-    });
-  } catch (error) {
-    console.error('Error getting districts and groups:', error);
-    res.status(500).json({
-      success: false,
-      message: '获取大区和小组列表失败',
-    });
+      res.json({
+        success: true,
+        data: {
+          districts,
+          groups,
+        },
+      });
+    } catch (error) {
+      console.error('Error getting districts and groups:', error);
+      res.status(500).json({
+        success: false,
+        message: '获取大区和小组列表失败',
+      });
+    }
   }
-});
+);
 
 /**
  * POST /api/attendance
@@ -85,7 +80,15 @@ router.get('/districts-groups', authenticate, authorizeAttendance, async (req, r
  */
 router.post('/', authenticate, authorizeAttendance, async (req, res) => {
   try {
-    const { date, meetingType, scope, scopeValue, adultCount, youthChildCount, notes } = req.body;
+    const {
+      date,
+      meetingType,
+      scope,
+      scopeValue,
+      adultCount,
+      youthChildCount,
+      notes,
+    } = req.body;
     const user = req.user;
 
     // Validate input
@@ -105,13 +108,15 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
       });
     }
 
-    // Check if date is in the future
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const recordDate = new Date(date);
-    recordDate.setHours(0, 0, 0, 0);
+    // ✅ 使用 UTC 比较，避免服务器时区造成“今天误判为未来”的问题
+    const submittedDate = new Date(`${date}T00:00:00Z`);
+    const now = new Date();
+    const todayUTC = new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate())
+    );
 
-    if (recordDate > today) {
+    // 只禁止未来的日期
+    if (submittedDate > todayUTC) {
       return res.status(400).json({
         success: false,
         message: '不能提交未来日期的数据',
@@ -163,7 +168,11 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
       });
     }
 
-    if (typeof adultCount !== 'number' || adultCount < 0 || !Number.isInteger(adultCount)) {
+    if (
+      typeof adultCount !== 'number' ||
+      adultCount < 0 ||
+      !Number.isInteger(adultCount)
+    ) {
       return res.status(400).json({
         success: false,
         message: '成年人数量必须是大于等于0的整数',
@@ -177,7 +186,11 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
       });
     }
 
-    if (typeof youthChildCount !== 'number' || youthChildCount < 0 || !Number.isInteger(youthChildCount)) {
+    if (
+      typeof youthChildCount !== 'number' ||
+      youthChildCount < 0 ||
+      !Number.isInteger(youthChildCount)
+    ) {
       return res.status(400).json({
         success: false,
         message: '青少年或儿童数量必须是大于等于0的整数',
@@ -227,12 +240,14 @@ router.get('/', authenticate, authorizeAttendance, async (req, res) => {
     const limit = req.query.limit ? parseInt(req.query.limit) : null;
     const offset = req.query.offset ? parseInt(req.query.offset) : 0;
 
-    // Check if user is admin (can see all records) or just their own
-    const isAdmin = ['super_admin', 'admin'].includes(user.role);
+    // Check if user can see all records (admin, super_admin, leader) or just their own
+    const canSeeAllRecords = ['super_admin', 'admin', 'leader'].includes(
+      user.role
+    );
 
     let records;
-    if (isAdmin) {
-      // Admins can see all records
+    if (canSeeAllRecords) {
+      // Admins and leaders can see all records
       records = await Attendance.findAll(limit, offset);
     } else {
       // Regular users can only see their own records
@@ -296,4 +311,3 @@ router.delete('/:id', authenticate, authorizeAttendance, async (req, res) => {
 });
 
 export default router;
-

@@ -86,7 +86,8 @@
   "common": {
     "tip": "提示",
     "clear": "清空",
-    "cancel": "取消"
+    "cancel": "取消",
+    "ok": "確定"
   },
   "hymns": {
     "title": "詩歌",
@@ -151,6 +152,8 @@
     "invalidMeetingType": "請選擇聚會類型",
     "invalidScope": "請選擇統計層級",
     "invalidScopeValue": "請選擇分區/小組",
+    "invalidDistrict": "請選擇大區",
+    "invalidGroup": "請選擇小排",
     "invalidAdultCount": "請輸入成年人數量（0或正整數）",
     "invalidYouthChildCount": "請輸入青少年或兒童數量（0或正整數）",
     "futureDateNotAllowed": "不能選擇未來日期",

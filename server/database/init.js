@@ -303,6 +303,9 @@ export function initDatabase() {
     });
 
     // Create attendance table
+    // Note: UNIQUE constraint removed - logic handled in application layer
+    // - full_congregation: Allows multiple records (same date + meetingType can have multiple entries)
+    // - small_group/district: Application enforces one record per (date, meetingType, scope, scopeValue)
     db.run(`
       CREATE TABLE IF NOT EXISTS attendance (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -317,7 +320,6 @@ export function initDatabase() {
         notes TEXT,
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL,
-        UNIQUE(date, meetingType, scope, scopeValue, createdBy),
         FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE CASCADE
       )
     `, (err) => {
@@ -342,7 +344,7 @@ export function initDatabase() {
       if (err) console.error('Error creating index on createdBy:', err);
     });
 
-    db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_date_type_creator ON attendance(date, meetingType, createdBy)`, (err) => {
+    db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_date_type_scope ON attendance(date, meetingType, scope, scopeValue)`, (err) => {
       if (err) console.error('Error creating composite index:', err);
     });
 

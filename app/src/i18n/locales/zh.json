@@ -86,7 +86,8 @@
   "common": {
     "tip": "提示",
     "clear": "清空",
-    "cancel": "取消"
+    "cancel": "取消",
+    "ok": "确定"
   },
   "hymns": {
     "title": "诗歌",
@@ -151,6 +152,8 @@
     "invalidMeetingType": "请选择聚会类型",
     "invalidScope": "请选择统计层级",
     "invalidScopeValue": "请选择分区/小组",
+    "invalidDistrict": "请选择大区",
+    "invalidGroup": "请选择小排",
     "invalidAdultCount": "请输入成年人数量（0或正整数）",
     "invalidYouthChildCount": "请输入青少年或儿童数量（0或正整数）",
     "futureDateNotAllowed": "不能选择未来日期",

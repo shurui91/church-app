@@ -7,7 +7,9 @@ import { getCurrentTimestamp, getDatabase } from '../db.js';
 export class Attendance {
   /**
    * Create or update an attendance record
-   * If a record with the same date, meetingType, scope, scopeValue, and createdBy exists, it will be updated
+   * Logic:
+   * - For full_congregation: Allows multiple records (same date + meetingType can have multiple entries)
+   * - For small_group/district: If same date + meetingType + scopeValue exists, update it; otherwise insert new
    * @param {string} date - Date in ISO format (YYYY-MM-DD)
    * @param {string} meetingType - Meeting type: 'table'/'homeMeeting'/'prayer'
    * @param {string} scope - Scope: 'full_congregation'/'district'/'small_group'
@@ -37,34 +39,66 @@ export class Attendance {
       // Normalize scopeValue: null for full_congregation
       const normalizedScopeValue = scope === 'full_congregation' ? null : (scopeValue || null);
 
-      // Check if record already exists
-      const existing = await db.get(
-        `SELECT id FROM attendance 
-         WHERE date = ? AND meetingType = ? AND scope = ? 
-         AND (scopeValue = ? OR (scopeValue IS NULL AND ? IS NULL))
-         AND createdBy = ?`,
-        [date, meetingType, scope, normalizedScopeValue, normalizedScopeValue, createdBy]
-      );
-
-      if (existing) {
-        // Update existing record
-        await db.run(
-          `UPDATE attendance 
-           SET adultCount = ?, youthChildCount = ?, scopeValue = ?, district = ?, notes = ?, updatedAt = ?
-           WHERE id = ?`,
-          [adultCount, youthChildCount, normalizedScopeValue, district, notes, now, existing.id]
-        );
-        return await this.findById(existing.id);
-      } else {
-        // Insert new record
+      if (scope === 'full_congregation') {
+        // For full_congregation, always insert new record (allow multiple records)
         const result = await db.run(
           `INSERT INTO attendance (date, meetingType, scope, scopeValue, adultCount, youthChildCount, createdBy, district, notes, createdAt, updatedAt)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
         );
-
         return await this.findById(result.lastID);
+      } else {
+        // For small_group/district, check if record with same date + meetingType + scope + scopeValue exists
+        // (regardless of createdBy - new data overwrites old)
+        const existing = await db.get(
+          `SELECT id FROM attendance 
+           WHERE date = ? AND meetingType = ? AND scope = ? 
+           AND (scopeValue = ? OR (scopeValue IS NULL AND ? IS NULL))`,
+          [date, meetingType, scope, normalizedScopeValue, normalizedScopeValue]
+        );
+
+        if (existing) {
+          // Update existing record (overwrite with new data)
+          await db.run(
+            `UPDATE attendance 
+             SET adultCount = ?, youthChildCount = ?, createdBy = ?, district = ?, notes = ?, updatedAt = ?
+             WHERE id = ?`,
+            [adultCount, youthChildCount, createdBy, district, notes, now, existing.id]
+          );
+          return await this.findById(existing.id);
+        } else {
+          // Insert new record
+          const result = await db.run(
+            `INSERT INTO attendance (date, meetingType, scope, scopeValue, adultCount, youthChildCount, createdBy, district, notes, createdAt, updatedAt)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
+          );
+          return await this.findById(result.lastID);
+        }
       }
+    } catch (error) {
+      // Handle UNIQUE constraint violation (fallback)
+      if (error.message && error.message.includes('UNIQUE constraint')) {
+        // Try to find and update the existing record
+        const normalizedScopeValue = scope === 'full_congregation' ? null : (scopeValue || null);
+        const existing = await db.get(
+          `SELECT id FROM attendance 
+           WHERE date = ? AND meetingType = ? AND scope = ? 
+           AND (scopeValue = ? OR (scopeValue IS NULL AND ? IS NULL))`,
+          [date, meetingType, scope, normalizedScopeValue, normalizedScopeValue]
+        );
+        
+        if (existing) {
+          await db.run(
+            `UPDATE attendance 
+             SET adultCount = ?, youthChildCount = ?, createdBy = ?, district = ?, notes = ?, updatedAt = ?
+             WHERE id = ?`,
+            [adultCount, youthChildCount, createdBy, district, notes, now, existing.id]
+          );
+          return await this.findById(existing.id);
+        }
+      }
+      throw error;
     } finally {
       await db.close();
     }
