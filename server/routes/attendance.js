@@ -1,6 +1,8 @@
 import express from 'express';
 import { Attendance } from '../database/models/Attendance.js';
+import { User } from '../database/models/User.js';
 import { authenticate, authorize } from '../middleware/auth.js';
+import { getDatabase } from '../database/db.js';
 
 const router = express.Router();
 
@@ -41,13 +43,49 @@ function authorizeAttendance(req, res, next) {
 }
 
 /**
+ * GET /api/attendance/districts-groups
+ * Get list of available districts and groups
+ */
+router.get('/districts-groups', authenticate, authorizeAttendance, async (req, res) => {
+  try {
+    const db = await getDatabase();
+    
+    // Get distinct districts
+    const districts = await db.all(
+      'SELECT DISTINCT district FROM users WHERE district IS NOT NULL AND district != "" ORDER BY district'
+    );
+    
+    // Get distinct groups
+    const groups = await db.all(
+      'SELECT DISTINCT groupNum FROM users WHERE groupNum IS NOT NULL AND groupNum != "" ORDER BY groupNum'
+    );
+    
+    await db.close();
+
+    res.json({
+      success: true,
+      data: {
+        districts: districts.map(row => row.district),
+        groups: groups.map(row => row.groupNum),
+      },
+    });
+  } catch (error) {
+    console.error('Error getting districts and groups:', error);
+    res.status(500).json({
+      success: false,
+      message: '获取大区和小组列表失败',
+    });
+  }
+});
+
+/**
  * POST /api/attendance
  * Create or update an attendance record (covers update if exists)
- * Body: { date, meetingType, adultCount, youthChildCount, notes? }
+ * Body: { date, meetingType, scope, scopeValue?, adultCount, youthChildCount, notes? }
  */
 router.post('/', authenticate, authorizeAttendance, async (req, res) => {
   try {
-    const { date, meetingType, adultCount, youthChildCount, notes } = req.body;
+    const { date, meetingType, scope, scopeValue, adultCount, youthChildCount, notes } = req.body;
     const user = req.user;
 
     // Validate input
@@ -95,6 +133,29 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
       });
     }
 
+    if (!scope) {
+      return res.status(400).json({
+        success: false,
+        message: '请提供统计层级',
+      });
+    }
+
+    const validScopes = ['full_congregation', 'district', 'small_group'];
+    if (!validScopes.includes(scope)) {
+      return res.status(400).json({
+        success: false,
+        message: `无效的统计层级。有效层级：${validScopes.join(', ')}`,
+      });
+    }
+
+    // Validate scopeValue based on scope
+    if (scope !== 'full_congregation' && !scopeValue) {
+      return res.status(400).json({
+        success: false,
+        message: '选择大区或小排时，必须提供具体值',
+      });
+    }
+
     if (adultCount === undefined || adultCount === null) {
       return res.status(400).json({
         success: false,
@@ -130,6 +191,8 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
     const attendance = await Attendance.createOrUpdate(
       date,
       meetingType,
+      scope,
+      scopeValue || null,
       adultCount,
       youthChildCount,
       user.id,

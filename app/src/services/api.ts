@@ -257,11 +257,24 @@ export const api = {
   },
 
   /**
+   * Get available districts and groups
+   */
+  async getDistrictsAndGroups() {
+    const response = await apiRequest('/api/attendance/districts-groups');
+    return parseResponse<{
+      success: boolean;
+      data: { districts: string[]; groups: string[] };
+    }>(response);
+  },
+
+  /**
    * Create or update attendance record
    */
   async createOrUpdateAttendance(data: {
     date: string;
     meetingType: 'table' | 'homeMeeting' | 'prayer';
+    scope: 'full_congregation' | 'district' | 'small_group';
+    scopeValue?: string | null;
     adultCount: number;
     youthChildCount: number;
     notes?: string;

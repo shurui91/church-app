@@ -308,6 +308,8 @@ export function initDatabase() {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         date TEXT NOT NULL,
         meetingType TEXT NOT NULL CHECK(meetingType IN ('table', 'homeMeeting', 'prayer')),
+        scope TEXT NOT NULL CHECK(scope IN ('full_congregation', 'district', 'small_group')),
+        scopeValue TEXT,
         adultCount INTEGER NOT NULL CHECK(adultCount >= 0),
         youthChildCount INTEGER NOT NULL CHECK(youthChildCount >= 0),
         createdBy INTEGER NOT NULL,
@@ -315,7 +317,7 @@ export function initDatabase() {
         notes TEXT,
         createdAt TEXT NOT NULL,
         updatedAt TEXT NOT NULL,
-        UNIQUE(date, meetingType, createdBy),
+        UNIQUE(date, meetingType, scope, scopeValue, createdBy),
         FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE CASCADE
       )
     `, (err) => {

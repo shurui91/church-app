@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -24,14 +24,16 @@ import { Ionicons } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 type MeetingType = 'table' | 'homeMeeting' | 'prayer';
+type Scope = 'full_congregation' | 'district' | 'small_group';
 
 interface AttendanceRecord {
   id: number;
   date: string;
   meetingType: MeetingType;
+  scope: Scope;
+  scopeValue: string | null;
   adultCount: number;
   youthChildCount: number;
-  notes?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -44,7 +46,7 @@ export default function AttendanceScreen() {
   const { user, hasRole } = useAuth();
 
   // Permission check
-  const canAccess = hasRole(['super_admin', 'admin', 'leader']) && user?.role !== 'member' && user?.role !== 'other';
+  const canAccess = hasRole(['super_admin', 'admin', 'leader']) && user?.role !== 'member';
 
   // Redirect if no permission
   useEffect(() => {
@@ -60,29 +62,76 @@ export default function AttendanceScreen() {
         ]
       );
     }
-  }, [user, canAccess]);
+  }, [user, canAccess, router, t]);
 
   // Form state
   const [date, setDate] = useState<Date>(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [meetingType, setMeetingType] = useState<MeetingType | null>(null);
   const [showMeetingTypePicker, setShowMeetingTypePicker] = useState(false);
+  const [scope, setScope] = useState<Scope | null>(null);
+  const [showScopePicker, setShowScopePicker] = useState(false);
+  const [scopeValue, setScopeValue] = useState<string | null>(null);
+  const [showScopeValuePicker, setShowScopeValuePicker] = useState(false);
   const [adultCount, setAdultCount] = useState<string>('');
   const [youthChildCount, setYouthChildCount] = useState<string>('');
-  const [notes, setNotes] = useState<string>('');
   const [submitting, setSubmitting] = useState(false);
+
+  // Data state
+  const [districts, setDistricts] = useState<string[]>([]);
+  const [groups, setGroups] = useState<string[]>([]);
+  const [loadingDistrictsGroups, setLoadingDistrictsGroups] = useState(false);
 
   // Records state
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [loadingRecords, setLoadingRecords] = useState(false);
   const [editingRecord, setEditingRecord] = useState<AttendanceRecord | null>(null);
 
-  // Load records on mount
+  // Load districts and groups on mount
   useEffect(() => {
     if (canAccess) {
+      loadDistrictsAndGroups();
       loadRecords();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canAccess]);
+
+  // Auto-set scope when meeting type changes
+  useEffect(() => {
+    if (meetingType === 'table') {
+      // 主日聚会 → 默认"全会众"
+      setScope('full_congregation');
+      setScopeValue(null);
+    } else if (meetingType === 'homeMeeting') {
+      // 小排聚会 → "小排"
+      setScope('small_group');
+      setScopeValue(null);
+    } else if (meetingType === 'prayer') {
+      // 祷告聚会 → 允许用户选择"大区"或"小排"
+      // Don't auto-set, let user choose
+      setScope(null);
+      setScopeValue(null);
+    } else {
+      setScope(null);
+      setScopeValue(null);
+    }
+  }, [meetingType]);
+
+  const loadDistrictsAndGroups = async () => {
+    try {
+      setLoadingDistrictsGroups(true);
+      const response = await api.getDistrictsAndGroups();
+      if (response.success) {
+        setDistricts(response.data.districts);
+        setGroups(response.data.groups);
+      }
+    } catch (error: any) {
+      console.error('Failed to load districts and groups:', error);
+      Alert.alert(t('common.tip') || '提示', error.message || '加载大区和小组列表失败');
+    } finally {
+      setLoadingDistrictsGroups(false);
+    }
+  };
 
   const loadRecords = async () => {
     try {
@@ -106,6 +155,33 @@ export default function AttendanceScreen() {
     return `${year}-${month}-${day}`;
   };
 
+  // Get available scopes based on meeting type
+  const getAvailableScopes = (): Scope[] => {
+    if (meetingType === 'table') {
+      return ['full_congregation'];
+    } else if (meetingType === 'homeMeeting') {
+      return ['small_group'];
+    } else if (meetingType === 'prayer') {
+      return ['district', 'small_group'];
+    }
+    return [];
+  };
+
+  // Get scope value options based on selected scope
+  const getScopeValueOptions = (): string[] => {
+    if (scope === 'district') {
+      return districts;
+    } else if (scope === 'small_group') {
+      return groups;
+    }
+    return [];
+  };
+
+  // Check if scope value selector should be shown
+  const shouldShowScopeValue = (): boolean => {
+    return scope !== null && scope !== 'full_congregation';
+  };
+
   const validateForm = (): boolean => {
     if (!date) {
       Alert.alert(t('common.tip') || '提示', t('attendance.invalidDate') || '请选择日期');
@@ -124,6 +200,16 @@ export default function AttendanceScreen() {
 
     if (!meetingType) {
       Alert.alert(t('common.tip') || '提示', t('attendance.invalidMeetingType') || '请选择聚会类型');
+      return false;
+    }
+
+    if (!scope) {
+      Alert.alert(t('common.tip') || '提示', t('attendance.invalidScope') || '请选择统计层级');
+      return false;
+    }
+
+    if (shouldShowScopeValue() && !scopeValue) {
+      Alert.alert(t('common.tip') || '提示', t('attendance.invalidScopeValue') || '请选择分区/小组');
       return false;
     }
 
@@ -150,9 +236,10 @@ export default function AttendanceScreen() {
       const response = await api.createOrUpdateAttendance({
         date: formatDate(date),
         meetingType: meetingType!,
+        scope: scope!,
+        scopeValue: scope === 'full_congregation' ? null : scopeValue,
         adultCount: parseInt(adultCount),
         youthChildCount: parseInt(youthChildCount),
-        notes: notes || undefined,
       });
 
       if (response.success) {
@@ -160,14 +247,15 @@ export default function AttendanceScreen() {
         // Clear form
         setDate(new Date());
         setMeetingType(null);
+        setScope(null);
+        setScopeValue(null);
         setAdultCount('');
         setYouthChildCount('');
-        setNotes('');
         setEditingRecord(null);
         // Reload records
         loadRecords();
       } else {
-        Alert.alert(t('attendance.submitFailed') || '提交失败', response.message || '未知错误');
+        Alert.alert(t('attendance.submitFailed') || '提交失败', (response as any).message || '未知错误');
       }
     } catch (error: any) {
       console.error('Failed to submit attendance:', error);
@@ -182,10 +270,10 @@ export default function AttendanceScreen() {
     const recordDate = new Date(record.date);
     setDate(recordDate);
     setMeetingType(record.meetingType);
+    setScope(record.scope);
+    setScopeValue(record.scopeValue);
     setAdultCount(record.adultCount.toString());
     setYouthChildCount(record.youthChildCount.toString());
-    setNotes(record.notes || '');
-    // Scroll to form
   };
 
   const handleDelete = (record: AttendanceRecord) => {
@@ -202,7 +290,7 @@ export default function AttendanceScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              const response = await api.deleteAttendance(record.id);
+              const response = await api.deleteAttendance(record.id) as { success: boolean; message?: string };
               if (response.success) {
                 Alert.alert(t('common.tip') || '提示', t('attendance.deleteSuccess') || '删除成功');
                 loadRecords();
@@ -221,6 +309,19 @@ export default function AttendanceScreen() {
 
   const getMeetingTypeLabel = (type: MeetingType): string => {
     return t(`attendance.meetingType.${type}`) || type;
+  };
+
+  const getScopeLabel = (scopeValue: Scope): string => {
+    return t(`attendance.scope.${scopeValue}`) || scopeValue;
+  };
+
+  const getScopeValueLabel = (): string => {
+    if (scope === 'district') {
+      return t('attendance.selectDistrict') || '选择大区';
+    } else if (scope === 'small_group') {
+      return t('attendance.selectGroup') || '选择小排';
+    }
+    return t('attendance.selectScopeValue') || '选择分区/小组';
   };
 
   if (!canAccess) {
@@ -268,10 +369,8 @@ export default function AttendanceScreen() {
                 ]}
                 onPress={() => {
                   if (Platform.OS === 'ios') {
-                    // On iOS, show picker in a modal
                     setShowDatePicker(true);
                   } else {
-                    // On Android, show native picker
                     setShowDatePicker(true);
                   }
                 }}>
@@ -300,6 +399,55 @@ export default function AttendanceScreen() {
               </TouchableOpacity>
             </View>
 
+            {/* Scope Picker (only show if meetingType is prayer) */}
+            {meetingType === 'prayer' && (
+              <View style={styles.inputContainer}>
+                <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
+                  {t('attendance.scope') || '统计层级'} *
+                </Text>
+                <TouchableOpacity
+                  style={[
+                    styles.inputWrapper,
+                    { backgroundColor: colors.background, borderColor: colors.border },
+                  ]}
+                  onPress={() => setShowScopePicker(true)}>
+                  <Text style={[styles.inputText, { color: scope ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
+                    {scope ? getScopeLabel(scope) : t('attendance.selectScope') || '选择统计层级'}
+                  </Text>
+                  <Ionicons name="chevron-down-outline" size={20} color={colors.textSecondary} />
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {/* Scope Value Picker (only show if not full_congregation) */}
+            {shouldShowScopeValue() && (
+              <View style={styles.inputContainer}>
+                <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
+                  {t('attendance.scopeValue') || '分区/小组'} *
+                </Text>
+                {loadingDistrictsGroups ? (
+                  <View style={[styles.inputWrapper, { backgroundColor: colors.background, borderColor: colors.border, justifyContent: 'center' }]}>
+                    <ActivityIndicator size="small" color={colors.primary} />
+                    <Text style={[styles.inputText, { color: colors.textTertiary, fontSize: getFontSizeValue(16), marginLeft: 8 }]}>
+                      {t('attendance.loadingDistrictsGroups') || '加载中...'}
+                    </Text>
+                  </View>
+                ) : (
+                  <TouchableOpacity
+                    style={[
+                      styles.inputWrapper,
+                      { backgroundColor: colors.background, borderColor: colors.border },
+                    ]}
+                    onPress={() => setShowScopeValuePicker(true)}>
+                    <Text style={[styles.inputText, { color: scopeValue ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
+                      {scopeValue || getScopeValueLabel()}
+                    </Text>
+                    <Ionicons name="chevron-down-outline" size={20} color={colors.textSecondary} />
+                  </TouchableOpacity>
+                )}
+              </View>
+            )}
+
             {/* Adult Count */}
             <View style={styles.inputContainer}>
               <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
@@ -312,7 +460,6 @@ export default function AttendanceScreen() {
                   placeholderTextColor={colors.textTertiary}
                   value={adultCount}
                   onChangeText={(text) => {
-                    // Only allow numbers
                     const numericValue = text.replace(/[^0-9]/g, '');
                     setAdultCount(numericValue);
                   }}
@@ -333,29 +480,10 @@ export default function AttendanceScreen() {
                   placeholderTextColor={colors.textTertiary}
                   value={youthChildCount}
                   onChangeText={(text) => {
-                    // Only allow numbers
                     const numericValue = text.replace(/[^0-9]/g, '');
                     setYouthChildCount(numericValue);
                   }}
                   keyboardType="number-pad"
-                />
-              </View>
-            </View>
-
-            {/* Notes */}
-            <View style={styles.inputContainer}>
-              <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
-                {t('attendance.notes') || '备注'}
-              </Text>
-              <View style={[styles.inputWrapper, styles.textAreaWrapper, { backgroundColor: colors.background, borderColor: colors.border }]}>
-                <TextInput
-                  style={[styles.input, styles.textArea, { color: colors.text, fontSize: getFontSizeValue(16) }]}
-                  placeholder="可选备注"
-                  placeholderTextColor={colors.textTertiary}
-                  value={notes}
-                  onChangeText={setNotes}
-                  multiline
-                  numberOfLines={3}
                 />
               </View>
             </View>
@@ -422,7 +550,8 @@ export default function AttendanceScreen() {
                       </View>
                     </View>
                     <Text style={[styles.recordType, { color: colors.textSecondary, fontSize: getFontSizeValue(14) }]}>
-                      {getMeetingTypeLabel(item.meetingType)}
+                      {getMeetingTypeLabel(item.meetingType)} - {getScopeLabel(item.scope)}
+                      {item.scopeValue && ` (${item.scopeValue})`}
                     </Text>
                     <View style={styles.recordCounts}>
                       <Text style={[styles.recordCount, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
@@ -432,11 +561,6 @@ export default function AttendanceScreen() {
                         青少年/儿童: {item.youthChildCount}
                       </Text>
                     </View>
-                    {item.notes && (
-                      <Text style={[styles.recordNotes, { color: colors.textSecondary, fontSize: getFontSizeValue(12) }]}>
-                        {item.notes}
-                      </Text>
-                    )}
                   </View>
                 )}
                 scrollEnabled={false}
@@ -511,14 +635,23 @@ export default function AttendanceScreen() {
         transparent
         animationType="slide"
         onRequestClose={() => setShowMeetingTypePicker(false)}>
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={() => setShowMeetingTypePicker(false)}>
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity
+            style={StyleSheet.absoluteFill}
+            activeOpacity={1}
+            onPress={() => setShowMeetingTypePicker(false)}
+          />
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-            <Text style={[styles.modalTitle, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
-              {t('attendance.selectMeetingType') || '选择聚会类型'}
-            </Text>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
+                {t('attendance.selectMeetingType') || '选择聚会类型'}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setShowMeetingTypePicker(false)}
+                style={styles.modalCloseButton}>
+                <Ionicons name="close" size={24} color={colors.text} />
+              </TouchableOpacity>
+            </View>
             {(['table', 'homeMeeting', 'prayer'] as MeetingType[]).map((type) => (
               <TouchableOpacity
                 key={type}
@@ -547,7 +680,124 @@ export default function AttendanceScreen() {
               </Text>
             </TouchableOpacity>
           </View>
-        </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {/* Scope Picker Modal (for prayer meetings) */}
+      <Modal
+        visible={showScopePicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowScopePicker(false)}>
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity
+            style={StyleSheet.absoluteFill}
+            activeOpacity={1}
+            onPress={() => setShowScopePicker(false)}
+          />
+          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
+                {t('attendance.selectScope') || '选择统计层级'}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setShowScopePicker(false)}
+                style={styles.modalCloseButton}>
+                <Ionicons name="close" size={24} color={colors.text} />
+              </TouchableOpacity>
+            </View>
+            {getAvailableScopes().map((scopeOption) => (
+              <TouchableOpacity
+                key={scopeOption}
+                style={[
+                  styles.modalOption,
+                  { borderBottomColor: colors.border },
+                  scope === scopeOption && { backgroundColor: colors.background },
+                ]}
+                onPress={() => {
+                  setScope(scopeOption);
+                  setScopeValue(null); // Reset scope value when scope changes
+                  setShowScopePicker(false);
+                }}>
+                <Text style={[styles.modalOptionText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+                  {getScopeLabel(scopeOption)}
+                </Text>
+                {scope === scopeOption && (
+                  <Ionicons name="checkmark" size={24} color={colors.primary} />
+                )}
+              </TouchableOpacity>
+            ))}
+            <TouchableOpacity
+              style={[styles.modalCancelButton, { borderTopColor: colors.border }]}
+              onPress={() => setShowScopePicker(false)}>
+              <Text style={[styles.modalCancelText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+                {t('common.cancel') || '取消'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Scope Value Picker Modal */}
+      <Modal
+        visible={showScopeValuePicker}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowScopeValuePicker(false)}>
+        <View style={styles.modalOverlay}>
+          <TouchableOpacity
+            style={StyleSheet.absoluteFill}
+            activeOpacity={1}
+            onPress={() => setShowScopeValuePicker(false)}
+          />
+          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+            <View style={styles.modalHeader}>
+              <Text style={[styles.modalTitle, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
+                {getScopeValueLabel()}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setShowScopeValuePicker(false)}
+                style={styles.modalCloseButton}>
+                <Ionicons name="close" size={24} color={colors.text} />
+              </TouchableOpacity>
+            </View>
+            {getScopeValueOptions().length === 0 ? (
+              <View style={styles.modalOption}>
+                <Text style={[styles.modalOptionText, { color: colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
+                  {t('attendance.noRecords') || '暂无选项'}
+                </Text>
+              </View>
+            ) : (
+              getScopeValueOptions().map((value) => (
+                <TouchableOpacity
+                  key={value}
+                  style={[
+                    styles.modalOption,
+                    { borderBottomColor: colors.border },
+                    scopeValue === value && { backgroundColor: colors.background },
+                  ]}
+                  onPress={() => {
+                    setScopeValue(value);
+                    setShowScopeValuePicker(false);
+                  }}>
+                  <Text style={[styles.modalOptionText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+                    {value}
+                  </Text>
+                  {scopeValue === value && (
+                    <Ionicons name="checkmark" size={24} color={colors.primary} />
+                  )}
+                </TouchableOpacity>
+              ))
+            )}
+            <TouchableOpacity
+              style={[styles.modalCancelButton, { borderTopColor: colors.border }]}
+              onPress={() => setShowScopeValuePicker(false)}>
+              <Text style={[styles.modalCancelText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+                {t('common.cancel') || '取消'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );
@@ -606,15 +856,6 @@ const styles = StyleSheet.create({
   },
   inputText: {
     flex: 1,
-  },
-  textAreaWrapper: {
-    minHeight: 80,
-    alignItems: 'flex-start',
-    paddingVertical: 8,
-  },
-  textArea: {
-    minHeight: 64,
-    textAlignVertical: 'top',
   },
   submitButton: {
     borderRadius: 8,
@@ -681,10 +922,6 @@ const styles = StyleSheet.create({
   recordCount: {
     fontWeight: '500',
   },
-  recordNotes: {
-    marginTop: 8,
-    fontStyle: 'italic',
-  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -695,13 +932,23 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 20,
     paddingBottom: 32,
     maxHeight: '80%',
+    backgroundColor: 'transparent',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
   },
   modalTitle: {
     fontWeight: 'bold',
-    padding: 16,
+    flex: 1,
     textAlign: 'center',
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  modalCloseButton: {
+    padding: 4,
   },
   modalOption: {
     flexDirection: 'row',
@@ -757,4 +1004,3 @@ const styles = StyleSheet.create({
     height: 200,
   },
 });
-
