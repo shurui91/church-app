@@ -218,7 +218,7 @@ export default function ProfileScreen() {
                 </View>
               </View>
             )}
-            {/* 显示角色（仅 super_admin 和 admin） */}
+            {/* 显示角色（super_admin、admin、usher） */}
             {(() => {
               const getRoleDisplay = () => {
                 // 使用 trim() 和 toLowerCase() 来确保匹配准确
@@ -230,10 +230,8 @@ export default function ProfileScreen() {
                 if (role === 'admin') {
                   return t('profile.role.admin') || '管理员';
                 }
-                
-                // 调试：如果 role 存在但不匹配，打印出来
-                if (user.role && role !== 'super_admin' && role !== 'admin') {
-                //   console.log('Profile - Unexpected role value:', user.role, 'Normalized:', role);
+                if (role === 'usher') {
+                  return t('profile.role.usher') || '招待';
                 }
                 
                 return null;
