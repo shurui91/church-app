@@ -116,7 +116,7 @@ router.get('/:id', authenticate, authorize('admin', 'super_admin'), async (req, 
  * PUT /api/users/:id/role
  * Update user role (requires admin or super_admin role)
  * Note: Only super_admin can change roles to/from super_admin
- * Body: { role: 'super_admin' | 'admin' | 'leader' | 'member' }
+ * Body: { role: 'super_admin' | 'admin' | 'leader' | 'member' | 'usher' }
  */
 router.put('/:id/role', authenticate, authorize('admin', 'super_admin'), async (req, res) => {
   try {
@@ -140,7 +140,7 @@ router.put('/:id/role', authenticate, authorize('admin', 'super_admin'), async (
     }
 
     // Validate role
-    const validRoles = ['super_admin', 'admin', 'leader', 'member'];
+    const validRoles = ['super_admin', 'admin', 'leader', 'member', 'usher'];
     if (!validRoles.includes(role)) {
       return res.status(400).json({
         success: false,

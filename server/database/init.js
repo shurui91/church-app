@@ -130,7 +130,7 @@ export function initDatabase() {
         name TEXT,
         nameZh TEXT,
         nameEn TEXT,
-        role TEXT NOT NULL DEFAULT 'member' CHECK(role IN ('super_admin', 'admin', 'leader', 'member')),
+        role TEXT NOT NULL DEFAULT 'member' CHECK(role IN ('super_admin', 'admin', 'leader', 'member', 'usher')),
         district TEXT,
         groupNum TEXT,
         createdAt TEXT NOT NULL,

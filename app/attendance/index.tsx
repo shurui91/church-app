@@ -44,10 +44,10 @@ export default function AttendanceScreen() {
   const colors = useThemeColors();
   const { getFontSizeValue } = useFontSize();
   const { t } = useTranslation();
-  const { user, hasRole } = useAuth();
+  const { user } = useAuth();
 
-  // Permission check
-  const canAccess = hasRole(['super_admin', 'admin', 'leader']) && user?.role !== 'member';
+  // Permission check: only member role cannot access, all other roles can access
+  const canAccess = user?.role !== 'member';
 
   // Redirect if no permission
   useEffect(() => {

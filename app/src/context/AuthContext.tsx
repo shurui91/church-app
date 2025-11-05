@@ -7,7 +7,7 @@ export interface User {
   name: string | null;
   nameZh?: string | null;
   nameEn?: string | null;
-  role: 'super_admin' | 'admin' | 'leader' | 'member';
+  role: 'super_admin' | 'admin' | 'leader' | 'member' | 'usher';
   district?: string | null;
   groupNum?: string | null;
   email?: string | null;

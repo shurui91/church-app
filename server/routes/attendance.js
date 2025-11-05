@@ -6,21 +6,21 @@ const router = express.Router();
 
 /**
  * Helper function to check if user can access attendance features
- * Members and 'other' role cannot access
+ * Only member role cannot access, all other roles (including usher) can access
  */
 function canAccessAttendance(user) {
   if (!user) return false;
-  // Block member and other roles
-  if (user.role === 'member' || user.role === 'other') {
+  // Block only member role
+  if (user.role === 'member') {
     return false;
   }
-  // Allow super_admin, admin, leader
-  return ['super_admin', 'admin', 'leader'].includes(user.role);
+  // Allow all other roles: super_admin, admin, leader, usher, etc.
+  return true;
 }
 
 /**
  * Custom authorization middleware for attendance
- * Only allows super_admin, admin, leader (not member or other)
+ * Only blocks member role, all other roles can access
  */
 function authorizeAttendance(req, res, next) {
   if (!req.user) {

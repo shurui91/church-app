@@ -44,6 +44,7 @@
     "role.admin": "管理員",
     "role.leader": "組長",
     "role.member": "成員",
+    "role.usher": "招待",
     "logout": "登出",
     "loggingOut": "登出中...",
     "logoutConfirm": "確認登出",

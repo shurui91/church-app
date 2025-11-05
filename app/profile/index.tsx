@@ -266,8 +266,8 @@ export default function ProfileScreen() {
 
         {/* 菜单 */}
         <View style={[styles.menuContainer, { backgroundColor: colors.card }]}>
-          {/* 人数统计 - 仅 super_admin、admin、leader 可见，member 不可见 */}
-          {hasRole(['super_admin', 'admin', 'leader']) && user?.role !== 'member' && (
+          {/* 人数统计 - 所有角色可见，只有 member 不可见 */}
+          {user?.role !== 'member' && (
             <MenuItem
               icon='clipboard-outline'
               title={t('attendance.title') || '人数统计'}
