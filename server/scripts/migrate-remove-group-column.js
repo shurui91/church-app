@@ -1,5 +1,5 @@
-import path from 'path';
 import sqlite3 from 'sqlite3';
+import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -9,9 +9,9 @@ const __dirname = path.dirname(__filename);
 const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../database.sqlite');
 
 /**
- * Migration script to add 'usher' role to the users table CHECK constraint
- * Since SQLite doesn't support ALTER TABLE to modify CHECK constraints,
- * we need to recreate the table with the new constraint.
+ * Migration script to remove the 'group' column from users table
+ * Since SQLite doesn't support DROP COLUMN directly in older versions,
+ * we need to recreate the table without the 'group' column.
  */
 async function migrate() {
   return new Promise((resolve, reject) => {
@@ -41,41 +41,54 @@ async function migrate() {
         }
 
         const columnNames = columns.map(col => col.name);
-        // Exclude 'group' column (deprecated, use groupNum instead)
-        const columnsToKeep = columnNames.filter(col => col !== 'group');
-        const baseColumns = ['id', 'phoneNumber', 'name', 'nameZh', 'nameEn', 'role', 'district', 'groupNum', 'createdAt', 'updatedAt'];
-        const additionalColumns = columnsToKeep.filter(col => !baseColumns.includes(col));
-
-        console.log(`Found columns: ${columnNames.join(', ')}`);
-        if (additionalColumns.length > 0) {
-          console.log(`Additional columns to preserve: ${additionalColumns.join(', ')}`);
+        
+        // Check if 'group' column exists
+        const hasGroupColumn = columnNames.includes('group');
+        if (!hasGroupColumn) {
+          console.log('✓ "group" column does not exist, no migration needed');
+          db.run('ROLLBACK');
+          db.close((closeErr) => {
+            if (closeErr) console.error('Error closing database:', closeErr);
+            resolve();
+          });
+          return;
         }
 
-        // Build CREATE TABLE statement with all columns
+        console.log(`Found columns: ${columnNames.join(', ')}`);
+        console.log('Removing "group" column...');
+
+        // Filter out 'group' column
+        const columnsToKeep = columnNames.filter(col => col !== 'group');
+        const columnsToKeepInfo = columns.filter(col => col.name !== 'group');
+
+        // Build CREATE TABLE statement without 'group' column
         let createTableSQL = `
           CREATE TABLE IF NOT EXISTS users_new (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            phoneNumber TEXT NOT NULL UNIQUE,
-            name TEXT,
-            nameZh TEXT,
-            nameEn TEXT,
-            role TEXT NOT NULL DEFAULT 'member' CHECK(role IN ('super_admin', 'admin', 'leader', 'member', 'usher')),
-            district TEXT,
-            groupNum TEXT,
-            createdAt TEXT NOT NULL,
-            updatedAt TEXT NOT NULL
         `;
 
-        // Add additional columns if they exist (excluding 'group' column)
-        additionalColumns.forEach(col => {
-          // Skip 'group' column if it exists (deprecated)
-          if (col === 'group') return;
+        // Add all columns except 'group'
+        columnsToKeepInfo.forEach((colInfo, index) => {
+          if (index > 0) createTableSQL += ',\n            ';
           
-          const colInfo = columns.find(c => c.name === col);
-          const colType = colInfo ? colInfo.type : 'TEXT';
-          const notNull = colInfo && colInfo.notnull ? ' NOT NULL' : '';
-          const defaultValue = colInfo && colInfo.dflt_value !== null ? ` DEFAULT ${colInfo.dflt_value}` : '';
-          createTableSQL += `,\n            ${col} ${colType}${notNull}${defaultValue}`;
+          const colName = colInfo.name;
+          const colType = colInfo.type;
+          const notNull = colInfo.notnull ? ' NOT NULL' : '';
+          const primaryKey = colInfo.pk ? ' PRIMARY KEY' + (colInfo.dflt_value === null ? ' AUTOINCREMENT' : '') : '';
+          const unique = colName === 'phoneNumber' ? ' UNIQUE' : '';
+          
+          // Handle CHECK constraint for role column
+          let columnDef = `${colName} ${colType}${notNull}${primaryKey}${unique}`;
+          
+          if (colName === 'role') {
+            // Add CHECK constraint for role
+            columnDef += ` CHECK(role IN ('super_admin', 'admin', 'leader', 'member', 'usher'))`;
+          }
+          
+          if (colInfo.dflt_value !== null && !colInfo.pk) {
+            columnDef += ` DEFAULT ${colInfo.dflt_value}`;
+          }
+          
+          createTableSQL += columnDef;
         });
 
         createTableSQL += '\n          )';
@@ -91,9 +104,9 @@ async function migrate() {
             });
             return;
           }
-          console.log('Created users_new table with usher role');
+          console.log('✓ Created users_new table without "group" column');
 
-          // Copy all data from old table to new table (excluding 'group' column)
+          // Copy all data from old table to new table (excluding 'group')
           const colsToCopy = columnsToKeep.join(', ');
           db.run(`
             INSERT INTO users_new (${colsToCopy})
@@ -108,7 +121,7 @@ async function migrate() {
               });
               return;
             }
-            console.log('Copied data from users to users_new');
+            console.log('✓ Copied data from users to users_new');
 
             // Drop old table
             db.run('DROP TABLE users', (err) => {
@@ -121,7 +134,7 @@ async function migrate() {
                 });
                 return;
               }
-              console.log('Dropped old users table');
+              console.log('✓ Dropped old users table');
 
               // Rename new table
               db.run('ALTER TABLE users_new RENAME TO users', (err) => {
@@ -134,9 +147,9 @@ async function migrate() {
                   });
                   return;
                 }
-                console.log('Renamed users_new to users');
+                console.log('✓ Renamed users_new to users');
 
-                // Recreate indexes if they exist
+                // Recreate indexes
                 db.run('CREATE INDEX IF NOT EXISTS idx_users_phoneNumber ON users(phoneNumber)', (err) => {
                   if (err) console.log('Note: Could not create index (may already exist):', err.message);
                 });
@@ -157,7 +170,7 @@ async function migrate() {
                     return;
                   }
                   console.log('✅ Migration completed successfully!');
-                  console.log('The users table now supports the "usher" role.');
+                  console.log('The "group" column has been removed from the users table.');
                   db.close((closeErr) => {
                     if (closeErr) console.error('Error closing database:', closeErr);
                     resolve();
@@ -182,3 +195,4 @@ migrate()
     console.error('Migration failed:', err);
     process.exit(1);
   });
+
