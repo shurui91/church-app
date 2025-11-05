@@ -117,7 +117,7 @@
     "phoneNotWhitelisted": "该手机号未在邀请列表中，请联系负责弟兄"
   },
   "attendance": {
-    "title": "出席数据上传",
+    "title": "人数统计",
     "date": "日期",
     "meetingType": "聚会类型",
     "scope": "统计层级",
@@ -157,8 +157,11 @@
     "invalidAdultCount": "请输入成年人数量（0或正整数）",
     "invalidYouthChildCount": "请输入青少年或儿童数量（0或正整数）",
     "futureDateNotAllowed": "不能选择未来日期",
+    "tooLateToSubmit": "提交太晚了，只能提交最近3天的记录",
     "editRecord": "编辑",
     "deleteRecord": "删除",
+    "newRecord": "新增记录",
+    "editRecordTitle": "编辑记录",
     "loadingDistrictsGroups": "加载大区和小组列表..."
   }
 }

@@ -170,6 +170,25 @@ export default function AttendanceScreen() {
     return `${year}-${month}-${day}`;
   };
 
+  // Filter records to show only those within the last 3 days
+  const getFilteredRecords = (): AttendanceRecord[] => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+    
+    return records.filter((record) => {
+      // Parse record date (format: YYYY-MM-DD)
+      const recordDate = new Date(record.date + 'T00:00:00');
+      recordDate.setHours(0, 0, 0, 0);
+      
+      // Calculate days difference
+      const daysDiff = Math.floor((today.getTime() - recordDate.getTime()) / (1000 * 60 * 60 * 24));
+      
+      // Show records within the last 3 days (0, 1, 2 days ago)
+      // If today is Nov 7, a record from Nov 4 (3 days ago) should be hidden
+      return daysDiff < 3;
+    });
+  };
+
   // Check if district and group selectors should be shown
   const shouldShowDistrictAndGroup = (): boolean => {
     return meetingType === 'homeMeeting' || meetingType === 'prayer';
@@ -183,12 +202,20 @@ export default function AttendanceScreen() {
 
     // Check if date is in the future (compare date strings to avoid timezone issues)
     const today = new Date();
-    const todayStr = formatDate(today);
-    const selectedDateStr = formatDate(date);
+    today.setHours(0, 0, 0, 0);
+    const selectedDate = new Date(date);
+    selectedDate.setHours(0, 0, 0, 0);
     
-    // Allow today and past dates, only block future dates
-    if (selectedDateStr > todayStr) {
+    // Block future dates
+    if (selectedDate > today) {
       Alert.alert(t('common.tip') || '提示', t('attendance.futureDateNotAllowed') || '不能选择未来日期');
+      return false;
+    }
+    
+    // Check if date is more than 3 days ago
+    const daysDiff = Math.floor((today.getTime() - selectedDate.getTime()) / (1000 * 60 * 60 * 24));
+    if (daysDiff >= 3) {
+      Alert.alert(t('common.tip') || '提示', t('attendance.tooLateToSubmit') || '提交太晚了，只能提交最近3天的记录');
       return false;
     }
 
@@ -340,7 +367,7 @@ export default function AttendanceScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
-          title: t('attendance.title') || '出席数据上传',
+          title: t('attendance.title') || '人数统计',
           headerShown: true,
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
@@ -360,7 +387,7 @@ export default function AttendanceScreen() {
           <View style={[styles.formSection, { backgroundColor: colors.card }]}>
             <View style={styles.sectionHeader}>
               <Text style={[styles.sectionTitle, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
-                {editingRecord ? '编辑记录' : '新增记录'}
+                {editingRecord ? (t('attendance.editRecordTitle') || '编辑记录') : (t('attendance.newRecord') || '新增记录')}
               </Text>
               {(editingRecord || meetingType || selectedDistrict || selectedGroup || adultCount || youthChildCount) && (
                 <TouchableOpacity
@@ -537,7 +564,7 @@ export default function AttendanceScreen() {
                   {t('attendance.loadingRecords') || '加载记录中...'}
                 </Text>
               </View>
-            ) : records.length === 0 ? (
+            ) : getFilteredRecords().length === 0 ? (
               <View style={styles.emptyContainer}>
                 <Text style={[styles.emptyText, { color: colors.textSecondary, fontSize: getFontSizeValue(14) }]}>
                   {t('attendance.noRecords') || '暂无记录'}
@@ -545,7 +572,7 @@ export default function AttendanceScreen() {
               </View>
             ) : (
               <FlatList
-                data={records}
+                data={getFilteredRecords()}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                   <View style={[styles.recordItem, { backgroundColor: colors.background, borderColor: colors.border }]}>

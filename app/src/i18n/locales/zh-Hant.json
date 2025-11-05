@@ -117,7 +117,7 @@
     "phoneNotWhitelisted": "該手機號未在邀請列表中，請聯繫負責弟兄"
   },
   "attendance": {
-    "title": "出席數據上傳",
+    "title": "人數統計",
     "date": "日期",
     "meetingType": "聚會類型",
     "scope": "統計層級",
@@ -157,8 +157,11 @@
     "invalidAdultCount": "請輸入成年人數量（0或正整數）",
     "invalidYouthChildCount": "請輸入青少年或兒童數量（0或正整數）",
     "futureDateNotAllowed": "不能選擇未來日期",
+    "tooLateToSubmit": "提交太晚了，只能提交最近3天的記錄",
     "editRecord": "編輯",
     "deleteRecord": "刪除",
+    "newRecord": "新增記錄",
+    "editRecordTitle": "編輯記錄",
     "loadingDistrictsGroups": "載入大區和小組列表..."
   }
 }

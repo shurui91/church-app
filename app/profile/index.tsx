@@ -266,11 +266,11 @@ export default function ProfileScreen() {
 
         {/* 菜单 */}
         <View style={[styles.menuContainer, { backgroundColor: colors.card }]}>
-          {/* 出席数据上传 - 仅 super_admin、admin、leader 可见，member 不可见 */}
+          {/* 人数统计 - 仅 super_admin、admin、leader 可见，member 不可见 */}
           {hasRole(['super_admin', 'admin', 'leader']) && user?.role !== 'member' && (
             <MenuItem
               icon='clipboard-outline'
-              title={t('attendance.title') || '出席数据上传'}
+              title={t('attendance.title') || '人数统计'}
               onPress={() => router.push('/attendance')}
             />
           )}
