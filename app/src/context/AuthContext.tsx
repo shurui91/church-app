@@ -1,5 +1,5 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { api, getStoredToken } from '../services/api';
+import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import { api, getStoredToken, removeToken } from '../services/api';
 
 export interface User {
   id: number;
@@ -123,20 +123,37 @@ export function AuthProvider({ children }: AuthProviderProps) {
    * Logout
    */
   const logout = async () => {
-    // 先清除本地状态，确保立即触发 AuthGuard 导航
-    setUser(null);
+    console.log('[AuthContext] logout() called');
     
-    // 然后尝试调用 API 登出（不阻塞，即使失败也继续）
+    // 立即删除 token，防止 refreshUser 或其他操作重新获取用户信息
+    // 必须在设置 user = null 之前或同时删除 token
     try {
+      console.log('[AuthContext] Removing token from storage...');
+      await removeToken();
+      console.log('[AuthContext] Token removed from storage');
+    } catch (error) {
+      console.log('[AuthContext] Failed to remove token (ignored):', error);
+    }
+    
+    // 然后清除本地状态，确保立即触发 AuthGuard 导航
+    console.log('[AuthContext] Setting user to null...');
+    setUser(null);
+    console.log('[AuthContext] User set to null, isAuthenticated should now be false');
+    
+    // 最后尝试调用 API 登出（不阻塞，即使失败也继续）
+    // 注意：api.logout() 会在 finally 中再次删除 token，但这不会造成问题
+    try {
+      console.log('[AuthContext] Calling API logout...');
       // 添加超时，避免 API 调用卡住
       const logoutPromise = api.logout();
       const timeoutPromise = new Promise((resolve) => {
         setTimeout(() => resolve(null), 2000); // 2秒超时
       });
       await Promise.race([logoutPromise, timeoutPromise]);
+      console.log('[AuthContext] API logout completed');
     } catch (error) {
       // 忽略错误，本地状态已清除
-      console.log('Logout API call failed (ignored):', error);
+      console.log('[AuthContext] Logout API call failed (ignored):', error);
     }
   };
 
@@ -145,22 +162,39 @@ export function AuthProvider({ children }: AuthProviderProps) {
    */
   const refreshUser = async () => {
     try {
+      console.log('[AuthContext] refreshUser() called');
       // 检查是否有 token，如果没有则跳过（可能是登出后调用）
       const token = await getStoredToken();
       if (!token) {
         // 没有 token，可能是用户已登出，不执行刷新
+        console.log('[AuthContext] refreshUser() - No token, skipping');
+        // 如果 token 不存在但 user 还存在，清除 user
+        if (user) {
+          console.log('[AuthContext] refreshUser() - No token but user exists, clearing user');
+          setUser(null);
+        }
         return;
       }
 
+      console.log('[AuthContext] refreshUser() - Token exists, fetching user info...');
       const response = await api.getCurrentUser();
       if (response.success && response.data.user) {
+        console.log('[AuthContext] refreshUser() - User info fetched, setting user');
         setUser(response.data.user);
+      } else {
+        console.log('[AuthContext] refreshUser() - Failed to fetch user info');
+        // 如果获取用户信息失败，清除 user
+        setUser(null);
       }
     } catch (error: any) {
       // 只在非 token 缺失错误时记录日志
       // token 缺失错误（401）在登出时是正常的，不需要记录
       if (error.message && !error.message.includes('未提供认证令牌') && !error.message.includes('无效或过期的令牌')) {
-        console.error('Refresh user failed:', error);
+        console.error('[AuthContext] refreshUser() - Error:', error);
+      } else {
+        console.log('[AuthContext] refreshUser() - Token error (expected after logout):', error.message);
+        // 如果是 token 错误，清除 user
+        setUser(null);
       }
     }
   };
@@ -188,6 +222,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     checkAuth();
   }, []);
 
+  // 使用 useCallback 包装 refreshUser，避免不必要的重新创建
+  // 注意：refreshUser 不依赖 user，因为它在函数内部会检查 user
+  const refreshUserMemoized = useCallback(refreshUser, []);
+  
   const value: AuthContextType = {
     user,
     loading,
@@ -195,7 +233,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login,
     logout,
     sendVerificationCode,
-    refreshUser,
+    refreshUser: refreshUserMemoized,
     hasRole,
     isAdmin,
     isSuperAdmin,

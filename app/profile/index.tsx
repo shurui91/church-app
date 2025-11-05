@@ -24,19 +24,41 @@ export default function ProfileScreen() {
   const { getFontSizeValue } = useFontSize();
   const [loggingOut, setLoggingOut] = useState(false);
   const isMountedRef = useRef(true);
+  const shouldNavigateToLoginRef = useRef(false);
 
   // 页面加载时刷新用户信息（仅在已认证时）
+  // 注意：不要在登出过程中刷新用户信息
   useEffect(() => {
-    // 只在用户已认证时才刷新用户信息
-    if (isAuthenticated) {
+    console.log('[Profile] useEffect (refreshUser) - isAuthenticated:', isAuthenticated, 'loggingOut:', loggingOut);
+    // 只在用户已认证且不在登出过程中时才刷新用户信息
+    if (isAuthenticated && !loggingOut) {
+      console.log('[Profile] Calling refreshUser()...');
       refreshUser();
+    } else {
+      console.log('[Profile] Not authenticated or logging out, skipping refreshUser()');
     }
     
     // 组件卸载时标记
     return () => {
       isMountedRef.current = false;
     };
-  }, [refreshUser, isAuthenticated]);
+  }, [refreshUser, isAuthenticated, loggingOut]);
+
+  // 监听登出状态变化，当 isAuthenticated 变为 false 时自动导航
+  // 使用 setTimeout 确保在 AuthGuard 检查之后执行，避免导航冲突
+  useEffect(() => {
+    console.log('[Profile] useEffect - shouldNavigateToLoginRef.current:', shouldNavigateToLoginRef.current, 'isAuthenticated:', isAuthenticated);
+    if (shouldNavigateToLoginRef.current && !isAuthenticated) {
+      console.log('[Profile] Navigating to /login (isAuthenticated became false)');
+      shouldNavigateToLoginRef.current = false;
+      // 延迟导航，确保 AuthGuard 已经处理完状态变化
+      setTimeout(() => {
+        console.log('[Profile] Executing navigation to /login');
+        router.replace('/login');
+        setLoggingOut(false);
+      }, 50);
+    }
+  }, [isAuthenticated, router]);
 
   const handleLogout = () => {
     Alert.alert(
@@ -52,29 +74,25 @@ export default function ProfileScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
+              console.log('[Profile] Logout button pressed');
               setLoggingOut(true);
               
-              // 添加超时机制，确保不会永远等待
-              const logoutPromise = logout();
-              const timeoutPromise = new Promise((resolve) => {
-                setTimeout(() => resolve(null), 3000); // 3秒超时
-              });
+              // 设置标记，表示需要导航到登录页
+              shouldNavigateToLoginRef.current = true;
+              console.log('[Profile] shouldNavigateToLoginRef set to true, current isAuthenticated:', isAuthenticated);
               
-              // 执行登出（这会设置 user = null，触发 AuthGuard 自动导航）
-              await Promise.race([logoutPromise, timeoutPromise]);
-              
-              // AuthGuard 会自动检测到 isAuthenticated = false 并导航到登录页
-              // 不需要手动导航，避免双重导航冲突导致的 crash
+              // 调用 logout() 清除本地状态（这会设置 user = null）
+              // logout() 内部会先设置 setUser(null)，然后异步调用 API
+              // useEffect 会监听 isAuthenticated 变化，当它变为 false 时自动导航
+              console.log('[Profile] Calling logout()...');
+              logout();
+              console.log('[Profile] logout() called, waiting for state update...');
             } catch (error) {
-              console.error('Logout error:', error);
-            } finally {
-              // 重置登出状态，即使组件可能即将卸载
-              // 使用 setTimeout 确保状态更新不会阻塞导航
-              setTimeout(() => {
-                if (isMountedRef.current) {
-                  setLoggingOut(false);
-                }
-              }, 100);
+              console.error('[Profile] Logout error:', error);
+              // 即使出错，也尝试导航到登录页
+              shouldNavigateToLoginRef.current = false;
+              router.replace('/login');
+              setLoggingOut(false);
             }
           },
         },

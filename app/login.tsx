@@ -42,11 +42,35 @@ export default function LoginScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
 
   // Redirect if already authenticated
+  const isAuthenticatedRef = useRef(isAuthenticated);
+  
   useEffect(() => {
-    if (isAuthenticated) {
-      router.replace('/meeting');
-    }
+    isAuthenticatedRef.current = isAuthenticated;
+    console.log('[Login] Ref updated - isAuthenticated:', isAuthenticated);
   }, [isAuthenticated]);
+  
+  useEffect(() => {
+    console.log('[Login] useEffect - isAuthenticated:', isAuthenticated);
+    if (isAuthenticated) {
+      console.log('[Login] User authenticated, setting timeout to redirect to /meeting');
+      // 添加延迟，避免在登出过程中状态更新导致的误判
+      const timeoutId = setTimeout(() => {
+        console.log('[Login] Timeout callback - isAuthenticatedRef.current:', isAuthenticatedRef.current);
+        // 使用 ref 获取最新值，确保检查的是当前状态
+        if (isAuthenticatedRef.current) {
+          console.log('[Login] Still authenticated, redirecting to /meeting');
+          router.replace('/meeting');
+        } else {
+          console.log('[Login] User logged out, not redirecting');
+        }
+      }, 300);
+      
+      return () => {
+        console.log('[Login] Clearing timeout');
+        clearTimeout(timeoutId);
+      };
+    }
+  }, [isAuthenticated, router]);
 
   // Handle keyboard events to scroll content
   useEffect(() => {
