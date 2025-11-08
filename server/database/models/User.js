@@ -44,8 +44,8 @@ export class User {
 
     try {
       const result = await db.run(
-        `INSERT INTO users (phoneNumber, name, nameZh, nameEn, role, district, groupNum, email, status, gender, birthdate, joinDate, preferredLanguage, notes, createdAt, updatedAt)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO users ("phoneNumber", name, "nameZh", "nameEn", role, district, "groupNum", email, status, gender, birthdate, "joinDate", "preferredLanguage", notes, "createdAt", "updatedAt")
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
         [phoneNumber, name, nameZh, nameEn, role, district, groupNum, email, status, gender, birthdate, joinDate, preferredLanguage, notes, now, now]
       );
 
@@ -82,7 +82,7 @@ export class User {
     const db = await getDatabase();
     try {
       const user = await db.get(
-        'SELECT * FROM users WHERE phoneNumber = ?',
+        'SELECT * FROM users WHERE "phoneNumber" = ?',
         [phoneNumber]
       );
       return user || null;
@@ -115,10 +115,10 @@ export class User {
     const db = await getDatabase();
     try {
       if (role) {
-        const users = await db.all('SELECT * FROM users WHERE role = ? ORDER BY createdAt DESC', [role]);
+        const users = await db.all('SELECT * FROM users WHERE role = ? ORDER BY "createdAt" DESC', [role]);
         return users;
       } else {
-        const users = await db.all('SELECT * FROM users ORDER BY createdAt DESC');
+        const users = await db.all('SELECT * FROM users ORDER BY "createdAt" DESC');
         return users;
       }
     } finally {
@@ -138,7 +138,7 @@ export class User {
 
     try {
       const result = await db.run(
-        'UPDATE users SET role = ?, updatedAt = ? WHERE id = ?',
+        'UPDATE users SET role = ?, "updatedAt" = ? WHERE id = ?',
         [role, now, id]
       );
 
@@ -164,7 +164,7 @@ export class User {
 
     try {
       const result = await db.run(
-        'UPDATE users SET name = ?, updatedAt = ? WHERE id = ?',
+        'UPDATE users SET name = ?, "updatedAt" = ? WHERE id = ?',
         [name, now, id]
       );
 
@@ -191,7 +191,7 @@ export class User {
 
     try {
       const result = await db.run(
-        'UPDATE users SET nameZh = ?, nameEn = ?, updatedAt = ? WHERE id = ?',
+        'UPDATE users SET "nameZh" = ?, "nameEn" = ?, "updatedAt" = ? WHERE id = ?',
         [nameZh, nameEn, now, id]
       );
 
@@ -218,7 +218,7 @@ export class User {
 
     try {
       const result = await db.run(
-        'UPDATE users SET district = ?, groupNum = ?, updatedAt = ? WHERE id = ?',
+        'UPDATE users SET district = ?, "groupNum" = ?, "updatedAt" = ? WHERE id = ?',
         [district, groupNum, now, id]
       );
 
@@ -243,7 +243,7 @@ export class User {
 
     try {
       const result = await db.run(
-        'UPDATE users SET lastLoginAt = ?, updatedAt = ? WHERE id = ?',
+        'UPDATE users SET "lastLoginAt" = ?, "updatedAt" = ? WHERE id = ?',
         [now, now, id]
       );
 
@@ -266,7 +266,7 @@ export class User {
     const db = await getDatabase();
     try {
       const users = await db.all(
-        'SELECT * FROM users WHERE district = ? ORDER BY groupNum, createdAt DESC',
+        'SELECT * FROM users WHERE district = ? ORDER BY "groupNum", "createdAt" DESC',
         [district]
       );
       return users;
@@ -285,7 +285,7 @@ export class User {
     const db = await getDatabase();
     try {
       const users = await db.all(
-        'SELECT * FROM users WHERE district = ? AND groupNum = ? ORDER BY createdAt DESC',
+        'SELECT * FROM users WHERE district = ? AND "groupNum" = ? ORDER BY "createdAt" DESC',
         [district, groupNum]
       );
       return users;

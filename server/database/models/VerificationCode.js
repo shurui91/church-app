@@ -19,12 +19,12 @@ export class VerificationCode {
 
     try {
       // Delete any existing codes for this phone number
-      await db.run('DELETE FROM verification_codes WHERE phoneNumber = ?', [phoneNumber]);
+      await db.run('DELETE FROM verification_codes WHERE "phoneNumber" = ?', [phoneNumber]);
 
       // Insert new code
       const result = await db.run(
-        `INSERT INTO verification_codes (phoneNumber, code, expiresAt, createdAt, attempts)
-         VALUES (?, ?, ?, ?, 0)`,
+        `INSERT INTO verification_codes ("phoneNumber", code, "expiresAt", "createdAt", attempts)
+         VALUES (?, ?, ?, ?, 0) RETURNING id`,
         [phoneNumber, code, expiresAt, now]
       );
 
@@ -52,7 +52,7 @@ export class VerificationCode {
     try {
       // Find the latest code for this phone number
       const record = await db.get(
-        'SELECT * FROM verification_codes WHERE phoneNumber = ? ORDER BY createdAt DESC LIMIT 1',
+        'SELECT * FROM verification_codes WHERE "phoneNumber" = ? ORDER BY "createdAt" DESC LIMIT 1',
         [phoneNumber]
       );
 
@@ -119,7 +119,7 @@ export class VerificationCode {
     const db = await getDatabase();
     try {
       const record = await db.get(
-        'SELECT * FROM verification_codes WHERE phoneNumber = ? ORDER BY createdAt DESC LIMIT 1',
+        'SELECT * FROM verification_codes WHERE "phoneNumber" = ? ORDER BY "createdAt" DESC LIMIT 1',
         [phoneNumber]
       );
       return record || null;
@@ -137,7 +137,7 @@ export class VerificationCode {
     const now = getCurrentTimestamp();
     try {
       const result = await db.run(
-        'DELETE FROM verification_codes WHERE expiresAt < ?',
+        'DELETE FROM verification_codes WHERE "expiresAt" < ?',
         [now]
       );
       return result.changes;
@@ -155,7 +155,7 @@ export class VerificationCode {
     const db = await getDatabase();
     try {
       const result = await db.run(
-        'DELETE FROM verification_codes WHERE phoneNumber = ?',
+        'DELETE FROM verification_codes WHERE "phoneNumber" = ?',
         [phoneNumber]
       );
       return result.changes;

@@ -1,12 +1,4 @@
-import path from 'path';
-import sqlite3 from 'sqlite3';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Database path
-const DB_PATH = process.env.DB_PATH || path.join(__dirname, '../database.sqlite');
+import { getDatabase } from './db.js';
 
 /**
  * Default users to create on database initialization
@@ -106,267 +98,153 @@ const DEFAULT_USERS = [
 ];
 
 /**
+ * Helper function to add column if it doesn't exist (PostgreSQL)
+ */
+async function addColumnIfNotExists(db, tableName, columnName, columnDefinition) {
+  try {
+    // Extract column name without quotes for checking
+    const columnNameForCheck = columnName.replace(/"/g, '');
+    
+    // Check if column exists (PostgreSQL stores column names in lowercase in information_schema)
+    const result = await db.get(
+      `SELECT column_name 
+       FROM information_schema.columns 
+       WHERE table_name = $1 AND LOWER(column_name) = LOWER($2)`,
+      [tableName, columnNameForCheck]
+    );
+    
+    if (!result) {
+      await db.run(
+        `ALTER TABLE "${tableName}" ADD COLUMN ${columnName} ${columnDefinition}`,
+        []
+      );
+      console.log(`  Added column ${columnName} to ${tableName}`);
+    }
+  } catch (err) {
+    // Column might already exist or other error
+    if (!err.message.includes('duplicate column') && !err.message.includes('already exists') && !err.message.includes('duplicate key')) {
+      console.error(`Error adding column ${columnName} to ${tableName}:`, err.message);
+    }
+  }
+}
+
+/**
  * Initialize database and create tables
  */
-export function initDatabase() {
-  return new Promise((resolve, reject) => {
-    const db = new sqlite3.Database(DB_PATH, (err) => {
-      if (err) {
-        console.error('Error opening database:', err);
-        reject(err);
-        return;
-      }
-      console.log('Connected to SQLite database');
-    });
-
-    // Enable foreign keys
-    db.run('PRAGMA foreign_keys = ON');
+export async function initDatabase() {
+  const db = await getDatabase();
+  
+  try {
+    console.log('Connected to PostgreSQL database');
 
     // Create users table
-    db.run(`
+    await db.run(`
       CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        phoneNumber TEXT NOT NULL UNIQUE,
+        id SERIAL PRIMARY KEY,
+        "phoneNumber" TEXT NOT NULL UNIQUE,
         name TEXT,
-        nameZh TEXT,
-        nameEn TEXT,
+        "nameZh" TEXT,
+        "nameEn" TEXT,
         role TEXT NOT NULL DEFAULT 'member' CHECK(role IN ('super_admin', 'admin', 'leader', 'member', 'usher')),
         district TEXT,
-        groupNum TEXT,
-        createdAt TEXT NOT NULL,
-        updatedAt TEXT NOT NULL
+        "groupNum" TEXT,
+        "createdAt" TEXT NOT NULL,
+        "updatedAt" TEXT NOT NULL
       )
-    `, (err) => {
-      if (err) {
-        console.error('Error creating users table:', err);
-        reject(err);
-        return;
-      }
-      console.log('Users table created or already exists');
-      
-      // Migrate existing database: add new columns if they don't exist
-      db.run(`ALTER TABLE users ADD COLUMN nameZh TEXT`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-          console.error('Error adding nameZh column:', err);
-        }
-      });
-      
-      db.run(`ALTER TABLE users ADD COLUMN nameEn TEXT`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-          console.error('Error adding nameEn column:', err);
-        }
-      });
-      
-      db.run(`ALTER TABLE users ADD COLUMN district TEXT`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-          console.error('Error adding district column:', err);
-        }
-      });
-      
-      db.run(`ALTER TABLE users ADD COLUMN groupNum TEXT`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-          console.error('Error adding groupNum column:', err);
-        }
-      });
-      
-      // Add new columns: email, lastLoginAt, status, gender, birthdate, joinDate, preferredLanguage, notes
-      db.run(`ALTER TABLE users ADD COLUMN email TEXT`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-          console.error('Error adding email column:', err);
-        }
-      });
-      
-      db.run(`ALTER TABLE users ADD COLUMN lastLoginAt TEXT`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-          console.error('Error adding lastLoginAt column:', err);
-        }
-      });
-      
-      db.run(`ALTER TABLE users ADD COLUMN status TEXT DEFAULT 'active' CHECK(status IN ('active', 'inactive', 'suspended'))`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-          console.error('Error adding status column:', err);
-        }
-      });
-      
-      db.run(`ALTER TABLE users ADD COLUMN gender TEXT CHECK(gender IN ('male', 'female', 'other'))`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-          console.error('Error adding gender column:', err);
-        }
-      });
-      
-      db.run(`ALTER TABLE users ADD COLUMN birthdate TEXT`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-          console.error('Error adding birthdate column:', err);
-        }
-      });
-      
-      db.run(`ALTER TABLE users ADD COLUMN joinDate TEXT`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-          console.error('Error adding joinDate column:', err);
-        }
-      });
-      
-      db.run(`ALTER TABLE users ADD COLUMN preferredLanguage TEXT DEFAULT 'zh'`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-          console.error('Error adding preferredLanguage column:', err);
-        }
-      });
-      
-      db.run(`ALTER TABLE users ADD COLUMN notes TEXT`, (err) => {
-        if (err && !err.message.includes('duplicate column')) {
-          console.error('Error adding notes column:', err);
-        }
-      });
-      
-      // Create indexes for new columns
-      db.run(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`, (err) => {
-        if (err) console.error('Error creating index on email:', err);
-      });
-      
-      db.run(`CREATE INDEX IF NOT EXISTS idx_users_status ON users(status)`, (err) => {
-        if (err) console.error('Error creating index on status:', err);
-      });
-    });
+    `, []);
+    console.log('Users table created or already exists');
+
+    // Add additional columns if they don't exist
+    await addColumnIfNotExists(db, 'users', '"nameZh"', 'TEXT');
+    await addColumnIfNotExists(db, 'users', '"nameEn"', 'TEXT');
+    await addColumnIfNotExists(db, 'users', 'district', 'TEXT');
+    await addColumnIfNotExists(db, 'users', '"groupNum"', 'TEXT');
+    await addColumnIfNotExists(db, 'users', 'email', 'TEXT');
+    await addColumnIfNotExists(db, 'users', '"lastLoginAt"', 'TEXT');
+    await addColumnIfNotExists(db, 'users', 'status', 'TEXT DEFAULT \'active\' CHECK(status IN (\'active\', \'inactive\', \'suspended\'))');
+    await addColumnIfNotExists(db, 'users', 'gender', 'TEXT CHECK(gender IN (\'male\', \'female\', \'other\'))');
+    await addColumnIfNotExists(db, 'users', 'birthdate', 'TEXT');
+    await addColumnIfNotExists(db, 'users', '"joinDate"', 'TEXT');
+    await addColumnIfNotExists(db, 'users', '"preferredLanguage"', 'TEXT DEFAULT \'zh\'');
+    await addColumnIfNotExists(db, 'users', 'notes', 'TEXT');
 
     // Create indexes for users table
-    db.run(`CREATE INDEX IF NOT EXISTS idx_users_phoneNumber ON users(phoneNumber)`, (err) => {
-      if (err) console.error('Error creating index on phoneNumber:', err);
-    });
-
-    db.run(`CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)`, (err) => {
-      if (err) console.error('Error creating index on role:', err);
-    });
-
-    db.run(`CREATE INDEX IF NOT EXISTS idx_users_district ON users(district)`, (err) => {
-      if (err) console.error('Error creating index on district:', err);
-    });
-
-    db.run(`CREATE INDEX IF NOT EXISTS idx_users_groupNum ON users(groupNum)`, (err) => {
-      if (err) console.error('Error creating index on groupNum:', err);
-    });
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_users_phoneNumber ON users("phoneNumber")`, []);
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)`, []);
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_users_district ON users(district)`, []);
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_users_groupNum ON users("groupNum")`, []);
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`, []);
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_users_status ON users(status)`, []);
 
     // Create verification_codes table
-    db.run(`
+    await db.run(`
       CREATE TABLE IF NOT EXISTS verification_codes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        phoneNumber TEXT NOT NULL,
+        id SERIAL PRIMARY KEY,
+        "phoneNumber" TEXT NOT NULL,
         code TEXT NOT NULL,
-        expiresAt TEXT NOT NULL,
-        createdAt TEXT NOT NULL,
+        "expiresAt" TEXT NOT NULL,
+        "createdAt" TEXT NOT NULL,
         attempts INTEGER NOT NULL DEFAULT 0
       )
-    `, (err) => {
-      if (err) {
-        console.error('Error creating verification_codes table:', err);
-        reject(err);
-        return;
-      }
-      console.log('Verification codes table created or already exists');
-    });
+    `, []);
+    console.log('Verification codes table created or already exists');
 
     // Create indexes for verification_codes table
-    db.run(`CREATE INDEX IF NOT EXISTS idx_verification_codes_phoneNumber ON verification_codes(phoneNumber)`, (err) => {
-      if (err) console.error('Error creating index on phoneNumber:', err);
-    });
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_verification_codes_phoneNumber ON verification_codes("phoneNumber")`, []);
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_verification_codes_expiresAt ON verification_codes("expiresAt")`, []);
 
-    db.run(`CREATE INDEX IF NOT EXISTS idx_verification_codes_expiresAt ON verification_codes(expiresAt)`, (err) => {
-      if (err) console.error('Error creating index on expiresAt:', err);
-    });
-
-    // Create sessions table (optional, for session management)
-    db.run(`
+    // Create sessions table
+    await db.run(`
       CREATE TABLE IF NOT EXISTS sessions (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        userId INTEGER NOT NULL,
+        id SERIAL PRIMARY KEY,
+        "userId" INTEGER NOT NULL,
         token TEXT NOT NULL UNIQUE,
-        deviceInfo TEXT,
-        expiresAt TEXT NOT NULL,
-        createdAt TEXT NOT NULL,
-        FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+        "deviceInfo" TEXT,
+        "expiresAt" TEXT NOT NULL,
+        "createdAt" TEXT NOT NULL,
+        FOREIGN KEY ("userId") REFERENCES users(id) ON DELETE CASCADE
       )
-    `, (err) => {
-      if (err) {
-        console.error('Error creating sessions table:', err);
-        reject(err);
-        return;
-      }
-      console.log('Sessions table created or already exists');
-    });
+    `, []);
+    console.log('Sessions table created or already exists');
 
     // Create indexes for sessions table
-    db.run(`CREATE INDEX IF NOT EXISTS idx_sessions_userId ON sessions(userId)`, (err) => {
-      if (err) console.error('Error creating index on userId:', err);
-    });
-
-    db.run(`CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token)`, (err) => {
-      if (err) console.error('Error creating index on token:', err);
-    });
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_sessions_userId ON sessions("userId")`, []);
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token)`, []);
 
     // Create attendance table
-    // Note: UNIQUE constraint removed - logic handled in application layer
-    // - full_congregation: Allows multiple records (same date + meetingType can have multiple entries)
-    // - small_group/district: Application enforces one record per (date, meetingType, scope, scopeValue)
-    db.run(`
+    await db.run(`
       CREATE TABLE IF NOT EXISTS attendance (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id SERIAL PRIMARY KEY,
         date TEXT NOT NULL,
-        meetingType TEXT NOT NULL CHECK(meetingType IN ('table', 'homeMeeting', 'prayer')),
+        "meetingType" TEXT NOT NULL CHECK("meetingType" IN ('table', 'homeMeeting', 'prayer')),
         scope TEXT NOT NULL CHECK(scope IN ('full_congregation', 'district', 'small_group')),
-        scopeValue TEXT,
-        adultCount INTEGER NOT NULL CHECK(adultCount >= 0),
-        youthChildCount INTEGER NOT NULL CHECK(youthChildCount >= 0),
-        createdBy INTEGER NOT NULL,
+        "scopeValue" TEXT,
+        "adultCount" INTEGER NOT NULL CHECK("adultCount" >= 0),
+        "youthChildCount" INTEGER NOT NULL CHECK("youthChildCount" >= 0),
+        "createdBy" INTEGER NOT NULL,
         district TEXT,
         notes TEXT,
-        createdAt TEXT NOT NULL,
-        updatedAt TEXT NOT NULL,
-        FOREIGN KEY (createdBy) REFERENCES users(id) ON DELETE CASCADE
+        "createdAt" TEXT NOT NULL,
+        "updatedAt" TEXT NOT NULL,
+        FOREIGN KEY ("createdBy") REFERENCES users(id) ON DELETE CASCADE
       )
-    `, (err) => {
-      if (err) {
-        console.error('Error creating attendance table:', err);
-        reject(err);
-        return;
-      }
-      console.log('Attendance table created or already exists');
-    });
+    `, []);
+    console.log('Attendance table created or already exists');
 
     // Create indexes for attendance table
-    db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(date)`, (err) => {
-      if (err) console.error('Error creating index on date:', err);
-    });
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(date)`, []);
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_meetingType ON attendance("meetingType")`, []);
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_createdBy ON attendance("createdBy")`, []);
+    await db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_date_type_scope ON attendance(date, "meetingType", scope, "scopeValue")`, []);
 
-    db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_meetingType ON attendance(meetingType)`, (err) => {
-      if (err) console.error('Error creating index on meetingType:', err);
-    });
+    console.log('Database initialization completed');
 
-    db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_createdBy ON attendance(createdBy)`, (err) => {
-      if (err) console.error('Error creating index on createdBy:', err);
-    });
-
-    db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_date_type_scope ON attendance(date, meetingType, scope, scopeValue)`, (err) => {
-      if (err) console.error('Error creating composite index:', err);
-    });
-
-    // Close database connection after initialization
-    db.close((err) => {
-      if (err) {
-        console.error('Error closing database:', err);
-        reject(err);
-        return;
-      }
-      console.log('Database initialization completed');
-      
-      // Initialize default users after database tables are created
-      initDefaultUsers().then(() => {
-        resolve();
-      }).catch((err) => {
-        console.error('Warning: Failed to initialize default users:', err);
-        // Don't reject - database initialization is complete even if users fail
-        resolve();
-      });
-    });
-  });
+    // Initialize default users after database tables are created
+    await initDefaultUsers();
+  } catch (err) {
+    console.error('Error initializing database:', err);
+    throw err;
+  }
 }
 
 /**
@@ -420,7 +298,7 @@ async function initDefaultUsers() {
         createdCount++;
       } catch (error) {
         // If user already exists (race condition), just skip
-        if (error.message && error.message.includes('UNIQUE constraint')) {
+        if (error.message && (error.message.includes('UNIQUE constraint') || error.message.includes('duplicate key'))) {
           console.log(`  ⏭️  User ${userData.phoneNumber} already exists, skipping`);
           skippedCount++;
         } else {

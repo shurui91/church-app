@@ -42,8 +42,8 @@ export class Attendance {
       if (scope === 'full_congregation') {
         // For full_congregation, always insert new record (allow multiple records)
         const result = await db.run(
-          `INSERT INTO attendance (date, meetingType, scope, scopeValue, adultCount, youthChildCount, createdBy, district, notes, createdAt, updatedAt)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO attendance (date, "meetingType", scope, "scopeValue", "adultCount", "youthChildCount", "createdBy", district, notes, "createdAt", "updatedAt")
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
           [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
         );
         return await this.findById(result.lastID);
@@ -52,8 +52,8 @@ export class Attendance {
         // (regardless of createdBy - new data overwrites old)
         const existing = await db.get(
           `SELECT id FROM attendance 
-           WHERE date = ? AND meetingType = ? AND scope = ? 
-           AND (scopeValue = ? OR (scopeValue IS NULL AND ? IS NULL))`,
+           WHERE date = ? AND "meetingType" = ? AND scope = ? 
+           AND ("scopeValue" = ? OR ("scopeValue" IS NULL AND ? IS NULL))`,
           [date, meetingType, scope, normalizedScopeValue, normalizedScopeValue]
         );
 
@@ -61,7 +61,7 @@ export class Attendance {
           // Update existing record (overwrite with new data)
           await db.run(
             `UPDATE attendance 
-             SET adultCount = ?, youthChildCount = ?, createdBy = ?, district = ?, notes = ?, updatedAt = ?
+             SET "adultCount" = ?, "youthChildCount" = ?, "createdBy" = ?, district = ?, notes = ?, "updatedAt" = ?
              WHERE id = ?`,
             [adultCount, youthChildCount, createdBy, district, notes, now, existing.id]
           );
@@ -69,8 +69,8 @@ export class Attendance {
         } else {
           // Insert new record
           const result = await db.run(
-            `INSERT INTO attendance (date, meetingType, scope, scopeValue, adultCount, youthChildCount, createdBy, district, notes, createdAt, updatedAt)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            `INSERT INTO attendance (date, "meetingType", scope, "scopeValue", "adultCount", "youthChildCount", "createdBy", district, notes, "createdAt", "updatedAt")
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
             [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
           );
           return await this.findById(result.lastID);
@@ -78,20 +78,20 @@ export class Attendance {
       }
     } catch (error) {
       // Handle UNIQUE constraint violation (fallback)
-      if (error.message && error.message.includes('UNIQUE constraint')) {
+      if (error.message && (error.message.includes('UNIQUE constraint') || error.message.includes('duplicate key'))) {
         // Try to find and update the existing record
         const normalizedScopeValue = scope === 'full_congregation' ? null : (scopeValue || null);
         const existing = await db.get(
           `SELECT id FROM attendance 
-           WHERE date = ? AND meetingType = ? AND scope = ? 
-           AND (scopeValue = ? OR (scopeValue IS NULL AND ? IS NULL))`,
+           WHERE date = ? AND "meetingType" = ? AND scope = ? 
+           AND ("scopeValue" = ? OR ("scopeValue" IS NULL AND ? IS NULL))`,
           [date, meetingType, scope, normalizedScopeValue, normalizedScopeValue]
         );
         
         if (existing) {
           await db.run(
             `UPDATE attendance 
-             SET adultCount = ?, youthChildCount = ?, createdBy = ?, district = ?, notes = ?, updatedAt = ?
+             SET "adultCount" = ?, "youthChildCount" = ?, "createdBy" = ?, district = ?, notes = ?, "updatedAt" = ?
              WHERE id = ?`,
             [adultCount, youthChildCount, createdBy, district, notes, now, existing.id]
           );
@@ -132,7 +132,7 @@ export class Attendance {
   static async findByUser(createdBy, limit = null, offset = 0) {
     const db = await getDatabase();
     try {
-      let sql = 'SELECT * FROM attendance WHERE createdBy = ? ORDER BY date DESC, createdAt DESC';
+      let sql = 'SELECT * FROM attendance WHERE "createdBy" = ? ORDER BY date DESC, "createdAt" DESC';
       const params = [createdBy];
 
       if (limit !== null) {
@@ -156,7 +156,7 @@ export class Attendance {
   static async findAll(limit = null, offset = 0) {
     const db = await getDatabase();
     try {
-      let sql = 'SELECT * FROM attendance ORDER BY date DESC, createdAt DESC';
+      let sql = 'SELECT * FROM attendance ORDER BY date DESC, "createdAt" DESC';
       const params = [];
 
       if (limit !== null) {
@@ -212,7 +212,7 @@ export class Attendance {
     const db = await getDatabase();
     try {
       const result = await db.get(
-        'SELECT COUNT(*) as count FROM attendance WHERE createdBy = ?',
+        'SELECT COUNT(*) as count FROM attendance WHERE "createdBy" = ?',
         [createdBy]
       );
       return result?.count || 0;
