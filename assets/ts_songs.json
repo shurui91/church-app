@@ -1,9 +1,11 @@
 [
   {
     "id": 1,
-    "title_simp": "补充本 1",
-    "title_trad": "補充本 1",
+    "hymn_num_simp": "补充本 1",
+    "hymn_num_trad": "補充本 1",
     "url": "https://www.hymnal.net/cn/hymn/ts/1",
+    "title_simp": "开口赞美",
+    "title_trad": "開口讚美",
     "lyrics": [
       {
         "type": "verse",
@@ -105,9 +107,11 @@
   },
   {
     "id": 2,
-    "title_simp": "补充本 2",
-    "title_trad": "補充本 2",
+    "hymn_num_simp": "补充本 2",
+    "hymn_num_trad": "補充本 2",
     "url": "https://www.hymnal.net/cn/hymn/ts/2",
+    "title_simp": "当以嘴亲子",
+    "title_trad": "當以嘴親子",
     "lyrics": [
       {
         "type": "verse",
@@ -235,9 +239,11 @@
   },
   {
     "id": 3,
-    "title_simp": "补充本 3",
-    "title_trad": "補充本 3",
+    "hymn_num_simp": "补充本 3",
+    "hymn_num_trad": "補充本 3",
     "url": "https://www.hymnal.net/cn/hymn/ts/3",
+    "title_simp": "你名在全地何其美",
+    "title_trad": "你名在全地何其美",
     "lyrics": [
       {
         "type": "verse",
@@ -365,9 +371,11 @@
   },
   {
     "id": 4,
-    "title_simp": "补充本 4",
-    "title_trad": "補充本 4",
+    "hymn_num_simp": "补充本 4",
+    "hymn_num_trad": "補充本 4",
     "url": "https://www.hymnal.net/cn/hymn/ts/4",
+    "title_simp": "你的恩典一生之久",
+    "title_trad": "你的恩典一生之久",
     "lyrics": [
       {
         "type": "verse",
@@ -393,9 +401,11 @@
   },
   {
     "id": 5,
-    "title_simp": "补充本 5",
-    "title_trad": "補充本 5",
+    "hymn_num_simp": "补充本 5",
+    "hymn_num_trad": "補充本 5",
     "url": "https://www.hymnal.net/cn/hymn/ts/5",
+    "title_simp": "披上喜乐",
+    "title_trad": "披上喜樂",
     "lyrics": [
       {
         "type": "verse",
@@ -431,9 +441,11 @@
   },
   {
     "id": 6,
-    "title_simp": "补充本 6",
-    "title_trad": "補充本 6",
+    "hymn_num_simp": "补充本 6",
+    "hymn_num_trad": "補充本 6",
     "url": "https://www.hymnal.net/cn/hymn/ts/6",
+    "title_simp": "涌出美辞",
+    "title_trad": "湧出美辭",
     "lyrics": [
       {
         "type": "verse",
@@ -559,9 +571,11 @@
   },
   {
     "id": 7,
-    "title_simp": "补充本 7",
-    "title_trad": "補充本 7",
+    "hymn_num_simp": "补充本 7",
+    "hymn_num_trad": "補充本 7",
     "url": "https://www.hymnal.net/cn/hymn/ts/7",
+    "title_simp": "荣耀的召会与荣耀的王",
+    "title_trad": "榮耀的召會與榮耀的王",
     "lyrics": [
       {
         "type": "verse",
@@ -687,9 +701,11 @@
   },
   {
     "id": 8,
-    "title_simp": "补充本 8",
-    "title_trad": "補充本 8",
+    "hymn_num_simp": "补充本 8",
+    "hymn_num_trad": "補充本 8",
     "url": "https://www.hymnal.net/cn/hymn/ts/8",
+    "title_simp": "在祂的圣山上",
+    "title_trad": "在祂的聖山上",
     "lyrics": [
       {
         "type": "verse",
@@ -723,9 +739,11 @@
   },
   {
     "id": 9,
-    "title_simp": "补充本 9",
-    "title_trad": "補充本 9",
+    "hymn_num_simp": "补充本 9",
+    "hymn_num_trad": "補充本 9",
     "url": "https://www.hymnal.net/cn/hymn/ts/9",
+    "title_simp": "神兴起，仇敌四散",
+    "title_trad": "神興起，仇敵四散",
     "lyrics": [
       {
         "type": "verse",
@@ -947,9 +965,11 @@
   },
   {
     "id": 10,
-    "title_simp": "补充本 10",
-    "title_trad": "補充本 10",
+    "hymn_num_simp": "补充本 10",
+    "hymn_num_trad": "補充本 10",
     "url": "https://www.hymnal.net/cn/hymn/ts/10",
+    "title_simp": "当向耶和华大声欢呼",
+    "title_trad": "當向耶和華大聲歡呼",
     "lyrics": [
       {
         "type": "verse",
@@ -997,9 +1017,11 @@
   },
   {
     "id": 11,
-    "title_simp": "补充本 11",
-    "title_trad": "補充本 11",
+    "hymn_num_simp": "补充本 11",
+    "hymn_num_trad": "補充本 11",
     "url": "https://www.hymnal.net/cn/hymn/ts/11",
+    "title_simp": "在你有赦免之恩",
+    "title_trad": "在你有赦免之恩",
     "lyrics": [
       {
         "type": "verse",
@@ -1033,9 +1055,11 @@
   },
   {
     "id": 12,
-    "title_simp": "补充本 12",
-    "title_trad": "補充本 12",
+    "hymn_num_simp": "补充本 12",
+    "hymn_num_trad": "補充本 12",
     "url": "https://www.hymnal.net/cn/hymn/ts/12",
+    "title_simp": "你们当称颂耶和华",
+    "title_trad": "你們當稱頌耶和華",
     "lyrics": [
       {
         "type": "verse",
@@ -1065,9 +1089,11 @@
   },
   {
     "id": 13,
-    "title_simp": "补充本 13",
-    "title_trad": "補充本 13",
+    "hymn_num_simp": "补充本 13",
+    "hymn_num_trad": "補充本 13",
     "url": "https://www.hymnal.net/cn/hymn/ts/13",
+    "title_simp": "我要永远的歌唱",
+    "title_trad": "我要永遠的歌唱",
     "lyrics": [
       {
         "type": "verse",
@@ -1117,9 +1143,11 @@
   },
   {
     "id": 14,
-    "title_simp": "补充本 14",
-    "title_trad": "補充本 14",
+    "hymn_num_simp": "补充本 14",
+    "hymn_num_trad": "補充本 14",
     "url": "https://www.hymnal.net/cn/hymn/ts/14",
+    "title_simp": "你们要向主称颂",
+    "title_trad": "你們要向主稱頌",
     "lyrics": [
       {
         "type": "verse",
@@ -1149,9 +1177,11 @@
   },
   {
     "id": 15,
-    "title_simp": "补充本 15",
-    "title_trad": "補充本 15",
+    "hymn_num_simp": "补充本 15",
+    "hymn_num_trad": "補充本 15",
     "url": "https://www.hymnal.net/cn/hymn/ts/15",
+    "title_simp": "我要不住赞美称颂神",
+    "title_trad": "我要不住讚美稱頌神",
     "lyrics": [
       {
         "type": "verse",
@@ -1295,9 +1325,11 @@
   },
   {
     "id": 16,
-    "title_simp": "补充本 16",
-    "title_trad": "補充本 16",
+    "hymn_num_simp": "补充本 16",
+    "hymn_num_trad": "補充本 16",
     "url": "https://www.hymnal.net/cn/hymn/ts/16",
+    "title_simp": "召会的赞美",
+    "title_trad": "召會的讚美",
     "lyrics": [
       {
         "type": "verse",
@@ -1423,9 +1455,11 @@
   },
   {
     "id": 17,
-    "title_simp": "补充本 17",
-    "title_trad": "補充本 17",
+    "hymn_num_simp": "补充本 17",
+    "hymn_num_trad": "補充本 17",
     "url": "https://www.hymnal.net/cn/hymn/ts/17",
+    "title_simp": "乐！乐！乐",
+    "title_trad": "樂！樂！樂",
     "lyrics": [
       {
         "type": "verse",
@@ -1531,9 +1565,11 @@
   },
   {
     "id": 18,
-    "title_simp": "补充本 18",
-    "title_trad": "補充本 18",
+    "hymn_num_simp": "补充本 18",
+    "hymn_num_trad": "補充本 18",
     "url": "https://www.hymnal.net/cn/hymn/ts/18",
+    "title_simp": "自从我被赎回",
+    "title_trad": "自從我被贖回",
     "lyrics": [
       {
         "type": "verse",
@@ -1709,9 +1745,11 @@
   },
   {
     "id": 19,
-    "title_simp": "补充本 19",
-    "title_trad": "補充本 19",
+    "hymn_num_simp": "补充本 19",
+    "hymn_num_trad": "補充本 19",
     "url": "https://www.hymnal.net/cn/hymn/ts/19",
+    "title_simp": "我在拿撒勒人耶稣面前",
+    "title_trad": "我在拿撒勒人耶穌面前",
     "lyrics": [
       {
         "type": "verse",
@@ -1877,9 +1915,11 @@
   },
   {
     "id": 20,
-    "title_simp": "补充本 20",
-    "title_trad": "補充本 20",
+    "hymn_num_simp": "补充本 20",
+    "hymn_num_trad": "補充本 20",
     "url": "https://www.hymnal.net/cn/hymn/ts/20",
+    "title_simp": "加冠祂万有主",
+    "title_trad": "加冠祂萬有主",
     "lyrics": [
       {
         "type": "verse",
@@ -2027,9 +2067,11 @@
   },
   {
     "id": 21,
-    "title_simp": "补充本 21",
-    "title_trad": "補充本 21",
+    "hymn_num_simp": "补充本 21",
+    "hymn_num_trad": "補充本 21",
     "url": "https://www.hymnal.net/cn/hymn/ts/21",
+    "title_simp": "祂是主",
+    "title_trad": "祂是主",
     "lyrics": [
       {
         "type": "verse",
@@ -2055,9 +2097,11 @@
   },
   {
     "id": 22,
-    "title_simp": "补充本 22",
-    "title_trad": "補充本 22",
+    "hymn_num_simp": "补充本 22",
+    "hymn_num_trad": "補充本 22",
     "url": "https://www.hymnal.net/cn/hymn/ts/22",
+    "title_simp": "耶稣为王",
+    "title_trad": "耶穌爲王",
     "lyrics": [
       {
         "type": "verse",
@@ -2223,9 +2267,11 @@
   },
   {
     "id": 23,
-    "title_simp": "补充本 23",
-    "title_trad": "補充本 23",
+    "hymn_num_simp": "补充本 23",
+    "hymn_num_trad": "補充本 23",
     "url": "https://www.hymnal.net/cn/hymn/ts/23",
+    "title_simp": "羔羊是配",
+    "title_trad": "羔羊是配",
     "lyrics": [
       {
         "type": "verse",
@@ -2327,9 +2373,11 @@
   },
   {
     "id": 24,
-    "title_simp": "补充本 24",
-    "title_trad": "補充本 24",
+    "hymn_num_simp": "补充本 24",
+    "hymn_num_trad": "補充本 24",
     "url": "https://www.hymnal.net/cn/hymn/ts/24",
+    "title_simp": "赞美羔羊",
+    "title_trad": "讚美羔羊",
     "lyrics": [
       {
         "type": "verse",
@@ -2463,9 +2511,11 @@
   },
   {
     "id": 25,
-    "title_simp": "补充本 25",
-    "title_trad": "補充本 25",
+    "hymn_num_simp": "补充本 25",
+    "hymn_num_trad": "補充本 25",
     "url": "https://www.hymnal.net/cn/hymn/ts/25",
+    "title_simp": "从救恩泉源欢然取水",
+    "title_trad": "從救恩泉源歡然取水",
     "lyrics": [
       {
         "type": "verse",
@@ -2509,9 +2559,11 @@
   },
   {
     "id": 26,
-    "title_simp": "补充本 26",
-    "title_trad": "補充本 26",
+    "hymn_num_simp": "补充本 26",
+    "hymn_num_trad": "補充本 26",
     "url": "https://www.hymnal.net/cn/hymn/ts/26",
+    "title_simp": "你们要尝尝主恩",
+    "title_trad": "你們要嚐嚐主恩",
     "lyrics": [
       {
         "type": "verse",
@@ -2541,9 +2593,11 @@
   },
   {
     "id": 27,
-    "title_simp": "补充本 27",
-    "title_trad": "補充本 27",
+    "hymn_num_simp": "补充本 27",
+    "hymn_num_trad": "補充本 27",
     "url": "https://www.hymnal.net/cn/hymn/ts/27",
+    "title_simp": "在荣耀里有一人",
+    "title_trad": "在榮耀裏有一人",
     "lyrics": [
       {
         "type": "verse",
@@ -2661,9 +2715,11 @@
   },
   {
     "id": 28,
-    "title_simp": "补充本 28",
-    "title_trad": "補充本 28",
+    "hymn_num_simp": "补充本 28",
+    "hymn_num_trad": "補充本 28",
     "url": "https://www.hymnal.net/cn/hymn/ts/28",
+    "title_simp": "来与我同欢唱",
+    "title_trad": "來與我同歡唱",
     "lyrics": [
       {
         "type": "verse",
@@ -2781,9 +2837,11 @@
   },
   {
     "id": 29,
-    "title_simp": "补充本 29",
-    "title_trad": "補充本 29",
+    "hymn_num_simp": "补充本 29",
+    "hymn_num_trad": "補充本 29",
     "url": "https://www.hymnal.net/cn/hymn/ts/29",
+    "title_simp": "赞美\"狮子羔羊\"",
+    "title_trad": "讚美\"獅子羔羊\"",
     "lyrics": [
       {
         "type": "verse",
@@ -2909,9 +2967,11 @@
   },
   {
     "id": 30,
-    "title_simp": "补充本 30",
-    "title_trad": "補充本 30",
+    "hymn_num_simp": "补充本 30",
+    "hymn_num_trad": "補充本 30",
     "url": "https://www.hymnal.net/cn/hymn/ts/30",
+    "title_simp": "祂是君王、战士、祭司和得胜者",
+    "title_trad": "祂是君王、戰士、祭司和得勝者",
     "lyrics": [
       {
         "type": "verse",
@@ -3037,9 +3097,11 @@
   },
   {
     "id": 31,
-    "title_simp": "补充本 31",
-    "title_trad": "補充本 31",
+    "hymn_num_simp": "补充本 31",
+    "hymn_num_trad": "補充本 31",
     "url": "https://www.hymnal.net/cn/hymn/ts/31",
+    "title_simp": "赞美主是平安祭",
+    "title_trad": "讚美主是平安祭",
     "lyrics": [
       {
         "type": "verse",
@@ -3237,9 +3299,11 @@
   },
   {
     "id": 32,
-    "title_simp": "补充本 32",
-    "title_trad": "補充本 32",
+    "hymn_num_simp": "补充本 32",
+    "hymn_num_trad": "補充本 32",
     "url": "https://www.hymnal.net/cn/hymn/ts/32",
+    "title_simp": "基督生活超凡佳美",
+    "title_trad": "基督生活超凡佳美",
     "lyrics": [
       {
         "type": "verse",
@@ -3357,9 +3421,11 @@
   },
   {
     "id": 33,
-    "title_simp": "补充本 33",
-    "title_trad": "補充本 33",
+    "hymn_num_simp": "补充本 33",
+    "hymn_num_trad": "補充本 33",
     "url": "https://www.hymnal.net/cn/hymn/ts/33",
+    "title_simp": "主耶和华永是我牧者",
+    "title_trad": "主耶和華永是我牧者",
     "lyrics": [
       {
         "type": "verse",
@@ -3565,9 +3631,11 @@
   },
   {
     "id": 34,
-    "title_simp": "补充本 34",
-    "title_trad": "補充本 34",
+    "hymn_num_simp": "补充本 34",
+    "hymn_num_trad": "補充本 34",
     "url": "https://www.hymnal.net/cn/hymn/ts/34",
+    "title_simp": "赞美基督，救恩成功",
+    "title_trad": "讚美基督，救恩成功",
     "lyrics": [
       {
         "type": "verse",
@@ -3727,9 +3795,11 @@
   },
   {
     "id": 35,
-    "title_simp": "补充本 35",
-    "title_trad": "補充本 35",
+    "hymn_num_simp": "补充本 35",
+    "hymn_num_trad": "補充本 35",
     "url": "https://www.hymnal.net/cn/hymn/ts/35",
+    "title_simp": "你的居所何等可爱",
+    "title_trad": "你的居所何等可愛",
     "lyrics": [
       {
         "type": "verse",
@@ -3775,9 +3845,11 @@
   },
   {
     "id": 36,
-    "title_simp": "补充本 36",
-    "title_trad": "補充本 36",
+    "hymn_num_simp": "补充本 36",
+    "hymn_num_trad": "補充本 36",
     "url": "https://www.hymnal.net/cn/hymn/ts/36",
+    "title_simp": "数算自己的日子",
+    "title_trad": "數算自己的日子",
     "lyrics": [
       {
         "type": "verse",
@@ -3821,9 +3893,11 @@
   },
   {
     "id": 37,
-    "title_simp": "补充本 37",
-    "title_trad": "補充本 37",
+    "hymn_num_simp": "补充本 37",
+    "hymn_num_trad": "補充本 37",
     "url": "https://www.hymnal.net/cn/hymn/ts/37",
+    "title_simp": "赞美荣耀王",
+    "title_trad": "讚美榮耀王",
     "lyrics": [
       {
         "type": "verse",
@@ -3925,9 +3999,11 @@
   },
   {
     "id": 101,
-    "title_simp": "补充本 101",
-    "title_trad": "補充本 101",
+    "hymn_num_simp": "补充本 101",
+    "hymn_num_trad": "補充本 101",
     "url": "https://www.hymnal.net/cn/hymn/ts/101",
+    "title_simp": "基督的灵",
+    "title_trad": "基督的靈",
     "lyrics": [
       {
         "type": "verse",
@@ -4029,9 +4105,11 @@
   },
   {
     "id": 102,
-    "title_simp": "补充本 102",
-    "title_trad": "補充本 102",
+    "hymn_num_simp": "补充本 102",
+    "hymn_num_trad": "補充本 102",
     "url": "https://www.hymnal.net/cn/hymn/ts/102",
+    "title_simp": "七灵",
+    "title_trad": "七靈",
     "lyrics": [
       {
         "type": "verse",
@@ -4253,9 +4331,11 @@
   },
   {
     "id": 103,
-    "title_simp": "补充本 103",
-    "title_trad": "補充本 103",
+    "hymn_num_simp": "补充本 103",
+    "hymn_num_trad": "補充本 103",
     "url": "https://www.hymnal.net/cn/hymn/ts/103",
+    "title_simp": "以赛亚书中的灵",
+    "title_trad": "以賽亞書中的靈",
     "lyrics": [
       {
         "type": "verse",
@@ -4373,9 +4453,11 @@
   },
   {
     "id": 104,
-    "title_simp": "补充本 104",
-    "title_trad": "補充本 104",
+    "hymn_num_simp": "补充本 104",
+    "hymn_num_trad": "補充本 104",
     "url": "https://www.hymnal.net/cn/hymn/ts/104",
+    "title_simp": "祂活",
+    "title_trad": "祂活",
     "lyrics": [
       {
         "type": "verse",
@@ -4435,9 +4517,11 @@
   },
   {
     "id": 105,
-    "title_simp": "补充本 105",
-    "title_trad": "補充本 105",
+    "hymn_num_simp": "补充本 105",
+    "hymn_num_trad": "補充本 105",
     "url": "https://www.hymnal.net/cn/hymn/ts/105",
+    "title_simp": "基督是那赐生命的灵",
+    "title_trad": "基督是那賜生命的靈",
     "lyrics": [
       {
         "type": "verse",
@@ -4515,9 +4599,11 @@
   },
   {
     "id": 106,
-    "title_simp": "补充本 106",
-    "title_trad": "補充本 106",
+    "hymn_num_simp": "补充本 106",
+    "hymn_num_trad": "補充本 106",
     "url": "https://www.hymnal.net/cn/hymn/ts/106",
+    "title_simp": "祂是赐生命的灵",
+    "title_trad": "祂是賜生命的靈",
     "lyrics": [
       {
         "type": "verse",
@@ -4539,9 +4625,11 @@
   },
   {
     "id": 107,
-    "title_simp": "补充本 107",
-    "title_trad": "補充本 107",
+    "hymn_num_simp": "补充本 107",
+    "hymn_num_trad": "補充本 107",
     "url": "https://www.hymnal.net/cn/hymn/ts/107",
+    "title_simp": "祂是住在我们的灵里",
+    "title_trad": "祂是住在我們的靈裏",
     "lyrics": [
       {
         "type": "verse",
@@ -4595,9 +4683,11 @@
   },
   {
     "id": 108,
-    "title_simp": "补充本 108",
-    "title_trad": "補充本 108",
+    "hymn_num_simp": "补充本 108",
+    "hymn_num_trad": "補充本 108",
     "url": "https://www.hymnal.net/cn/hymn/ts/108",
+    "title_simp": "祂是奇妙之灵住我里",
+    "title_trad": "祂是奇妙之靈住我裏",
     "lyrics": [
       {
         "type": "verse",
@@ -4803,9 +4893,11 @@
   },
   {
     "id": 109,
-    "title_simp": "补充本 109",
-    "title_trad": "補充本 109",
+    "hymn_num_simp": "补充本 109",
+    "hymn_num_trad": "補充本 109",
     "url": "https://www.hymnal.net/cn/hymn/ts/109",
+    "title_simp": "膏油在此",
+    "title_trad": "膏油在此",
     "lyrics": [
       {
         "type": "verse",
@@ -4915,9 +5007,11 @@
   },
   {
     "id": 110,
-    "title_simp": "补充本 110",
-    "title_trad": "補充本 110",
+    "hymn_num_simp": "补充本 110",
+    "hymn_num_trad": "補充本 110",
     "url": "https://www.hymnal.net/cn/hymn/ts/110",
+    "title_simp": "我有膏油涂抹",
+    "title_trad": "我有膏油塗抹",
     "lyrics": [
       {
         "type": "verse",
@@ -5163,9 +5257,11 @@
   },
   {
     "id": 111,
-    "title_simp": "补充本 111",
-    "title_trad": "補充本 111",
+    "hymn_num_simp": "补充本 111",
+    "hymn_num_trad": "補充本 111",
     "url": "https://www.hymnal.net/cn/hymn/ts/111",
+    "title_simp": "你找着你的灵没有",
+    "title_trad": "你找着你的靈沒有",
     "lyrics": [
       {
         "type": "verse",
@@ -5245,9 +5341,11 @@
   },
   {
     "id": 112,
-    "title_simp": "补充本 112",
-    "title_trad": "補充本 112",
+    "hymn_num_simp": "补充本 112",
+    "hymn_num_trad": "補充本 112",
     "url": "https://www.hymnal.net/cn/hymn/ts/112",
+    "title_simp": "转入灵里",
+    "title_trad": "轉入靈裏",
     "lyrics": [
       {
         "type": "verse",
@@ -5329,9 +5427,11 @@
   },
   {
     "id": 113,
-    "title_simp": "补充本 113",
-    "title_trad": "補充本 113",
+    "hymn_num_simp": "补充本 113",
+    "hymn_num_trad": "補充本 113",
     "url": "https://www.hymnal.net/cn/hymn/ts/113",
+    "title_simp": "回到你灵里",
+    "title_trad": "回到你靈裏",
     "lyrics": [
       {
         "type": "verse",
@@ -5403,9 +5503,11 @@
   },
   {
     "id": 114,
-    "title_simp": "补充本 114",
-    "title_trad": "補充本 114",
+    "hymn_num_simp": "补充本 114",
+    "hymn_num_trad": "補充本 114",
     "url": "https://www.hymnal.net/cn/hymn/ts/114",
+    "title_simp": "得着释放在灵里",
+    "title_trad": "得着釋放在靈裏",
     "lyrics": [
       {
         "type": "verse",
@@ -5459,9 +5561,11 @@
   },
   {
     "id": 115,
-    "title_simp": "补充本 115",
-    "title_trad": "補充本 115",
+    "hymn_num_simp": "补充本 115",
+    "hymn_num_trad": "補充本 115",
     "url": "https://www.hymnal.net/cn/hymn/ts/115",
+    "title_simp": "在灵里享受",
+    "title_trad": "在靈裏享受",
     "lyrics": [
       {
         "type": "verse",
@@ -5495,9 +5599,11 @@
   },
   {
     "id": 116,
-    "title_simp": "补充本 116",
-    "title_trad": "補充本 116",
+    "hymn_num_simp": "补充本 116",
+    "hymn_num_trad": "補充本 116",
     "url": "https://www.hymnal.net/cn/hymn/ts/116",
+    "title_simp": "在灵里向主歌唱",
+    "title_trad": "在靈裏向主歌唱",
     "lyrics": [
       {
         "type": "verse",
@@ -5571,9 +5677,11 @@
   },
   {
     "id": 117,
-    "title_simp": "补充本 117",
-    "title_trad": "補充本 117",
+    "hymn_num_simp": "补充本 117",
+    "hymn_num_trad": "補充本 117",
     "url": "https://www.hymnal.net/cn/hymn/ts/117",
+    "title_simp": "在灵里行事",
+    "title_trad": "在靈裏行事",
     "lyrics": [
       {
         "type": "verse",
@@ -5659,9 +5767,11 @@
   },
   {
     "id": 118,
-    "title_simp": "补充本 118",
-    "title_trad": "補充本 118",
+    "hymn_num_simp": "补充本 118",
+    "hymn_num_trad": "補充本 118",
     "url": "https://www.hymnal.net/cn/hymn/ts/118",
+    "title_simp": "三一神作生命",
+    "title_trad": "三一神作生命",
     "lyrics": [
       {
         "type": "verse",
@@ -5727,9 +5837,11 @@
   },
   {
     "id": 119,
-    "title_simp": "补充本 119",
-    "title_trad": "補充本 119",
+    "hymn_num_simp": "补充本 119",
+    "hymn_num_trad": "補充本 119",
     "url": "https://www.hymnal.net/cn/hymn/ts/119",
+    "title_simp": "主是赐生命者",
+    "title_trad": "主是賜生命者",
     "lyrics": [
       {
         "type": "verse",
@@ -5759,9 +5871,11 @@
   },
   {
     "id": 120,
-    "title_simp": "补充本 120",
-    "title_trad": "補充本 120",
+    "hymn_num_simp": "补充本 120",
+    "hymn_num_trad": "補充本 120",
     "url": "https://www.hymnal.net/cn/hymn/ts/120",
+    "title_simp": "主活在我里面",
+    "title_trad": "主活在我裏面",
     "lyrics": [
       {
         "type": "verse",
@@ -5895,9 +6009,11 @@
   },
   {
     "id": 121,
-    "title_simp": "补充本 121",
-    "title_trad": "補充本 121",
+    "hymn_num_simp": "补充本 121",
+    "hymn_num_trad": "補充本 121",
     "url": "https://www.hymnal.net/cn/hymn/ts/121",
+    "title_simp": "祂活在我里",
+    "title_trad": "祂活在我裏",
     "lyrics": [
       {
         "type": "verse",
@@ -5941,9 +6057,11 @@
   },
   {
     "id": 122,
-    "title_simp": "补充本 122",
-    "title_trad": "補充本 122",
+    "hymn_num_simp": "补充本 122",
+    "hymn_num_trad": "補充本 122",
     "url": "https://www.hymnal.net/cn/hymn/ts/122",
+    "title_simp": "基督是实际",
+    "title_trad": "基督是實際",
     "lyrics": [
       {
         "type": "verse",
@@ -6005,9 +6123,11 @@
   },
   {
     "id": 123,
-    "title_simp": "补充本 123",
-    "title_trad": "補充本 123",
+    "hymn_num_simp": "补充本 123",
+    "hymn_num_trad": "補充本 123",
     "url": "https://www.hymnal.net/cn/hymn/ts/123",
+    "title_simp": "耶稣活在我里面",
+    "title_trad": "耶穌活在我裏面",
     "lyrics": [
       {
         "type": "verse",
@@ -6029,9 +6149,11 @@
   },
   {
     "id": 124,
-    "title_simp": "补充本 124",
-    "title_trad": "補充本 124",
+    "hymn_num_simp": "补充本 124",
+    "hymn_num_trad": "補充本 124",
     "url": "https://www.hymnal.net/cn/hymn/ts/124",
+    "title_simp": "是生命使我们高声喊",
+    "title_trad": "是生命使我們高聲喊",
     "lyrics": [
       {
         "type": "verse",
@@ -6063,9 +6185,11 @@
   },
   {
     "id": 125,
-    "title_simp": "补充本 125",
-    "title_trad": "補充本 125",
+    "hymn_num_simp": "补充本 125",
+    "hymn_num_trad": "補充本 125",
     "url": "https://www.hymnal.net/cn/hymn/ts/125",
+    "title_simp": "主是生命种子",
+    "title_trad": "主是生命種子",
     "lyrics": [
       {
         "type": "verse",
@@ -6267,9 +6391,11 @@
   },
   {
     "id": 126,
-    "title_simp": "补充本 126",
-    "title_trad": "補充本 126",
+    "hymn_num_simp": "补充本 126",
+    "hymn_num_trad": "補充本 126",
     "url": "https://www.hymnal.net/cn/hymn/ts/126",
+    "title_simp": "我要让祂长大",
+    "title_trad": "我要讓祂長大",
     "lyrics": [
       {
         "type": "verse",
@@ -6385,9 +6511,11 @@
   },
   {
     "id": 127,
-    "title_simp": "补充本 127",
-    "title_trad": "補充本 127",
+    "hymn_num_simp": "补充本 127",
+    "hymn_num_trad": "補充本 127",
     "url": "https://www.hymnal.net/cn/hymn/ts/127",
+    "title_simp": "国度原是主的自己",
+    "title_trad": "國度原是主的自己",
     "lyrics": [
       {
         "type": "verse",
@@ -6513,9 +6641,11 @@
   },
   {
     "id": 128,
-    "title_simp": "补充本 128",
-    "title_trad": "補充本 128",
+    "hymn_num_simp": "补充本 128",
+    "hymn_num_trad": "補充本 128",
     "url": "https://www.hymnal.net/cn/hymn/ts/128",
+    "title_simp": "国度就是基督作生命",
+    "title_trad": "國度就是基督作生命",
     "lyrics": [
       {
         "type": "verse",
@@ -6605,9 +6735,11 @@
   },
   {
     "id": 129,
-    "title_simp": "补充本 129",
-    "title_trad": "補充本 129",
+    "hymn_num_simp": "补充本 129",
+    "hymn_num_trad": "補充本 129",
     "url": "https://www.hymnal.net/cn/hymn/ts/129",
+    "title_simp": "耶稣我太阳",
+    "title_trad": "耶穌我太陽",
     "lyrics": [
       {
         "type": "verse",
@@ -6653,9 +6785,11 @@
   },
   {
     "id": 130,
-    "title_simp": "补充本 130",
-    "title_trad": "補充本 130",
+    "hymn_num_simp": "补充本 130",
+    "hymn_num_trad": "補充本 130",
     "url": "https://www.hymnal.net/cn/hymn/ts/130",
+    "title_simp": "主耶稣作了我人位",
+    "title_trad": "主耶穌作了我人位",
     "lyrics": [
       {
         "type": "verse",
@@ -6685,9 +6819,11 @@
   },
   {
     "id": 131,
-    "title_simp": "补充本 131",
-    "title_trad": "補充本 131",
+    "hymn_num_simp": "补充本 131",
+    "hymn_num_trad": "補充本 131",
     "url": "https://www.hymnal.net/cn/hymn/ts/131",
+    "title_simp": "基督是我们人位",
+    "title_trad": "基督是我們人位",
     "lyrics": [
       {
         "type": "verse",
@@ -6749,9 +6885,11 @@
   },
   {
     "id": 132,
-    "title_simp": "补充本 132",
-    "title_trad": "補充本 132",
+    "hymn_num_simp": "补充本 132",
+    "hymn_num_trad": "補充本 132",
     "url": "https://www.hymnal.net/cn/hymn/ts/132",
+    "title_simp": "神在肉身显现",
+    "title_trad": "神在肉身顯現",
     "lyrics": [
       {
         "type": "verse",
@@ -6857,9 +6995,11 @@
   },
   {
     "id": 133,
-    "title_simp": "补充本 133",
-    "title_trad": "補充本 133",
+    "hymn_num_simp": "补充本 133",
+    "hymn_num_trad": "補充本 133",
     "url": "https://www.hymnal.net/cn/hymn/ts/133",
+    "title_simp": "凭着耶稣的人性",
+    "title_trad": "憑着耶穌的人性",
     "lyrics": [
       {
         "type": "verse",
@@ -7057,9 +7197,11 @@
   },
   {
     "id": 134,
-    "title_simp": "补充本 134",
-    "title_trad": "補充本 134",
+    "hymn_num_simp": "补充本 134",
+    "hymn_num_trad": "補充本 134",
     "url": "https://www.hymnal.net/cn/hymn/ts/134",
+    "title_simp": "永活救主",
+    "title_trad": "永活救主",
     "lyrics": [
       {
         "type": "verse",
@@ -7187,9 +7329,11 @@
   },
   {
     "id": 135,
-    "title_simp": "补充本 135",
-    "title_trad": "補充本 135",
+    "hymn_num_simp": "补充本 135",
+    "hymn_num_trad": "補充本 135",
     "url": "https://www.hymnal.net/cn/hymn/ts/135",
+    "title_simp": "真葡萄树",
+    "title_trad": "真葡萄樹",
     "lyrics": [
       {
         "type": "verse",
@@ -7231,9 +7375,11 @@
   },
   {
     "id": 136,
-    "title_simp": "补充本 136",
-    "title_trad": "補充本 136",
+    "hymn_num_simp": "补充本 136",
+    "hymn_num_trad": "補充本 136",
     "url": "https://www.hymnal.net/cn/hymn/ts/136",
+    "title_simp": "祂的生命在流通",
+    "title_trad": "祂的生命在流通",
     "lyrics": [
       {
         "type": "verse",
@@ -7347,9 +7493,11 @@
   },
   {
     "id": 137,
-    "title_simp": "补充本 137",
-    "title_trad": "補充本 137",
+    "hymn_num_simp": "补充本 137",
+    "hymn_num_trad": "補充本 137",
     "url": "https://www.hymnal.net/cn/hymn/ts/137",
+    "title_simp": "如今主你就是那灵",
+    "title_trad": "如今主你就是那靈",
     "lyrics": [
       {
         "type": "verse",
@@ -7419,9 +7567,11 @@
   },
   {
     "id": 138,
-    "title_simp": "补充本 138",
-    "title_trad": "補充本 138",
+    "hymn_num_simp": "补充本 138",
+    "hymn_num_trad": "補充本 138",
     "url": "https://www.hymnal.net/cn/hymn/ts/138",
+    "title_simp": "同心渴求赐福的雨",
+    "title_trad": "同心渴求賜福的雨",
     "lyrics": [
       {
         "type": "verse",
@@ -7587,9 +7737,11 @@
   },
   {
     "id": 139,
-    "title_simp": "补充本 139",
-    "title_trad": "補充本 139",
+    "hymn_num_simp": "补充本 139",
+    "hymn_num_trad": "補充本 139",
     "url": "https://www.hymnal.net/cn/hymn/ts/139",
+    "title_simp": "膏油与馨香",
+    "title_trad": "膏油與馨香",
     "lyrics": [
       {
         "type": "verse",
@@ -7667,9 +7819,11 @@
   },
   {
     "id": 140,
-    "title_simp": "补充本 140",
-    "title_trad": "補充本 140",
+    "hymn_num_simp": "补充本 140",
+    "hymn_num_trad": "補充本 140",
     "url": "https://www.hymnal.net/cn/hymn/ts/140",
+    "title_simp": "召会实际全在于灵",
+    "title_trad": "召會實際全在於靈",
     "lyrics": [
       {
         "type": "verse",
@@ -7771,9 +7925,11 @@
   },
   {
     "id": 141,
-    "title_simp": "补充本 141",
-    "title_trad": "補充本 141",
+    "hymn_num_simp": "补充本 141",
+    "hymn_num_trad": "補充本 141",
     "url": "https://www.hymnal.net/cn/hymn/ts/141",
+    "title_simp": "神在基督耶稣里成那灵",
+    "title_trad": "神在基督耶穌裏成那靈",
     "lyrics": [
       {
         "type": "verse",
@@ -7891,9 +8047,11 @@
   },
   {
     "id": 142,
-    "title_simp": "补充本 142",
-    "title_trad": "補充本 142",
+    "hymn_num_simp": "补充本 142",
+    "hymn_num_trad": "補充本 142",
     "url": "https://www.hymnal.net/cn/hymn/ts/142",
+    "title_simp": "我神乃是澎湃水流",
+    "title_trad": "我神乃是澎湃水流",
     "lyrics": [
       {
         "type": "verse",
@@ -7987,9 +8145,11 @@
   },
   {
     "id": 143,
-    "title_simp": "补充本 143",
-    "title_trad": "補充本 143",
+    "hymn_num_simp": "补充本 143",
+    "hymn_num_trad": "補充本 143",
     "url": "https://www.hymnal.net/cn/hymn/ts/143",
+    "title_simp": "吹动！覆罩！焚烧！显耀！",
+    "title_trad": "吹動！覆罩！焚燒！顯耀！",
     "lyrics": [
       {
         "type": "verse",
@@ -8155,9 +8315,11 @@
   },
   {
     "id": 144,
-    "title_simp": "补充本 144",
-    "title_trad": "補充本 144",
+    "hymn_num_simp": "补充本 144",
+    "hymn_num_trad": "補充本 144",
     "url": "https://www.hymnal.net/cn/hymn/ts/144",
+    "title_simp": "阿们生命之律",
+    "title_trad": "阿們生命之律",
     "lyrics": [
       {
         "type": "verse",
@@ -8273,9 +8435,11 @@
   },
   {
     "id": 145,
-    "title_simp": "补充本 145",
-    "title_trad": "補充本 145",
+    "hymn_num_simp": "补充本 145",
+    "hymn_num_trad": "補充本 145",
     "url": "https://www.hymnal.net/cn/hymn/ts/145",
+    "title_simp": "当将主权完全归主",
+    "title_trad": "當將主權完全歸主",
     "lyrics": [
       {
         "type": "verse",
@@ -8313,9 +8477,11 @@
   },
   {
     "id": 146,
-    "title_simp": "补充本 146",
-    "title_trad": "補充本 146",
+    "hymn_num_simp": "补充本 146",
+    "hymn_num_trad": "補充本 146",
     "url": "https://www.hymnal.net/cn/hymn/ts/146",
+    "title_simp": "经历包罗万有的灵",
+    "title_trad": "經歷包羅萬有的靈",
     "lyrics": [
       {
         "type": "verse",
@@ -8417,9 +8583,11 @@
   },
   {
     "id": 147,
-    "title_simp": "补充本 147",
-    "title_trad": "補充本 147",
+    "hymn_num_simp": "补充本 147",
+    "hymn_num_trad": "補充本 147",
     "url": "https://www.hymnal.net/cn/hymn/ts/147",
+    "title_simp": "神成那灵，话作实际",
+    "title_trad": "神成那靈，話作實際",
     "lyrics": [
       {
         "type": "verse",
@@ -8521,9 +8689,11 @@
   },
   {
     "id": 148,
-    "title_simp": "补充本 148",
-    "title_trad": "補充本 148",
+    "hymn_num_simp": "补充本 148",
+    "hymn_num_trad": "補充本 148",
     "url": "https://www.hymnal.net/cn/hymn/ts/148",
+    "title_simp": "子同着父凭着灵",
+    "title_trad": "子同着父憑着靈",
     "lyrics": [
       {
         "type": "verse",
@@ -8737,9 +8907,11 @@
   },
   {
     "id": 149,
-    "title_simp": "补充本 149",
-    "title_trad": "補充本 149",
+    "hymn_num_simp": "补充本 149",
+    "hymn_num_trad": "補充本 149",
     "url": "https://www.hymnal.net/cn/hymn/ts/149",
+    "title_simp": "神儿子的名分",
+    "title_trad": "神兒子的名分",
     "lyrics": [
       {
         "type": "verse",
@@ -8817,9 +8989,11 @@
   },
   {
     "id": 150,
-    "title_simp": "补充本 150",
-    "title_trad": "補充本 150",
+    "hymn_num_simp": "补充本 150",
+    "hymn_num_trad": "補充本 150",
     "url": "https://www.hymnal.net/cn/hymn/ts/150",
+    "title_simp": "国度子民有福了",
+    "title_trad": "國度子民有福了",
     "lyrics": [
       {
         "type": "verse",
@@ -8865,9 +9039,11 @@
   },
   {
     "id": 201,
-    "title_simp": "补充本 201",
-    "title_trad": "補充本 201",
+    "hymn_num_simp": "补充本 201",
+    "hymn_num_trad": "補充本 201",
     "url": "https://www.hymnal.net/cn/hymn/ts/201",
+    "title_simp": "祂是天天更宝贝",
+    "title_trad": "祂是天天更寶貝",
     "lyrics": [
       {
         "type": "verse",
@@ -9033,9 +9209,11 @@
   },
   {
     "id": 202,
-    "title_simp": "补充本 202",
-    "title_trad": "補充本 202",
+    "hymn_num_simp": "补充本 202",
+    "hymn_num_trad": "補充本 202",
     "url": "https://www.hymnal.net/cn/hymn/ts/202",
+    "title_simp": "哦，说不出的喜乐",
+    "title_trad": "哦，說不出的喜樂",
     "lyrics": [
       {
         "type": "verse",
@@ -9221,9 +9399,11 @@
   },
   {
     "id": 203,
-    "title_simp": "补充本 203",
-    "title_trad": "補充本 203",
+    "hymn_num_simp": "补充本 203",
+    "hymn_num_trad": "補充本 203",
     "url": "https://www.hymnal.net/cn/hymn/ts/203",
+    "title_simp": "新鲜活泼的耶稣",
+    "title_trad": "新鮮活潑的耶穌",
     "lyrics": [
       {
         "type": "verse",
@@ -9267,9 +9447,11 @@
   },
   {
     "id": 204,
-    "title_simp": "补充本 204",
-    "title_trad": "補充本 204",
+    "hymn_num_simp": "补充本 204",
+    "hymn_num_trad": "補充本 204",
     "url": "https://www.hymnal.net/cn/hymn/ts/204",
+    "title_simp": "享受主的丰富",
+    "title_trad": "享受主的豐富",
     "lyrics": [
       {
         "type": "verse",
@@ -9301,9 +9483,11 @@
   },
   {
     "id": 205,
-    "title_simp": "补充本 205",
-    "title_trad": "補充本 205",
+    "hymn_num_simp": "补充本 205",
+    "hymn_num_trad": "補充本 205",
     "url": "https://www.hymnal.net/cn/hymn/ts/205",
+    "title_simp": "更多得着基督",
+    "title_trad": "更多得着基督",
     "lyrics": [
       {
         "type": "verse",
@@ -9357,9 +9541,11 @@
   },
   {
     "id": 206,
-    "title_simp": "补充本 206",
-    "title_trad": "補充本 206",
+    "hymn_num_simp": "补充本 206",
+    "hymn_num_trad": "補充本 206",
     "url": "https://www.hymnal.net/cn/hymn/ts/206",
+    "title_simp": "趁着今天多享受主",
+    "title_trad": "趁着今天多享受主",
     "lyrics": [
       {
         "type": "verse",
@@ -9515,9 +9701,11 @@
   },
   {
     "id": 207,
-    "title_simp": "补充本 207",
-    "title_trad": "補充本 207",
+    "hymn_num_simp": "补充本 207",
+    "hymn_num_trad": "補充本 207",
     "url": "https://www.hymnal.net/cn/hymn/ts/207",
+    "title_simp": "同来享受主的丰富",
+    "title_trad": "同來享受主的豐富",
     "lyrics": [
       {
         "type": "verse",
@@ -9557,9 +9745,11 @@
   },
   {
     "id": 208,
-    "title_simp": "补充本 208",
-    "title_trad": "補充本 208",
+    "hymn_num_simp": "补充本 208",
+    "hymn_num_trad": "補充本 208",
     "url": "https://www.hymnal.net/cn/hymn/ts/208",
+    "title_simp": "靠耶和华得的喜乐",
+    "title_trad": "靠耶和華得的喜樂",
     "lyrics": [
       {
         "type": "verse",
@@ -9589,9 +9779,11 @@
   },
   {
     "id": 209,
-    "title_simp": "补充本 209",
-    "title_trad": "補充本 209",
+    "hymn_num_simp": "补充本 209",
+    "hymn_num_trad": "補充本 209",
     "url": "https://www.hymnal.net/cn/hymn/ts/209",
+    "title_simp": "生命树",
+    "title_trad": "生命樹",
     "lyrics": [
       {
         "type": "verse",
@@ -9661,9 +9853,11 @@
   },
   {
     "id": 210,
-    "title_simp": "补充本 210",
-    "title_trad": "補充本 210",
+    "hymn_num_simp": "补充本 210",
+    "hymn_num_trad": "補充本 210",
     "url": "https://www.hymnal.net/cn/hymn/ts/210",
+    "title_simp": "神是我们食物",
+    "title_trad": "神是我們食物",
     "lyrics": [
       {
         "type": "verse",
@@ -9765,9 +9959,11 @@
   },
   {
     "id": 211,
-    "title_simp": "补充本 211",
-    "title_trad": "補充本 211",
+    "hymn_num_simp": "补充本 211",
+    "hymn_num_trad": "補充本 211",
     "url": "https://www.hymnal.net/cn/hymn/ts/211",
+    "title_simp": "人活着不是单靠食物",
+    "title_trad": "人活着不是單靠食物",
     "lyrics": [
       {
         "type": "verse",
@@ -9933,9 +10129,11 @@
   },
   {
     "id": 212,
-    "title_simp": "补充本 212",
-    "title_trad": "補充本 212",
+    "hymn_num_simp": "补充本 212",
+    "hymn_num_trad": "補充本 212",
     "url": "https://www.hymnal.net/cn/hymn/ts/212",
+    "title_simp": "你何微小",
+    "title_trad": "你何微小",
     "lyrics": [
       {
         "type": "verse",
@@ -10059,9 +10257,11 @@
   },
   {
     "id": 213,
-    "title_simp": "补充本 213",
-    "title_trad": "補充本 213",
+    "hymn_num_simp": "补充本 213",
+    "hymn_num_trad": "補充本 213",
     "url": "https://www.hymnal.net/cn/hymn/ts/213",
+    "title_simp": "尽情吃喝",
+    "title_trad": "盡情喫喝",
     "lyrics": [
       {
         "type": "verse",
@@ -10139,9 +10339,11 @@
   },
   {
     "id": 214,
-    "title_simp": "补充本 214",
-    "title_trad": "補充本 214",
+    "hymn_num_simp": "补充本 214",
+    "hymn_num_trad": "補充本 214",
     "url": "https://www.hymnal.net/cn/hymn/ts/214",
+    "title_simp": "得胜借着吃基督",
+    "title_trad": "得勝藉着喫基督",
     "lyrics": [
       {
         "type": "verse",
@@ -10331,9 +10533,11 @@
   },
   {
     "id": 215,
-    "title_simp": "补充本 215",
-    "title_trad": "補充本 215",
+    "hymn_num_simp": "补充本 215",
+    "hymn_num_trad": "補充本 215",
     "url": "https://www.hymnal.net/cn/hymn/ts/215",
+    "title_simp": "你们来吃",
+    "title_trad": "你們來喫",
     "lyrics": [
       {
         "type": "verse",
@@ -10395,9 +10599,11 @@
   },
   {
     "id": 216,
-    "title_simp": "补充本 216",
-    "title_trad": "補充本 216",
+    "hymn_num_simp": "补充本 216",
+    "hymn_num_trad": "補充本 216",
     "url": "https://www.hymnal.net/cn/hymn/ts/216",
+    "title_simp": "喝！吃！看！",
+    "title_trad": "喝！喫！看！",
     "lyrics": [
       {
         "type": "verse",
@@ -10581,9 +10787,11 @@
   },
   {
     "id": 217,
-    "title_simp": "补充本 217",
-    "title_trad": "補充本 217",
+    "hymn_num_simp": "补充本 217",
+    "hymn_num_trad": "補充本 217",
     "url": "https://www.hymnal.net/cn/hymn/ts/217",
+    "title_simp": "随流都必活",
+    "title_trad": "隨流都必活",
     "lyrics": [
       {
         "type": "verse",
@@ -10701,9 +10909,11 @@
   },
   {
     "id": 218,
-    "title_simp": "补充本 218",
-    "title_trad": "補充本 218",
+    "hymn_num_simp": "补充本 218",
+    "hymn_num_trad": "補充本 218",
     "url": "https://www.hymnal.net/cn/hymn/ts/218",
+    "title_simp": "我们在喝生命的水",
+    "title_trad": "我們在喝生命的水",
     "lyrics": [
       {
         "type": "verse",
@@ -10849,9 +11059,11 @@
   },
   {
     "id": 219,
-    "title_simp": "补充本 219",
-    "title_trad": "補充本 219",
+    "hymn_num_simp": "补充本 219",
+    "hymn_num_trad": "補充本 219",
     "url": "https://www.hymnal.net/cn/hymn/ts/219",
+    "title_simp": "活水涌流",
+    "title_trad": "活水湧流",
     "lyrics": [
       {
         "type": "verse",
@@ -10897,9 +11109,11 @@
   },
   {
     "id": 220,
-    "title_simp": "补充本 220",
-    "title_trad": "補充本 220",
+    "hymn_num_simp": "补充本 220",
+    "hymn_num_trad": "補充本 220",
     "url": "https://www.hymnal.net/cn/hymn/ts/220",
+    "title_simp": "饮于生命活水的泉源",
+    "title_trad": "飲於生命活水的泉源",
     "lyrics": [
       {
         "type": "verse",
@@ -11021,9 +11235,11 @@
   },
   {
     "id": 221,
-    "title_simp": "补充本 221",
-    "title_trad": "補充本 221",
+    "hymn_num_simp": "补充本 221",
+    "hymn_num_trad": "補充本 221",
     "url": "https://www.hymnal.net/cn/hymn/ts/221",
+    "title_simp": "畅饮于活泉",
+    "title_trad": "暢飲於活泉",
     "lyrics": [
       {
         "type": "verse",
@@ -11157,9 +11373,11 @@
   },
   {
     "id": 222,
-    "title_simp": "补充本 222",
-    "title_trad": "補充本 222",
+    "hymn_num_simp": "补充本 222",
+    "hymn_num_trad": "補充本 222",
     "url": "https://www.hymnal.net/cn/hymn/ts/222",
+    "title_simp": "呼吸生命气息",
+    "title_trad": "呼吸生命氣息",
     "lyrics": [
       {
         "type": "verse",
@@ -11189,9 +11407,11 @@
   },
   {
     "id": 223,
-    "title_simp": "补充本 223",
-    "title_trad": "補充本 223",
+    "hymn_num_simp": "补充本 223",
+    "hymn_num_trad": "補充本 223",
     "url": "https://www.hymnal.net/cn/hymn/ts/223",
+    "title_simp": "吃喝呼吸",
+    "title_trad": "喫喝呼吸",
     "lyrics": [
       {
         "type": "verse",
@@ -11245,9 +11465,11 @@
   },
   {
     "id": 224,
-    "title_simp": "补充本 224",
-    "title_trad": "補充本 224",
+    "hymn_num_simp": "补充本 224",
+    "hymn_num_trad": "補充本 224",
     "url": "https://www.hymnal.net/cn/hymn/ts/224",
+    "title_simp": "一呼一吸我吸主",
+    "title_trad": "一呼一吸我吸主",
     "lyrics": [
       {
         "type": "verse",
@@ -11373,9 +11595,11 @@
   },
   {
     "id": 225,
-    "title_simp": "补充本 225",
-    "title_trad": "補充本 225",
+    "hymn_num_simp": "补充本 225",
+    "hymn_num_trad": "補充本 225",
     "url": "https://www.hymnal.net/cn/hymn/ts/225",
+    "title_simp": "耶稣，何等的名",
+    "title_trad": "耶穌，何等的名",
     "lyrics": [
       {
         "type": "verse",
@@ -11629,9 +11853,11 @@
   },
   {
     "id": 226,
-    "title_simp": "补充本 226",
-    "title_trad": "補充本 226",
+    "hymn_num_simp": "补充本 226",
+    "hymn_num_trad": "補充本 226",
     "url": "https://www.hymnal.net/cn/hymn/ts/226",
+    "title_simp": "有一婴孩",
+    "title_trad": "有一嬰孩",
     "lyrics": [
       {
         "type": "verse",
@@ -11669,9 +11895,11 @@
   },
   {
     "id": 227,
-    "title_simp": "补充本 227",
-    "title_trad": "補充本 227",
+    "hymn_num_simp": "补充本 227",
+    "hymn_num_trad": "補充本 227",
     "url": "https://www.hymnal.net/cn/hymn/ts/227",
+    "title_simp": "祂的名是奇妙",
+    "title_trad": "祂的名是奇妙",
     "lyrics": [
       {
         "type": "verse",
@@ -11717,9 +11945,11 @@
   },
   {
     "id": 228,
-    "title_simp": "补充本 228",
-    "title_trad": "補充本 228",
+    "hymn_num_simp": "补充本 228",
+    "hymn_num_trad": "補充本 228",
     "url": "https://www.hymnal.net/cn/hymn/ts/228",
+    "title_simp": "呼吸才是路",
+    "title_trad": "呼吸纔是路",
     "lyrics": [
       {
         "type": "verse",
@@ -11813,9 +12043,11 @@
   },
   {
     "id": 229,
-    "title_simp": "补充本 229",
-    "title_trad": "補充本 229",
+    "hymn_num_simp": "补充本 229",
+    "hymn_num_trad": "補充本 229",
     "url": "https://www.hymnal.net/cn/hymn/ts/229",
+    "title_simp": "主名何甘甜",
+    "title_trad": "主名何甘甜",
     "lyrics": [
       {
         "type": "verse",
@@ -11839,9 +12071,11 @@
   },
   {
     "id": 230,
-    "title_simp": "补充本 230",
-    "title_trad": "補充本 230",
+    "hymn_num_simp": "补充本 230",
+    "hymn_num_trad": "補充本 230",
     "url": "https://www.hymnal.net/cn/hymn/ts/230",
+    "title_simp": "找到最简单的路",
+    "title_trad": "找到最簡單的路",
     "lyrics": [
       {
         "type": "verse",
@@ -11883,9 +12117,11 @@
   },
   {
     "id": 231,
-    "title_simp": "补充本 231",
-    "title_trad": "補充本 231",
+    "hymn_num_simp": "补充本 231",
+    "hymn_num_trad": "補充本 231",
     "url": "https://www.hymnal.net/cn/hymn/ts/231",
+    "title_simp": "每当我喊主耶稣",
+    "title_trad": "每當我喊主耶穌",
     "lyrics": [
       {
         "type": "verse",
@@ -11987,9 +12223,11 @@
   },
   {
     "id": 232,
-    "title_simp": "补充本 232",
-    "title_trad": "補充本 232",
+    "hymn_num_simp": "补充本 232",
+    "hymn_num_trad": "補充本 232",
     "url": "https://www.hymnal.net/cn/hymn/ts/232",
+    "title_simp": "当你说‘主’",
+    "title_trad": "當你說‘主’",
     "lyrics": [
       {
         "type": "verse",
@@ -12025,9 +12263,11 @@
   },
   {
     "id": 233,
-    "title_simp": "补充本 233",
-    "title_trad": "補充本 233",
+    "hymn_num_simp": "补充本 233",
+    "hymn_num_trad": "補充本 233",
     "url": "https://www.hymnal.net/cn/hymn/ts/233",
+    "title_simp": "呼喊‘哦，主耶稣’",
+    "title_trad": "呼喊‘哦，主耶穌’",
     "lyrics": [
       {
         "type": "verse",
@@ -12061,9 +12301,11 @@
   },
   {
     "id": 234,
-    "title_simp": "补充本 234",
-    "title_trad": "補充本 234",
+    "hymn_num_simp": "补充本 234",
+    "hymn_num_trad": "補充本 234",
     "url": "https://www.hymnal.net/cn/hymn/ts/234",
+    "title_simp": "‘哦，主耶稣！’喊祂名",
+    "title_trad": "‘哦，主耶穌！’喊祂名",
     "lyrics": [
       {
         "type": "verse",
@@ -12203,9 +12445,11 @@
   },
   {
     "id": 235,
-    "title_simp": "补充本 235",
-    "title_trad": "補充本 235",
+    "hymn_num_simp": "补充本 235",
+    "hymn_num_trad": "補充本 235",
     "url": "https://www.hymnal.net/cn/hymn/ts/235",
+    "title_simp": "时刻呼喊主名",
+    "title_trad": "時刻呼喊主名",
     "lyrics": [
       {
         "type": "verse",
@@ -12251,9 +12495,11 @@
   },
   {
     "id": 236,
-    "title_simp": "补充本 236",
-    "title_trad": "補充本 236",
+    "hymn_num_simp": "补充本 236",
+    "hymn_num_trad": "補充本 236",
     "url": "https://www.hymnal.net/cn/hymn/ts/236",
+    "title_simp": "终日将祂名呼喊",
+    "title_trad": "終日將祂名呼喊",
     "lyrics": [
       {
         "type": "verse",
@@ -12285,9 +12531,11 @@
   },
   {
     "id": 237,
-    "title_simp": "补充本 237",
-    "title_trad": "補充本 237",
+    "hymn_num_simp": "补充本 237",
+    "hymn_num_trad": "補充本 237",
     "url": "https://www.hymnal.net/cn/hymn/ts/237",
+    "title_simp": "终日呼喊主",
+    "title_trad": "終日呼喊主",
     "lyrics": [
       {
         "type": "verse",
@@ -12373,9 +12621,11 @@
   },
   {
     "id": 238,
-    "title_simp": "补充本 238",
-    "title_trad": "補充本 238",
+    "hymn_num_simp": "补充本 238",
+    "hymn_num_trad": "補充本 238",
     "url": "https://www.hymnal.net/cn/hymn/ts/238",
+    "title_simp": "在主耶稣名下就必得胜",
+    "title_trad": "在主耶穌名下就必得勝",
     "lyrics": [
       {
         "type": "verse",
@@ -12409,9 +12659,11 @@
   },
   {
     "id": 239,
-    "title_simp": "补充本 239",
-    "title_trad": "補充本 239",
+    "hymn_num_simp": "补充本 239",
+    "hymn_num_trad": "補充本 239",
     "url": "https://www.hymnal.net/cn/hymn/ts/239",
+    "title_simp": "我奉耶稣基督的名",
+    "title_trad": "我奉耶穌基督的名",
     "lyrics": [
       {
         "type": "verse",
@@ -12469,9 +12721,11 @@
   },
   {
     "id": 240,
-    "title_simp": "补充本 240",
-    "title_trad": "補充本 240",
+    "hymn_num_simp": "补充本 240",
+    "hymn_num_trad": "補充本 240",
     "url": "https://www.hymnal.net/cn/hymn/ts/240",
+    "title_simp": "基督美地丰富之地",
+    "title_trad": "基督美地豐富之地",
     "lyrics": [
       {
         "type": "verse",
@@ -12591,9 +12845,11 @@
   },
   {
     "id": 241,
-    "title_simp": "补充本 241",
-    "title_trad": "補充本 241",
+    "hymn_num_simp": "补充本 241",
+    "hymn_num_trad": "補充本 241",
     "url": "https://www.hymnal.net/cn/hymn/ts/241",
+    "title_simp": "基督是美地",
+    "title_trad": "基督是美地",
     "lyrics": [
       {
         "type": "verse",
@@ -12787,9 +13043,11 @@
   },
   {
     "id": 242,
-    "title_simp": "补充本 242",
-    "title_trad": "補充本 242",
+    "hymn_num_simp": "补充本 242",
+    "hymn_num_trad": "補充本 242",
     "url": "https://www.hymnal.net/cn/hymn/ts/242",
+    "title_simp": "美地，神已赐给我们",
+    "title_trad": "美地，神已賜給我們",
     "lyrics": [
       {
         "type": "verse",
@@ -12861,9 +13119,11 @@
   },
   {
     "id": 243,
-    "title_simp": "补充本 243",
-    "title_trad": "補充本 243",
+    "hymn_num_simp": "补充本 243",
+    "hymn_num_trad": "補充本 243",
     "url": "https://www.hymnal.net/cn/hymn/ts/243",
+    "title_simp": "来得这地",
+    "title_trad": "來得這地",
     "lyrics": [
       {
         "type": "verse",
@@ -12985,9 +13245,11 @@
   },
   {
     "id": 244,
-    "title_simp": "补充本 244",
-    "title_trad": "補充本 244",
+    "hymn_num_simp": "补充本 244",
+    "hymn_num_trad": "補充本 244",
     "url": "https://www.hymnal.net/cn/hymn/ts/244",
+    "title_simp": "行走在这美地",
+    "title_trad": "行走在這美地",
     "lyrics": [
       {
         "type": "verse",
@@ -13021,9 +13283,11 @@
   },
   {
     "id": 245,
-    "title_simp": "补充本 245",
-    "title_trad": "補充本 245",
+    "hymn_num_simp": "补充本 245",
+    "hymn_num_trad": "補充本 245",
     "url": "https://www.hymnal.net/cn/hymn/ts/245",
+    "title_simp": "我们在美地",
+    "title_trad": "我們在美地",
     "lyrics": [
       {
         "type": "verse",
@@ -13083,9 +13347,11 @@
   },
   {
     "id": 246,
-    "title_simp": "补充本 246",
-    "title_trad": "補充本 246",
+    "hymn_num_simp": "补充本 246",
+    "hymn_num_trad": "補充本 246",
     "url": "https://www.hymnal.net/cn/hymn/ts/246",
+    "title_simp": "享受，经营，行走",
+    "title_trad": "享受，經營，行走",
     "lyrics": [
       {
         "type": "verse",
@@ -13139,9 +13405,11 @@
   },
   {
     "id": 247,
-    "title_simp": "补充本 247",
-    "title_trad": "補充本 247",
+    "hymn_num_simp": "补充本 247",
+    "hymn_num_trad": "補充本 247",
     "url": "https://www.hymnal.net/cn/hymn/ts/247",
+    "title_simp": "在美地上经营",
+    "title_trad": "在美地上經營",
     "lyrics": [
       {
         "type": "verse",
@@ -13291,9 +13559,11 @@
   },
   {
     "id": 248,
-    "title_simp": "补充本 248",
-    "title_trad": "補充本 248",
+    "hymn_num_simp": "补充本 248",
+    "hymn_num_trad": "補充本 248",
     "url": "https://www.hymnal.net/cn/hymn/ts/248",
+    "title_simp": "与神和好，由神而生",
+    "title_trad": "與神和好，由神而生",
     "lyrics": [
       {
         "type": "verse",
@@ -13409,9 +13679,11 @@
   },
   {
     "id": 249,
-    "title_simp": "补充本 249",
-    "title_trad": "補充本 249",
+    "hymn_num_simp": "补充本 249",
+    "hymn_num_trad": "補充本 249",
     "url": "https://www.hymnal.net/cn/hymn/ts/249",
+    "title_simp": "耶稣是首先，耶稣是末后",
+    "title_trad": "耶穌是首先，耶穌是末後",
     "lyrics": [
       {
         "type": "verse",
@@ -13601,9 +13873,11 @@
   },
   {
     "id": 250,
-    "title_simp": "补充本 250",
-    "title_trad": "補充本 250",
+    "hymn_num_simp": "补充本 250",
+    "hymn_num_trad": "補充本 250",
     "url": "https://www.hymnal.net/cn/hymn/ts/250",
+    "title_simp": "我已寻得一生命泉源",
+    "title_trad": "我已尋得一生命泉源",
     "lyrics": [
       {
         "type": "verse",
@@ -13769,9 +14043,11 @@
   },
   {
     "id": 251,
-    "title_simp": "补充本 251",
-    "title_trad": "補充本 251",
+    "hymn_num_simp": "补充本 251",
+    "hymn_num_trad": "補充本 251",
     "url": "https://www.hymnal.net/cn/hymn/ts/251",
+    "title_simp": "吃喝基督，成为新妇",
+    "title_trad": "喫喝基督，成爲新婦",
     "lyrics": [
       {
         "type": "verse",
@@ -14001,9 +14277,11 @@
   },
   {
     "id": 252,
-    "title_simp": "补充本 252",
-    "title_trad": "補充本 252",
+    "hymn_num_simp": "补充本 252",
+    "hymn_num_trad": "補充本 252",
     "url": "https://www.hymnal.net/cn/hymn/ts/252",
+    "title_simp": "公义日头，医治之翼",
+    "title_trad": "公義日頭，醫治之翼",
     "lyrics": [
       {
         "type": "verse",
@@ -14089,9 +14367,11 @@
   },
   {
     "id": 253,
-    "title_simp": "补充本 253",
-    "title_trad": "補充本 253",
+    "hymn_num_simp": "补充本 253",
+    "hymn_num_trad": "補充本 253",
     "url": "https://www.hymnal.net/cn/hymn/ts/253",
+    "title_simp": "基督美地，包罗万有",
+    "title_trad": "基督美地，包羅萬有",
     "lyrics": [
       {
         "type": "verse",
@@ -14241,9 +14521,11 @@
   },
   {
     "id": 254,
-    "title_simp": "补充本 254",
-    "title_trad": "補充本 254",
+    "hymn_num_simp": "补充本 254",
+    "hymn_num_trad": "補充本 254",
     "url": "https://www.hymnal.net/cn/hymn/ts/254",
+    "title_simp": "住在葡萄树上",
+    "title_trad": "住在葡萄樹上",
     "lyrics": [
       {
         "type": "verse",
@@ -14393,9 +14675,11 @@
   },
   {
     "id": 255,
-    "title_simp": "补充本 255",
-    "title_trad": "補充本 255",
+    "hymn_num_simp": "补充本 255",
+    "hymn_num_trad": "補充本 255",
     "url": "https://www.hymnal.net/cn/hymn/ts/255",
+    "title_simp": "浩大能力向着召会",
+    "title_trad": "浩大能力向着召會",
     "lyrics": [
       {
         "type": "verse",
@@ -14497,9 +14781,11 @@
   },
   {
     "id": 256,
-    "title_simp": "补充本 256",
-    "title_trad": "補充本 256",
+    "hymn_num_simp": "补充本 256",
+    "hymn_num_trad": "補充本 256",
     "url": "https://www.hymnal.net/cn/hymn/ts/256",
+    "title_simp": "经历大能，得着加力",
+    "title_trad": "經歷大能，得着加力",
     "lyrics": [
       {
         "type": "verse",
@@ -14601,9 +14887,11 @@
   },
   {
     "id": 257,
-    "title_simp": "补充本 257",
-    "title_trad": "補充本 257",
+    "hymn_num_simp": "补充本 257",
+    "hymn_num_trad": "補充本 257",
     "url": "https://www.hymnal.net/cn/hymn/ts/257",
+    "title_simp": "认识复活",
+    "title_trad": "認識復活",
     "lyrics": [
       {
         "type": "verse",
@@ -14993,9 +15281,11 @@
   },
   {
     "id": 258,
-    "title_simp": "补充本 258",
-    "title_trad": "補充本 258",
+    "hymn_num_simp": "补充本 258",
+    "hymn_num_trad": "補充本 258",
     "url": "https://www.hymnal.net/cn/hymn/ts/258",
+    "title_simp": "我在你内，你在我里",
+    "title_trad": "我在你內，你在我裏",
     "lyrics": [
       {
         "type": "verse",
@@ -15193,9 +15483,11 @@
   },
   {
     "id": 301,
-    "title_simp": "补充本 301",
-    "title_trad": "補充本 301",
+    "hymn_num_simp": "补充本 301",
+    "hymn_num_trad": "補充本 301",
     "url": "https://www.hymnal.net/cn/hymn/ts/301",
+    "title_simp": "耶稣！我爱你",
+    "title_trad": "耶穌！我愛你",
     "lyrics": [
       {
         "type": "verse",
@@ -15329,9 +15621,11 @@
   },
   {
     "id": 302,
-    "title_simp": "补充本 302",
-    "title_trad": "補充本 302",
+    "hymn_num_simp": "补充本 302",
+    "hymn_num_trad": "補充本 302",
     "url": "https://www.hymnal.net/cn/hymn/ts/302",
+    "title_simp": "你名如同倒出香膏",
+    "title_trad": "你名如同倒出香膏",
     "lyrics": [
       {
         "type": "verse",
@@ -15427,9 +15721,11 @@
   },
   {
     "id": 303,
-    "title_simp": "补充本 303",
-    "title_trad": "補充本 303",
+    "hymn_num_simp": "补充本 303",
+    "hymn_num_trad": "補充本 303",
     "url": "https://www.hymnal.net/cn/hymn/ts/303",
+    "title_simp": "至美的享受",
+    "title_trad": "至美的享受",
     "lyrics": [
       {
         "type": "verse",
@@ -15563,9 +15859,11 @@
   },
   {
     "id": 304,
-    "title_simp": "补充本 304",
-    "title_trad": "補充本 304",
+    "hymn_num_simp": "补充本 304",
+    "hymn_num_trad": "補充本 304",
     "url": "https://www.hymnal.net/cn/hymn/ts/304",
+    "title_simp": "同往葡萄园去",
+    "title_trad": "同往葡萄園去",
     "lyrics": [
       {
         "type": "verse",
@@ -15631,9 +15929,11 @@
   },
   {
     "id": 305,
-    "title_simp": "补充本 305",
-    "title_trad": "補充本 305",
+    "hymn_num_simp": "补充本 305",
+    "hymn_num_trad": "補充本 305",
     "url": "https://www.hymnal.net/cn/hymn/ts/305",
+    "title_simp": "主耶稣，你美丽夺了我心",
+    "title_trad": "主耶穌，你美麗奪了我心",
     "lyrics": [
       {
         "type": "verse",
@@ -15765,9 +16065,11 @@
   },
   {
     "id": 306,
-    "title_simp": "补充本 306",
-    "title_trad": "補充本 306",
+    "hymn_num_simp": "补充本 306",
+    "hymn_num_trad": "補充本 306",
     "url": "https://www.hymnal.net/cn/hymn/ts/306",
+    "title_simp": "我爱耶稣",
+    "title_trad": "我愛耶穌",
     "lyrics": [
       {
         "type": "verse",
@@ -15789,9 +16091,11 @@
   },
   {
     "id": 307,
-    "title_simp": "补充本 307",
-    "title_trad": "補充本 307",
+    "hymn_num_simp": "补充本 307",
+    "hymn_num_trad": "補充本 307",
     "url": "https://www.hymnal.net/cn/hymn/ts/307",
+    "title_simp": "我何等爱耶稣",
+    "title_trad": "我何等愛耶穌",
     "lyrics": [
       {
         "type": "verse",
@@ -15925,9 +16229,11 @@
   },
   {
     "id": 308,
-    "title_simp": "补充本 308",
-    "title_trad": "補充本 308",
+    "hymn_num_simp": "补充本 308",
+    "hymn_num_trad": "補充本 308",
     "url": "https://www.hymnal.net/cn/hymn/ts/308",
+    "title_simp": "专一爱你",
+    "title_trad": "專一愛你",
     "lyrics": [
       {
         "type": "verse",
@@ -16015,9 +16321,11 @@
   },
   {
     "id": 309,
-    "title_simp": "补充本 309",
-    "title_trad": "補充本 309",
+    "hymn_num_simp": "补充本 309",
+    "hymn_num_trad": "補充本 309",
     "url": "https://www.hymnal.net/cn/hymn/ts/309",
+    "title_simp": "全心爱你",
+    "title_trad": "全心愛你",
     "lyrics": [
       {
         "type": "verse",
@@ -16139,9 +16447,11 @@
   },
   {
     "id": 310,
-    "title_simp": "补充本 310",
-    "title_trad": "補充本 310",
+    "hymn_num_simp": "补充本 310",
+    "hymn_num_trad": "補充本 310",
     "url": "https://www.hymnal.net/cn/hymn/ts/310",
+    "title_simp": "单单爱你",
+    "title_trad": "單單愛你",
     "lyrics": [
       {
         "type": "verse",
@@ -16219,9 +16529,11 @@
   },
   {
     "id": 311,
-    "title_simp": "补充本 311",
-    "title_trad": "補充本 311",
+    "hymn_num_simp": "补充本 311",
+    "hymn_num_trad": "補充本 311",
     "url": "https://www.hymnal.net/cn/hymn/ts/311",
+    "title_simp": "沉醉在你爱里",
+    "title_trad": "沉醉在你愛裏",
     "lyrics": [
       {
         "type": "verse",
@@ -16271,9 +16583,11 @@
   },
   {
     "id": 312,
-    "title_simp": "补充本 312",
-    "title_trad": "補充本 312",
+    "hymn_num_simp": "补充本 312",
+    "hymn_num_trad": "補充本 312",
     "url": "https://www.hymnal.net/cn/hymn/ts/312",
+    "title_simp": "浸透在祂爱里",
+    "title_trad": "浸透在祂愛裏",
     "lyrics": [
       {
         "type": "verse",
@@ -16343,9 +16657,11 @@
   },
   {
     "id": 313,
-    "title_simp": "补充本 313",
-    "title_trad": "補充本 313",
+    "hymn_num_simp": "补充本 313",
+    "hymn_num_trad": "補充本 313",
     "url": "https://www.hymnal.net/cn/hymn/ts/313",
+    "title_simp": "愿我爱全归你",
+    "title_trad": "願我愛全歸你",
     "lyrics": [
       {
         "type": "verse",
@@ -16401,9 +16717,11 @@
   },
   {
     "id": 314,
-    "title_simp": "补充本 314",
-    "title_trad": "補充本 314",
+    "hymn_num_simp": "补充本 314",
+    "hymn_num_trad": "補充本 314",
     "url": "https://www.hymnal.net/cn/hymn/ts/314",
+    "title_simp": "我们与爱的耶稣",
+    "title_trad": "我們與愛的耶穌",
     "lyrics": [
       {
         "type": "verse",
@@ -16455,9 +16773,11 @@
   },
   {
     "id": 315,
-    "title_simp": "补充本 315",
-    "title_trad": "補充本 315",
+    "hymn_num_simp": "补充本 315",
+    "hymn_num_trad": "補充本 315",
     "url": "https://www.hymnal.net/cn/hymn/ts/315",
+    "title_simp": "一切在于爱耶稣",
+    "title_trad": "一切在於愛耶穌",
     "lyrics": [
       {
         "type": "verse",
@@ -16591,9 +16911,11 @@
   },
   {
     "id": 316,
-    "title_simp": "补充本 316",
-    "title_trad": "補充本 316",
+    "hymn_num_simp": "补充本 316",
+    "hymn_num_trad": "補充本 316",
     "url": "https://www.hymnal.net/cn/hymn/ts/316",
+    "title_simp": "恩主你是我至爱",
+    "title_trad": "恩主你是我至愛",
     "lyrics": [
       {
         "type": "verse",
@@ -16679,9 +17001,11 @@
   },
   {
     "id": 317,
-    "title_simp": "补充本 317",
-    "title_trad": "補充本 317",
+    "hymn_num_simp": "补充本 317",
+    "hymn_num_trad": "補充本 317",
     "url": "https://www.hymnal.net/cn/hymn/ts/317",
+    "title_simp": "除你外，在天上我有谁呢",
+    "title_trad": "除你外，在天上我有誰呢",
     "lyrics": [
       {
         "type": "chorus",
@@ -16793,9 +17117,11 @@
   },
   {
     "id": 318,
-    "title_simp": "补充本 318",
-    "title_trad": "補充本 318",
+    "hymn_num_simp": "补充本 318",
+    "hymn_num_trad": "補充本 318",
     "url": "https://www.hymnal.net/cn/hymn/ts/318",
+    "title_simp": "头一次的爱",
+    "title_trad": "頭一次的愛",
     "lyrics": [
       {
         "type": "verse",
@@ -16831,9 +17157,11 @@
   },
   {
     "id": 319,
-    "title_simp": "补充本 319",
-    "title_trad": "補充本 319",
+    "hymn_num_simp": "补充本 319",
+    "hymn_num_trad": "補充本 319",
     "url": "https://www.hymnal.net/cn/hymn/ts/319",
+    "title_simp": "你，你，你常在我心中",
+    "title_trad": "你，你，你常在我心中",
     "lyrics": [
       {
         "type": "verse",
@@ -16887,9 +17215,11 @@
   },
   {
     "id": 320,
-    "title_simp": "补充本 320",
-    "title_trad": "補充本 320",
+    "hymn_num_simp": "补充本 320",
+    "hymn_num_trad": "補充本 320",
     "url": "https://www.hymnal.net/cn/hymn/ts/320",
+    "title_simp": "轻诉",
+    "title_trad": "輕訴",
     "lyrics": [
       {
         "type": "verse",
@@ -16927,9 +17257,11 @@
   },
   {
     "id": 321,
-    "title_simp": "补充本 321",
-    "title_trad": "補充本 321",
+    "hymn_num_simp": "补充本 321",
+    "hymn_num_trad": "補充本 321",
     "url": "https://www.hymnal.net/cn/hymn/ts/321",
+    "title_simp": "我怎能离开主",
+    "title_trad": "我怎能離開主",
     "lyrics": [
       {
         "type": "verse",
@@ -16983,9 +17315,11 @@
   },
   {
     "id": 322,
-    "title_simp": "补充本 322",
-    "title_trad": "補充本 322",
+    "hymn_num_simp": "补充本 322",
+    "hymn_num_trad": "補充本 322",
     "url": "https://www.hymnal.net/cn/hymn/ts/322",
+    "title_simp": "我今是单纯敞开我心",
+    "title_trad": "我今是單純敞開我心",
     "lyrics": [
       {
         "type": "verse",
@@ -17071,9 +17405,11 @@
   },
   {
     "id": 323,
-    "title_simp": "补充本 323",
-    "title_trad": "補充本 323",
+    "hymn_num_simp": "补充本 323",
+    "hymn_num_trad": "補充本 323",
     "url": "https://www.hymnal.net/cn/hymn/ts/323",
+    "title_simp": "转，转，我转向主",
+    "title_trad": "轉，轉，我轉向主",
     "lyrics": [
       {
         "type": "verse",
@@ -17163,9 +17499,11 @@
   },
   {
     "id": 324,
-    "title_simp": "补充本 324",
-    "title_trad": "補充本 324",
+    "hymn_num_simp": "补充本 324",
+    "hymn_num_trad": "補充本 324",
     "url": "https://www.hymnal.net/cn/hymn/ts/324",
+    "title_simp": "爱的共鸣",
+    "title_trad": "愛的共鳴",
     "lyrics": [
       {
         "type": "verse",
@@ -17233,9 +17571,11 @@
   },
   {
     "id": 325,
-    "title_simp": "补充本 325",
-    "title_trad": "補充本 325",
+    "hymn_num_simp": "补充本 325",
+    "hymn_num_trad": "補充本 325",
     "url": "https://www.hymnal.net/cn/hymn/ts/325",
+    "title_simp": "从我心涌出了音乐",
+    "title_trad": "從我心湧出了音樂",
     "lyrics": [
       {
         "type": "verse",
@@ -17291,9 +17631,11 @@
   },
   {
     "id": 326,
-    "title_simp": "补充本 326",
-    "title_trad": "補充本 326",
+    "hymn_num_simp": "补充本 326",
+    "hymn_num_trad": "補充本 326",
     "url": "https://www.hymnal.net/cn/hymn/ts/326",
+    "title_simp": "是你的爱",
+    "title_trad": "是你的愛",
     "lyrics": [
       {
         "type": "verse",
@@ -17411,9 +17753,11 @@
   },
   {
     "id": 327,
-    "title_simp": "补充本 327",
-    "title_trad": "補充本 327",
+    "hymn_num_simp": "补充本 327",
+    "hymn_num_trad": "補充本 327",
     "url": "https://www.hymnal.net/cn/hymn/ts/327",
+    "title_simp": "主阿，我爱你",
+    "title_trad": "主阿，我愛你",
     "lyrics": [
       {
         "type": "verse",
@@ -17453,9 +17797,11 @@
   },
   {
     "id": 328,
-    "title_simp": "补充本 328",
-    "title_trad": "補充本 328",
+    "hymn_num_simp": "补充本 328",
+    "hymn_num_trad": "補充本 328",
     "url": "https://www.hymnal.net/cn/hymn/ts/328",
+    "title_simp": "神圣罗曼史",
+    "title_trad": "神聖羅曼史",
     "lyrics": [
       {
         "type": "verse",
@@ -17609,9 +17955,11 @@
   },
   {
     "id": 329,
-    "title_simp": "补充本 329",
-    "title_trad": "補充本 329",
+    "hymn_num_simp": "补充本 329",
+    "hymn_num_trad": "補充本 329",
     "url": "https://www.hymnal.net/cn/hymn/ts/329",
+    "title_simp": "惟见荣耀里的基督",
+    "title_trad": "惟見榮耀裏的基督",
     "lyrics": [
       {
         "type": "verse",
@@ -17641,9 +17989,11 @@
   },
   {
     "id": 330,
-    "title_simp": "补充本 330",
-    "title_trad": "補充本 330",
+    "hymn_num_simp": "补充本 330",
+    "hymn_num_trad": "補充本 330",
     "url": "https://www.hymnal.net/cn/hymn/ts/330",
+    "title_simp": "让我伫立你背后",
+    "title_trad": "讓我佇立你背後",
     "lyrics": [
       {
         "type": "verse",
@@ -17761,9 +18111,11 @@
   },
   {
     "id": 331,
-    "title_simp": "补充本 331",
-    "title_trad": "補充本 331",
+    "hymn_num_simp": "补充本 331",
+    "hymn_num_trad": "補充本 331",
     "url": "https://www.hymnal.net/cn/hymn/ts/331",
+    "title_simp": "我是属主",
+    "title_trad": "我是屬主",
     "lyrics": [
       {
         "type": "verse",
@@ -17833,9 +18185,11 @@
   },
   {
     "id": 332,
-    "title_simp": "补充本 332",
-    "title_trad": "補充本 332",
+    "hymn_num_simp": "补充本 332",
+    "hymn_num_trad": "補充本 332",
     "url": "https://www.hymnal.net/cn/hymn/ts/332",
+    "title_simp": "仅仅一摸，亲爱主",
+    "title_trad": "僅僅一摸，親愛主",
     "lyrics": [
       {
         "type": "verse",
@@ -17985,9 +18339,11 @@
   },
   {
     "id": 333,
-    "title_simp": "补充本 333",
-    "title_trad": "補充本 333",
+    "hymn_num_simp": "补充本 333",
+    "hymn_num_trad": "補充本 333",
     "url": "https://www.hymnal.net/cn/hymn/ts/333",
+    "title_simp": "我爱我主，非用天然之爱",
+    "title_trad": "我愛我主，非用天然之愛",
     "lyrics": [
       {
         "type": "verse",
@@ -18033,9 +18389,11 @@
   },
   {
     "id": 334,
-    "title_simp": "补充本 334",
-    "title_trad": "補充本 334",
+    "hymn_num_simp": "补充本 334",
+    "hymn_num_trad": "補充本 334",
     "url": "https://www.hymnal.net/cn/hymn/ts/334",
+    "title_simp": "与主情深",
+    "title_trad": "與主情深",
     "lyrics": [
       {
         "type": "verse",
@@ -18209,9 +18567,11 @@
   },
   {
     "id": 335,
-    "title_simp": "补充本 335",
-    "title_trad": "補充本 335",
+    "hymn_num_simp": "补充本 335",
+    "hymn_num_trad": "補充本 335",
     "url": "https://www.hymnal.net/cn/hymn/ts/335",
+    "title_simp": "上好之爱来爱你",
+    "title_trad": "上好之愛來愛你",
     "lyrics": [
       {
         "type": "verse",
@@ -18297,9 +18657,11 @@
   },
   {
     "id": 336,
-    "title_simp": "补充本 336",
-    "title_trad": "補充本 336",
+    "hymn_num_simp": "补充本 336",
+    "hymn_num_trad": "補充本 336",
     "url": "https://www.hymnal.net/cn/hymn/ts/336",
+    "title_simp": "何处寻祂",
+    "title_trad": "何處尋祂",
     "lyrics": [
       {
         "type": "verse",
@@ -18465,9 +18827,11 @@
   },
   {
     "id": 337,
-    "title_simp": "补充本 337",
-    "title_trad": "補充本 337",
+    "hymn_num_simp": "补充本 337",
+    "hymn_num_trad": "補充本 337",
     "url": "https://www.hymnal.net/cn/hymn/ts/337",
+    "title_simp": "一件美事",
+    "title_trad": "一件美事",
     "lyrics": [
       {
         "type": "verse",
@@ -18505,9 +18869,11 @@
   },
   {
     "id": 338,
-    "title_simp": "补充本 338",
-    "title_trad": "補充本 338",
+    "hymn_num_simp": "补充本 338",
+    "hymn_num_trad": "補充本 338",
     "url": "https://www.hymnal.net/cn/hymn/ts/338",
+    "title_simp": "主耶稣，我是真爱你",
+    "title_trad": "主耶穌，我是真愛你",
     "lyrics": [
       {
         "type": "verse",
@@ -18561,9 +18927,11 @@
   },
   {
     "id": 339,
-    "title_simp": "补充本 339",
-    "title_trad": "補充本 339",
+    "hymn_num_simp": "补充本 339",
+    "hymn_num_trad": "補充本 339",
     "url": "https://www.hymnal.net/cn/hymn/ts/339",
+    "title_simp": "主，你保守我心",
+    "title_trad": "主，你保守我心",
     "lyrics": [
       {
         "type": "verse",
@@ -18665,9 +19033,11 @@
   },
   {
     "id": 340,
-    "title_simp": "补充本 340",
-    "title_trad": "補充本 340",
+    "hymn_num_simp": "补充本 340",
+    "hymn_num_trad": "補充本 340",
     "url": "https://www.hymnal.net/cn/hymn/ts/340",
+    "title_simp": "主，我爱你逐日益深挚",
+    "title_trad": "主，我愛你逐日益深摯",
     "lyrics": [
       {
         "type": "verse",
@@ -18781,9 +19151,11 @@
   },
   {
     "id": 341,
-    "title_simp": "补充本 341",
-    "title_trad": "補充本 341",
+    "hymn_num_simp": "补充本 341",
+    "hymn_num_trad": "補充本 341",
     "url": "https://www.hymnal.net/cn/hymn/ts/341",
+    "title_simp": "愿一生爱你",
+    "title_trad": "願一生愛你",
     "lyrics": [
       {
         "type": "verse",
@@ -18859,9 +19231,11 @@
   },
   {
     "id": 342,
-    "title_simp": "补充本 342",
-    "title_trad": "補充本 342",
+    "hymn_num_simp": "补充本 342",
+    "hymn_num_trad": "補充本 342",
     "url": "https://www.hymnal.net/cn/hymn/ts/342",
+    "title_simp": "爱的交通",
+    "title_trad": "愛的交通",
     "lyrics": [
       {
         "type": "verse",
@@ -19027,9 +19401,11 @@
   },
   {
     "id": 343,
-    "title_simp": "补充本 343",
-    "title_trad": "補充本 343",
+    "hymn_num_simp": "补充本 343",
+    "hymn_num_trad": "補充本 343",
     "url": "https://www.hymnal.net/cn/hymn/ts/343",
+    "title_simp": "佳偶的歌",
+    "title_trad": "佳偶的歌",
     "lyrics": [
       {
         "type": "verse",
@@ -19131,9 +19507,11 @@
   },
   {
     "id": 344,
-    "title_simp": "补充本 344",
-    "title_trad": "補充本 344",
+    "hymn_num_simp": "补充本 344",
+    "hymn_num_trad": "補充本 344",
     "url": "https://www.hymnal.net/cn/hymn/ts/344",
+    "title_simp": "爱中牧养",
+    "title_trad": "愛中牧養",
     "lyrics": [
       {
         "type": "verse",
@@ -19235,9 +19613,11 @@
   },
   {
     "id": 345,
-    "title_simp": "补充本 345",
-    "title_trad": "補充本 345",
+    "hymn_num_simp": "补充本 345",
+    "hymn_num_trad": "補充本 345",
     "url": "https://www.hymnal.net/cn/hymn/ts/345",
+    "title_simp": "惟一最爱是你",
+    "title_trad": "惟一最愛是你",
     "lyrics": [
       {
         "type": "verse",
@@ -19387,9 +19767,11 @@
   },
   {
     "id": 346,
-    "title_simp": "补充本 346",
-    "title_trad": "補充本 346",
+    "hymn_num_simp": "补充本 346",
+    "hymn_num_trad": "補充本 346",
     "url": "https://www.hymnal.net/cn/hymn/ts/346",
+    "title_simp": "用我的诗歌向我所爱的主",
+    "title_trad": "用我的詩歌向我所愛的主",
     "lyrics": [
       {
         "type": "verse",
@@ -19467,9 +19849,11 @@
   },
   {
     "id": 347,
-    "title_simp": "补充本 347",
-    "title_trad": "補充本 347",
+    "hymn_num_simp": "补充本 347",
+    "hymn_num_trad": "補充本 347",
     "url": "https://www.hymnal.net/cn/hymn/ts/347",
+    "title_simp": "主，我心愿更贞洁",
+    "title_trad": "主，我心願更貞潔",
     "lyrics": [
       {
         "type": "verse",
@@ -19691,9 +20075,11 @@
   },
   {
     "id": 348,
-    "title_simp": "补充本 348",
-    "title_trad": "補充本 348",
+    "hymn_num_simp": "补充本 348",
+    "hymn_num_trad": "補充本 348",
     "url": "https://www.hymnal.net/cn/hymn/ts/348",
+    "title_simp": "引我归爱",
+    "title_trad": "引我歸愛",
     "lyrics": [
       {
         "type": "verse",
@@ -19811,9 +20197,11 @@
   },
   {
     "id": 349,
-    "title_simp": "补充本 349",
-    "title_trad": "補充本 349",
+    "hymn_num_simp": "补充本 349",
+    "hymn_num_trad": "補充本 349",
     "url": "https://www.hymnal.net/cn/hymn/ts/349",
+    "title_simp": "先是园子，终为圣城",
+    "title_trad": "先是園子，終爲聖城",
     "lyrics": [
       {
         "type": "verse",
@@ -19915,9 +20303,11 @@
   },
   {
     "id": 401,
-    "title_simp": "补充本 401",
-    "title_trad": "補充本 401",
+    "hymn_num_simp": "补充本 401",
+    "hymn_num_trad": "補充本 401",
     "url": "https://www.hymnal.net/cn/hymn/ts/401",
+    "title_simp": "生命之主向我吹气",
+    "title_trad": "生命之主向我吹氣",
     "lyrics": [
       {
         "type": "verse",
@@ -20003,9 +20393,11 @@
   },
   {
     "id": 402,
-    "title_simp": "补充本 402",
-    "title_trad": "補充本 402",
+    "hymn_num_simp": "补充本 402",
+    "hymn_num_trad": "補充本 402",
     "url": "https://www.hymnal.net/cn/hymn/ts/402",
+    "title_simp": "吸引",
+    "title_trad": "吸引",
     "lyrics": [
       {
         "type": "verse",
@@ -20077,9 +20469,11 @@
   },
   {
     "id": 403,
-    "title_simp": "补充本 403",
-    "title_trad": "補充本 403",
+    "hymn_num_simp": "补充本 403",
+    "hymn_num_trad": "補充本 403",
     "url": "https://www.hymnal.net/cn/hymn/ts/403",
+    "title_simp": "主耶稣！我渴慕摸着你",
+    "title_trad": "主耶穌！我渴慕摸着你",
     "lyrics": [
       {
         "type": "verse",
@@ -20109,9 +20503,11 @@
   },
   {
     "id": 404,
-    "title_simp": "补充本 404",
-    "title_trad": "補充本 404",
+    "hymn_num_simp": "补充本 404",
+    "hymn_num_trad": "補充本 404",
     "url": "https://www.hymnal.net/cn/hymn/ts/404",
+    "title_simp": "全心只有主",
+    "title_trad": "全心只有主",
     "lyrics": [
       {
         "type": "verse",
@@ -20165,9 +20561,11 @@
   },
   {
     "id": 405,
-    "title_simp": "补充本 405",
-    "title_trad": "補充本 405",
+    "hymn_num_simp": "补充本 405",
+    "hymn_num_trad": "補充本 405",
     "url": "https://www.hymnal.net/cn/hymn/ts/405",
+    "title_simp": "心归向主",
+    "title_trad": "心歸向主",
     "lyrics": [
       {
         "type": "verse",
@@ -20199,9 +20597,11 @@
   },
   {
     "id": 406,
-    "title_simp": "补充本 406",
-    "title_trad": "補充本 406",
+    "hymn_num_simp": "补充本 406",
+    "hymn_num_trad": "補充本 406",
     "url": "https://www.hymnal.net/cn/hymn/ts/406",
+    "title_simp": "我求更深",
+    "title_trad": "我求更深",
     "lyrics": [
       {
         "type": "verse",
@@ -20419,9 +20819,11 @@
   },
   {
     "id": 407,
-    "title_simp": "补充本 407",
-    "title_trad": "補充本 407",
+    "hymn_num_simp": "补充本 407",
+    "hymn_num_trad": "補充本 407",
     "url": "https://www.hymnal.net/cn/hymn/ts/407",
+    "title_simp": "答应主呼召",
+    "title_trad": "答應主呼召",
     "lyrics": [
       {
         "type": "verse",
@@ -20451,9 +20853,11 @@
   },
   {
     "id": 408,
-    "title_simp": "补充本 408",
-    "title_trad": "補充本 408",
+    "hymn_num_simp": "补充本 408",
+    "hymn_num_trad": "補充本 408",
     "url": "https://www.hymnal.net/cn/hymn/ts/408",
+    "title_simp": "挖透我",
+    "title_trad": "挖透我",
     "lyrics": [
       {
         "type": "verse",
@@ -20579,9 +20983,11 @@
   },
   {
     "id": 409,
-    "title_simp": "补充本 409",
-    "title_trad": "補充本 409",
+    "hymn_num_simp": "补充本 409",
+    "hymn_num_trad": "補充本 409",
     "url": "https://www.hymnal.net/cn/hymn/ts/409",
+    "title_simp": "哦主阿，更多来涌流",
+    "title_trad": "哦主阿，更多來湧流",
     "lyrics": [
       {
         "type": "verse",
@@ -20759,9 +21165,11 @@
   },
   {
     "id": 410,
-    "title_simp": "补充本 410",
-    "title_trad": "補充本 410",
+    "hymn_num_simp": "补充本 410",
+    "hymn_num_trad": "補充本 410",
     "url": "https://www.hymnal.net/cn/hymn/ts/410",
+    "title_simp": "主，我宝贝这生命的流",
+    "title_trad": "主，我寶貝這生命的流",
     "lyrics": [
       {
         "type": "verse",
@@ -20875,9 +21283,11 @@
   },
   {
     "id": 411,
-    "title_simp": "补充本 411",
-    "title_trad": "補充本 411",
+    "hymn_num_simp": "补充本 411",
+    "hymn_num_trad": "補充本 411",
     "url": "https://www.hymnal.net/cn/hymn/ts/411",
+    "title_simp": "取用宝血",
+    "title_trad": "取用寶血",
     "lyrics": [
       {
         "type": "verse",
@@ -20987,9 +21397,11 @@
   },
   {
     "id": 412,
-    "title_simp": "补充本 412",
-    "title_trad": "補充本 412",
+    "hymn_num_simp": "补充本 412",
+    "hymn_num_trad": "補充本 412",
     "url": "https://www.hymnal.net/cn/hymn/ts/412",
+    "title_simp": "在话的水里泡",
+    "title_trad": "在話的水裏泡",
     "lyrics": [
       {
         "type": "verse",
@@ -21025,9 +21437,11 @@
   },
   {
     "id": 413,
-    "title_simp": "补充本 413",
-    "title_trad": "補充本 413",
+    "hymn_num_simp": "补充本 413",
+    "hymn_num_trad": "補充本 413",
     "url": "https://www.hymnal.net/cn/hymn/ts/413",
+    "title_simp": "阿们，主耶稣",
+    "title_trad": "阿們，主耶穌",
     "lyrics": [
       {
         "type": "verse",
@@ -21061,9 +21475,11 @@
   },
   {
     "id": 414,
-    "title_simp": "补充本 414",
-    "title_trad": "補充本 414",
+    "hymn_num_simp": "补充本 414",
+    "hymn_num_trad": "補充本 414",
     "url": "https://www.hymnal.net/cn/hymn/ts/414",
+    "title_simp": "阿们神的话语",
+    "title_trad": "阿們神的話語",
     "lyrics": [
       {
         "type": "verse",
@@ -21179,9 +21595,11 @@
   },
   {
     "id": 415,
-    "title_simp": "补充本 415",
-    "title_trad": "補充本 415",
+    "hymn_num_simp": "补充本 415",
+    "hymn_num_trad": "補充本 415",
     "url": "https://www.hymnal.net/cn/hymn/ts/415",
+    "title_simp": "来到施恩座",
+    "title_trad": "來到施恩座",
     "lyrics": [
       {
         "type": "verse",
@@ -21259,9 +21677,11 @@
   },
   {
     "id": 416,
-    "title_simp": "补充本 416",
-    "title_trad": "補充本 416",
+    "hymn_num_simp": "补充本 416",
+    "hymn_num_trad": "補充本 416",
     "url": "https://www.hymnal.net/cn/hymn/ts/416",
+    "title_simp": "同环绕施恩座",
+    "title_trad": "同環繞施恩座",
     "lyrics": [
       {
         "type": "verse",
@@ -21371,9 +21791,11 @@
   },
   {
     "id": 417,
-    "title_simp": "补充本 417",
-    "title_trad": "補充本 417",
+    "hymn_num_simp": "补充本 417",
+    "hymn_num_trad": "補充本 417",
     "url": "https://www.hymnal.net/cn/hymn/ts/417",
+    "title_simp": "祂是主",
+    "title_trad": "祂是主",
     "lyrics": [
       {
         "type": "verse",
@@ -21559,9 +21981,11 @@
   },
   {
     "id": 418,
-    "title_simp": "补充本 418",
-    "title_trad": "補充本 418",
+    "hymn_num_simp": "补充本 418",
+    "hymn_num_trad": "補充本 418",
     "url": "https://www.hymnal.net/cn/hymn/ts/418",
+    "title_simp": "小百合",
+    "title_trad": "小百合",
     "lyrics": [
       {
         "type": "verse",
@@ -21711,9 +22135,11 @@
   },
   {
     "id": 419,
-    "title_simp": "补充本 419",
-    "title_trad": "補充本 419",
+    "hymn_num_simp": "补充本 419",
+    "hymn_num_trad": "補充本 419",
     "url": "https://www.hymnal.net/cn/hymn/ts/419",
+    "title_simp": "使我得以走正路",
+    "title_trad": "使我得以走正路",
     "lyrics": [
       {
         "type": "verse",
@@ -21815,9 +22241,11 @@
   },
   {
     "id": 420,
-    "title_simp": "补充本 420",
-    "title_trad": "補充本 420",
+    "hymn_num_simp": "补充本 420",
+    "hymn_num_trad": "補充本 420",
     "url": "https://www.hymnal.net/cn/hymn/ts/420",
+    "title_simp": "望断以及于耶稣",
+    "title_trad": "望斷以及於耶穌",
     "lyrics": [
       {
         "type": "verse",
@@ -21863,9 +22291,11 @@
   },
   {
     "id": 421,
-    "title_simp": "补充本 421",
-    "title_trad": "補充本 421",
+    "hymn_num_simp": "补充本 421",
+    "hymn_num_trad": "補充本 421",
     "url": "https://www.hymnal.net/cn/hymn/ts/421",
+    "title_simp": "奔跑",
+    "title_trad": "奔跑",
     "lyrics": [
       {
         "type": "verse",
@@ -21911,9 +22341,11 @@
   },
   {
     "id": 422,
-    "title_simp": "补充本 422",
-    "title_trad": "補充本 422",
+    "hymn_num_simp": "补充本 422",
+    "hymn_num_trad": "補充本 422",
     "url": "https://www.hymnal.net/cn/hymn/ts/422",
+    "title_simp": "奔跑生命路",
+    "title_trad": "奔跑生命路",
     "lyrics": [
       {
         "type": "verse",
@@ -21951,9 +22383,11 @@
   },
   {
     "id": 423,
-    "title_simp": "补充本 423",
-    "title_trad": "補充本 423",
+    "hymn_num_simp": "补充本 423",
+    "hymn_num_trad": "補充本 423",
     "url": "https://www.hymnal.net/cn/hymn/ts/423",
+    "title_simp": "向前直跑",
+    "title_trad": "向前直跑",
     "lyrics": [
       {
         "type": "verse",
@@ -22087,9 +22521,11 @@
   },
   {
     "id": 424,
-    "title_simp": "补充本 424",
-    "title_trad": "補充本 424",
+    "hymn_num_simp": "补充本 424",
+    "hymn_num_trad": "補充本 424",
     "url": "https://www.hymnal.net/cn/hymn/ts/424",
+    "title_simp": "一路跑尽",
+    "title_trad": "一路跑盡",
     "lyrics": [
       {
         "type": "verse",
@@ -22287,9 +22723,11 @@
   },
   {
     "id": 425,
-    "title_simp": "补充本 425",
-    "title_trad": "補充本 425",
+    "hymn_num_simp": "补充本 425",
+    "hymn_num_trad": "補充本 425",
     "url": "https://www.hymnal.net/cn/hymn/ts/425",
+    "title_simp": "与主相见在清晨",
+    "title_trad": "與主相見在清晨",
     "lyrics": [
       {
         "type": "verse",
@@ -22343,9 +22781,11 @@
   },
   {
     "id": 426,
-    "title_simp": "补充本 426",
-    "title_trad": "補充本 426",
+    "hymn_num_simp": "补充本 426",
+    "hymn_num_trad": "補充本 426",
     "url": "https://www.hymnal.net/cn/hymn/ts/426",
+    "title_simp": "我们是一粒粒‘麦子’",
+    "title_trad": "我們是一粒粒‘麥子’",
     "lyrics": [
       {
         "type": "verse",
@@ -22407,9 +22847,11 @@
   },
   {
     "id": 427,
-    "title_simp": "补充本 427",
-    "title_trad": "補充本 427",
+    "hymn_num_simp": "补充本 427",
+    "hymn_num_trad": "補充本 427",
     "url": "https://www.hymnal.net/cn/hymn/ts/427",
+    "title_simp": "为神永远的经纶",
+    "title_trad": "爲神永遠的經綸",
     "lyrics": [
       {
         "type": "verse",
@@ -22599,9 +23041,11 @@
   },
   {
     "id": 428,
-    "title_simp": "补充本 428",
-    "title_trad": "補充本 428",
+    "hymn_num_simp": "补充本 428",
+    "hymn_num_trad": "補充本 428",
     "url": "https://www.hymnal.net/cn/hymn/ts/428",
+    "title_simp": "让我爱",
+    "title_trad": "讓我愛",
     "lyrics": [
       {
         "type": "verse",
@@ -22707,9 +23151,11 @@
   },
   {
     "id": 429,
-    "title_simp": "补充本 429",
-    "title_trad": "補充本 429",
+    "hymn_num_simp": "补充本 429",
+    "hymn_num_trad": "補充本 429",
     "url": "https://www.hymnal.net/cn/hymn/ts/429",
+    "title_simp": "主到我这里来",
+    "title_trad": "主到我這裏來",
     "lyrics": [
       {
         "type": "verse",
@@ -22815,9 +23261,11 @@
   },
   {
     "id": 430,
-    "title_simp": "补充本 430",
-    "title_trad": "補充本 430",
+    "hymn_num_simp": "补充本 430",
+    "hymn_num_trad": "補充本 430",
     "url": "https://www.hymnal.net/cn/hymn/ts/430",
+    "title_simp": "主，你得胜",
+    "title_trad": "主，你得勝",
     "lyrics": [
       {
         "type": "verse",
@@ -22883,9 +23331,11 @@
   },
   {
     "id": 431,
-    "title_simp": "补充本 431",
-    "title_trad": "補充本 431",
+    "hymn_num_simp": "补充本 431",
+    "hymn_num_trad": "補充本 431",
     "url": "https://www.hymnal.net/cn/hymn/ts/431",
+    "title_simp": "在信的人凡事都能",
+    "title_trad": "在信的人凡事都能",
     "lyrics": [
       {
         "type": "verse",
@@ -22991,9 +23441,11 @@
   },
   {
     "id": 432,
-    "title_simp": "补充本 432",
-    "title_trad": "補充本 432",
+    "hymn_num_simp": "补充本 432",
+    "hymn_num_trad": "補充本 432",
     "url": "https://www.hymnal.net/cn/hymn/ts/432",
+    "title_simp": "奇妙秘诀我已学会",
+    "title_trad": "奇妙祕訣我已學會",
     "lyrics": [
       {
         "type": "verse",
@@ -23175,9 +23627,11 @@
   },
   {
     "id": 433,
-    "title_simp": "补充本 433",
-    "title_trad": "補充本 433",
+    "hymn_num_simp": "补充本 433",
+    "hymn_num_trad": "補充本 433",
     "url": "https://www.hymnal.net/cn/hymn/ts/433",
+    "title_simp": "踏上更高之地",
+    "title_trad": "踏上更高之地",
     "lyrics": [
       {
         "type": "verse",
@@ -23311,9 +23765,11 @@
   },
   {
     "id": 434,
-    "title_simp": "补充本 434",
-    "title_trad": "補充本 434",
+    "hymn_num_simp": "补充本 434",
+    "hymn_num_trad": "補充本 434",
     "url": "https://www.hymnal.net/cn/hymn/ts/434",
+    "title_simp": "总是丰富有盈馀",
+    "title_trad": "總是豐富有盈餘",
     "lyrics": [
       {
         "type": "verse",
@@ -23403,9 +23859,11 @@
   },
   {
     "id": 435,
-    "title_simp": "补充本 435",
-    "title_trad": "補充本 435",
+    "hymn_num_simp": "补充本 435",
+    "hymn_num_trad": "補充本 435",
     "url": "https://www.hymnal.net/cn/hymn/ts/435",
+    "title_simp": "惟夸荣耀十架",
+    "title_trad": "惟誇榮耀十架",
     "lyrics": [
       {
         "type": "verse",
@@ -23531,9 +23989,11 @@
   },
   {
     "id": 436,
-    "title_simp": "补充本 436",
-    "title_trad": "補充本 436",
+    "hymn_num_simp": "补充本 436",
+    "hymn_num_trad": "補充本 436",
     "url": "https://www.hymnal.net/cn/hymn/ts/436",
+    "title_simp": "惟夸荣耀十架",
+    "title_trad": "惟誇榮耀十架",
     "lyrics": [
       {
         "type": "verse",
@@ -23635,9 +24095,11 @@
   },
   {
     "id": 437,
-    "title_simp": "补充本 437",
-    "title_trad": "補充本 437",
+    "hymn_num_simp": "补充本 437",
+    "hymn_num_trad": "補充本 437",
     "url": "https://www.hymnal.net/cn/hymn/ts/437",
+    "title_simp": "主话如同粮仓",
+    "title_trad": "主話如同糧倉",
     "lyrics": [
       {
         "type": "verse",
@@ -23739,9 +24201,11 @@
   },
   {
     "id": 438,
-    "title_simp": "补充本 438",
-    "title_trad": "補充本 438",
+    "hymn_num_simp": "补充本 438",
+    "hymn_num_trad": "補充本 438",
     "url": "https://www.hymnal.net/cn/hymn/ts/438",
+    "title_simp": "愿你长在我里",
+    "title_trad": "願你長在我裏",
     "lyrics": [
       {
         "type": "verse",
@@ -23891,9 +24355,11 @@
   },
   {
     "id": 439,
-    "title_simp": "补充本 439",
-    "title_trad": "補充本 439",
+    "hymn_num_simp": "补充本 439",
+    "hymn_num_trad": "補充本 439",
     "url": "https://www.hymnal.net/cn/hymn/ts/439",
+    "title_simp": "神的大爱将我围困",
+    "title_trad": "神的大愛將我圍困",
     "lyrics": [
       {
         "type": "verse",
@@ -23963,9 +24429,11 @@
   },
   {
     "id": 440,
-    "title_simp": "补充本 440",
-    "title_trad": "補充本 440",
+    "hymn_num_simp": "补充本 440",
+    "hymn_num_trad": "補充本 440",
     "url": "https://www.hymnal.net/cn/hymn/ts/440",
+    "title_simp": "圣化洁净我们",
+    "title_trad": "聖化潔淨我們",
     "lyrics": [
       {
         "type": "verse",
@@ -24139,9 +24607,11 @@
   },
   {
     "id": 441,
-    "title_simp": "补充本 441",
-    "title_trad": "補充本 441",
+    "hymn_num_simp": "补充本 441",
+    "hymn_num_trad": "補充本 441",
     "url": "https://www.hymnal.net/cn/hymn/ts/441",
+    "title_simp": "羡慕看见并经历",
+    "title_trad": "羨慕看見並經歷",
     "lyrics": [
       {
         "type": "verse",
@@ -24267,9 +24737,11 @@
   },
   {
     "id": 442,
-    "title_simp": "补充本 442",
-    "title_trad": "補充本 442",
+    "hymn_num_simp": "补充本 442",
+    "hymn_num_trad": "補充本 442",
     "url": "https://www.hymnal.net/cn/hymn/ts/442",
+    "title_simp": "经过变化被建造",
+    "title_trad": "經過變化被建造",
     "lyrics": [
       {
         "type": "verse",
@@ -24467,9 +24939,11 @@
   },
   {
     "id": 443,
-    "title_simp": "补充本 443",
-    "title_trad": "補充本 443",
+    "hymn_num_simp": "补充本 443",
+    "hymn_num_trad": "補充本 443",
     "url": "https://www.hymnal.net/cn/hymn/ts/443",
+    "title_simp": "基督乃是真葡萄树",
+    "title_trad": "基督乃是真葡萄樹",
     "lyrics": [
       {
         "type": "verse",
@@ -24635,9 +25109,11 @@
   },
   {
     "id": 444,
-    "title_simp": "补充本 444",
-    "title_trad": "補充本 444",
+    "hymn_num_simp": "补充本 444",
+    "hymn_num_trad": "補充本 444",
     "url": "https://www.hymnal.net/cn/hymn/ts/444",
+    "title_simp": "在光中行",
+    "title_trad": "在光中行",
     "lyrics": [
       {
         "type": "verse",
@@ -24703,9 +25179,11 @@
   },
   {
     "id": 445,
-    "title_simp": "补充本 445",
-    "title_trad": "補充本 445",
+    "hymn_num_simp": "补充本 445",
+    "hymn_num_trad": "補充本 445",
     "url": "https://www.hymnal.net/cn/hymn/ts/445",
+    "title_simp": "新约执事耶稣基督",
+    "title_trad": "新約執事耶穌基督",
     "lyrics": [
       {
         "type": "verse",
@@ -24855,9 +25333,11 @@
   },
   {
     "id": 446,
-    "title_simp": "补充本 446",
-    "title_trad": "補充本 446",
+    "hymn_num_simp": "补充本 446",
+    "hymn_num_trad": "補充本 446",
     "url": "https://www.hymnal.net/cn/hymn/ts/446",
+    "title_simp": "进入我心",
+    "title_trad": "進入我心",
     "lyrics": [
       {
         "type": "verse",
@@ -24991,9 +25471,11 @@
   },
   {
     "id": 447,
-    "title_simp": "补充本 447",
-    "title_trad": "補充本 447",
+    "hymn_num_simp": "补充本 447",
+    "hymn_num_trad": "補充本 447",
     "url": "https://www.hymnal.net/cn/hymn/ts/447",
+    "title_simp": "有一人宝座上坐着",
+    "title_trad": "有一人寶座上坐着",
     "lyrics": [
       {
         "type": "verse",
@@ -25079,9 +25561,11 @@
   },
   {
     "id": 448,
-    "title_simp": "补充本 448",
-    "title_trad": "補充本 448",
+    "hymn_num_simp": "补充本 448",
+    "hymn_num_trad": "補充本 448",
     "url": "https://www.hymnal.net/cn/hymn/ts/448",
+    "title_simp": "调和是神心意",
+    "title_trad": "調和是神心意",
     "lyrics": [
       {
         "type": "verse",
@@ -25279,9 +25763,11 @@
   },
   {
     "id": 449,
-    "title_simp": "补充本 449",
-    "title_trad": "補充本 449",
+    "hymn_num_simp": "补充本 449",
+    "hymn_num_trad": "補充本 449",
     "url": "https://www.hymnal.net/cn/hymn/ts/449",
+    "title_simp": "称义，圣别，得荣耀",
+    "title_trad": "稱義，聖別，得榮耀",
     "lyrics": [
       {
         "type": "verse",
@@ -25479,9 +25965,11 @@
   },
   {
     "id": 450,
-    "title_simp": "补充本 450",
-    "title_trad": "補充本 450",
+    "hymn_num_simp": "补充本 450",
+    "hymn_num_trad": "補充本 450",
     "url": "https://www.hymnal.net/cn/hymn/ts/450",
+    "title_simp": "盼望何等坚定",
+    "title_trad": "盼望何等堅定",
     "lyrics": [
       {
         "type": "verse",
@@ -25607,9 +26095,11 @@
   },
   {
     "id": 451,
-    "title_simp": "补充本 451",
-    "title_trad": "補充本 451",
+    "hymn_num_simp": "补充本 451",
+    "hymn_num_trad": "補充本 451",
     "url": "https://www.hymnal.net/cn/hymn/ts/451",
+    "title_simp": "神赐宝贵极大应许",
+    "title_trad": "神賜寶貴極大應許",
     "lyrics": [
       {
         "type": "verse",
@@ -25759,9 +26249,11 @@
   },
   {
     "id": 452,
-    "title_simp": "补充本 452",
-    "title_trad": "補充本 452",
+    "hymn_num_simp": "补充本 452",
+    "hymn_num_trad": "補充本 452",
     "url": "https://www.hymnal.net/cn/hymn/ts/452",
+    "title_simp": "宝贵信仰交付我们",
+    "title_trad": "寶貴信仰交付我們",
     "lyrics": [
       {
         "type": "verse",
@@ -25959,9 +26451,11 @@
   },
   {
     "id": 453,
-    "title_simp": "补充本 453",
-    "title_trad": "補充本 453",
+    "hymn_num_simp": "补充本 453",
+    "hymn_num_trad": "補充本 453",
     "url": "https://www.hymnal.net/cn/hymn/ts/453",
+    "title_simp": "对主话说阿们",
+    "title_trad": "對主話說阿們",
     "lyrics": [
       {
         "type": "verse",
@@ -26095,9 +26589,11 @@
   },
   {
     "id": 454,
-    "title_simp": "补充本 454",
-    "title_trad": "補充本 454",
+    "hymn_num_simp": "补充本 454",
+    "hymn_num_trad": "補充本 454",
     "url": "https://www.hymnal.net/cn/hymn/ts/454",
+    "title_simp": "回归主自己",
+    "title_trad": "迴歸主自己",
     "lyrics": [
       {
         "type": "verse",
@@ -26199,9 +26695,11 @@
   },
   {
     "id": 455,
-    "title_simp": "补充本 455",
-    "title_trad": "補充本 455",
+    "hymn_num_simp": "补充本 455",
+    "hymn_num_trad": "補充本 455",
     "url": "https://www.hymnal.net/cn/hymn/ts/455",
+    "title_simp": "单纯的信托",
+    "title_trad": "單純的信託",
     "lyrics": [
       {
         "type": "verse",
@@ -26255,9 +26753,11 @@
   },
   {
     "id": 456,
-    "title_simp": "补充本 456",
-    "title_trad": "補充本 456",
+    "hymn_num_simp": "补充本 456",
+    "hymn_num_trad": "補充本 456",
     "url": "https://www.hymnal.net/cn/hymn/ts/456",
+    "title_simp": "转",
+    "title_trad": "轉",
     "lyrics": [
       {
         "type": "verse",
@@ -26401,9 +26901,11 @@
   },
   {
     "id": 457,
-    "title_simp": "补充本 457",
-    "title_trad": "補充本 457",
+    "hymn_num_simp": "补充本 457",
+    "hymn_num_trad": "補充本 457",
     "url": "https://www.hymnal.net/cn/hymn/ts/457",
+    "title_simp": "我在这里",
+    "title_trad": "我在這裏",
     "lyrics": [
       {
         "type": "verse",
@@ -26489,9 +26991,11 @@
   },
   {
     "id": 458,
-    "title_simp": "补充本 458",
-    "title_trad": "補充本 458",
+    "hymn_num_simp": "补充本 458",
+    "hymn_num_trad": "補充本 458",
     "url": "https://www.hymnal.net/cn/hymn/ts/458",
+    "title_simp": "与神和好",
+    "title_trad": "與神和好",
     "lyrics": [
       {
         "type": "verse",
@@ -26617,9 +27121,11 @@
   },
   {
     "id": 459,
-    "title_simp": "补充本 459",
-    "title_trad": "補充本 459",
+    "hymn_num_simp": "补充本 459",
+    "hymn_num_trad": "補充本 459",
     "url": "https://www.hymnal.net/cn/hymn/ts/459",
+    "title_simp": "主，你旨意我愿凭",
+    "title_trad": "主，你旨意我願憑",
     "lyrics": [
       {
         "type": "verse",
@@ -26721,9 +27227,11 @@
   },
   {
     "id": 460,
-    "title_simp": "补充本 460",
-    "title_trad": "補充本 460",
+    "hymn_num_simp": "补充本 460",
+    "hymn_num_trad": "補充本 460",
     "url": "https://www.hymnal.net/cn/hymn/ts/460",
+    "title_simp": "我的手不能停作主的圣工",
+    "title_trad": "我的手不能停作主的聖工",
     "lyrics": [
       {
         "type": "verse",
@@ -26825,9 +27333,11 @@
   },
   {
     "id": 461,
-    "title_simp": "补充本 461",
-    "title_trad": "補充本 461",
+    "hymn_num_simp": "补充本 461",
+    "hymn_num_trad": "補充本 461",
     "url": "https://www.hymnal.net/cn/hymn/ts/461",
+    "title_simp": "十架窄路",
+    "title_trad": "十架窄路",
     "lyrics": [
       {
         "type": "verse",
@@ -26961,9 +27471,11 @@
   },
   {
     "id": 462,
-    "title_simp": "补充本 462",
-    "title_trad": "補充本 462",
+    "hymn_num_simp": "补充本 462",
+    "hymn_num_trad": "補充本 462",
     "url": "https://www.hymnal.net/cn/hymn/ts/462",
+    "title_simp": "大哉！敬虔奥秘！",
+    "title_trad": "大哉！敬虔奧祕！",
     "lyrics": [
       {
         "type": "verse",
@@ -27129,9 +27641,11 @@
   },
   {
     "id": 463,
-    "title_simp": "补充本 463",
-    "title_trad": "補充本 463",
+    "hymn_num_simp": "补充本 463",
+    "hymn_num_trad": "補充本 463",
     "url": "https://www.hymnal.net/cn/hymn/ts/463",
+    "title_simp": "成为圣别",
+    "title_trad": "成爲聖別",
     "lyrics": [
       {
         "type": "verse",
@@ -27185,9 +27699,11 @@
   },
   {
     "id": 464,
-    "title_simp": "补充本 464",
-    "title_trad": "補充本 464",
+    "hymn_num_simp": "补充本 464",
+    "hymn_num_trad": "補充本 464",
     "url": "https://www.hymnal.net/cn/hymn/ts/464",
+    "title_simp": "随主前行",
+    "title_trad": "隨主前行",
     "lyrics": [
       {
         "type": "verse",
@@ -27289,9 +27805,11 @@
   },
   {
     "id": 465,
-    "title_simp": "补充本 465",
-    "title_trad": "補充本 465",
+    "hymn_num_simp": "补充本 465",
+    "hymn_num_trad": "補充本 465",
     "url": "https://www.hymnal.net/cn/hymn/ts/465",
+    "title_simp": "达到锡安",
+    "title_trad": "達到錫安",
     "lyrics": [
       {
         "type": "verse",
@@ -27457,9 +27975,11 @@
   },
   {
     "id": 466,
-    "title_simp": "补充本 466",
-    "title_trad": "補充本 466",
+    "hymn_num_simp": "补充本 466",
+    "hymn_num_trad": "補充本 466",
     "url": "https://www.hymnal.net/cn/hymn/ts/466",
+    "title_simp": "新的黎明，新的复兴",
+    "title_trad": "新的黎明，新的復興",
     "lyrics": [
       {
         "type": "verse",
@@ -27605,9 +28125,11 @@
   },
   {
     "id": 467,
-    "title_simp": "补充本 467",
-    "title_trad": "補充本 467",
+    "hymn_num_simp": "补充本 467",
+    "hymn_num_trad": "補充本 467",
     "url": "https://www.hymnal.net/cn/hymn/ts/467",
+    "title_simp": "祭坛与帐棚的生活",
+    "title_trad": "祭壇與帳棚的生活",
     "lyrics": [
       {
         "type": "verse",
@@ -27651,9 +28173,11 @@
   },
   {
     "id": 468,
-    "title_simp": "补充本 468",
-    "title_trad": "補充本 468",
+    "hymn_num_simp": "补充本 468",
+    "hymn_num_trad": "補充本 468",
     "url": "https://www.hymnal.net/cn/hymn/ts/468",
+    "title_simp": "奠祭",
+    "title_trad": "奠祭",
     "lyrics": [
       {
         "type": "verse",
@@ -27719,9 +28243,11 @@
   },
   {
     "id": 469,
-    "title_simp": "补充本 469",
-    "title_trad": "補充本 469",
+    "hymn_num_simp": "补充本 469",
+    "hymn_num_trad": "補充本 469",
     "url": "https://www.hymnal.net/cn/hymn/ts/469",
+    "title_simp": "生命与建造",
+    "title_trad": "生命與建造",
     "lyrics": [
       {
         "type": "verse",
@@ -27979,9 +28505,11 @@
   },
   {
     "id": 470,
-    "title_simp": "补充本 470",
-    "title_trad": "補充本 470",
+    "hymn_num_simp": "补充本 470",
+    "hymn_num_trad": "補充本 470",
     "url": "https://www.hymnal.net/cn/hymn/ts/470",
+    "title_simp": "主话真光越照越明",
+    "title_trad": "主話真光越照越明",
     "lyrics": [
       {
         "type": "verse",
@@ -28107,9 +28635,11 @@
   },
   {
     "id": 501,
-    "title_simp": "补充本 501",
-    "title_trad": "補充本 501",
+    "hymn_num_simp": "补充本 501",
+    "hymn_num_trad": "補充本 501",
     "url": "https://www.hymnal.net/cn/hymn/ts/501",
+    "title_simp": "基督乃是殿，城，与地",
+    "title_trad": "基督乃是殿，城，與地",
     "lyrics": [
       {
         "type": "verse",
@@ -28235,9 +28765,11 @@
   },
   {
     "id": 502,
-    "title_simp": "补充本 502",
-    "title_trad": "補充本 502",
+    "hymn_num_simp": "补充本 502",
+    "hymn_num_trad": "補充本 502",
     "url": "https://www.hymnal.net/cn/hymn/ts/502",
+    "title_simp": "神将被掳的带回锡安",
+    "title_trad": "神將被擄的帶回錫安",
     "lyrics": [
       {
         "type": "verse",
@@ -28283,9 +28815,11 @@
   },
   {
     "id": 503,
-    "title_simp": "补充本 503",
-    "title_trad": "補充本 503",
+    "hymn_num_simp": "补充本 503",
+    "hymn_num_trad": "補充本 503",
     "url": "https://www.hymnal.net/cn/hymn/ts/503",
+    "title_simp": "回耶路撒冷",
+    "title_trad": "回耶路撒冷",
     "lyrics": [
       {
         "type": "verse",
@@ -28417,9 +28951,11 @@
   },
   {
     "id": 504,
-    "title_simp": "补充本 504",
-    "title_trad": "補充本 504",
+    "hymn_num_simp": "补充本 504",
+    "hymn_num_trad": "補充本 504",
     "url": "https://www.hymnal.net/cn/hymn/ts/504",
+    "title_simp": "我已拣选了锡安",
+    "title_trad": "我已揀選了錫安",
     "lyrics": [
       {
         "type": "verse",
@@ -28451,9 +28987,11 @@
   },
   {
     "id": 505,
-    "title_simp": "补充本 505",
-    "title_trad": "補充本 505",
+    "hymn_num_simp": "补充本 505",
+    "hymn_num_trad": "補充本 505",
     "url": "https://www.hymnal.net/cn/hymn/ts/505",
+    "title_simp": "歌唱到来锡安",
+    "title_trad": "歌唱到來錫安",
     "lyrics": [
       {
         "type": "verse",
@@ -28493,9 +29031,11 @@
   },
   {
     "id": 506,
-    "title_simp": "补充本 506",
-    "title_trad": "補充本 506",
+    "hymn_num_simp": "补充本 506",
+    "hymn_num_trad": "補充本 506",
     "url": "https://www.hymnal.net/cn/hymn/ts/506",
+    "title_simp": "当周游锡安",
+    "title_trad": "當週遊錫安",
     "lyrics": [
       {
         "type": "verse",
@@ -28661,9 +29201,11 @@
   },
   {
     "id": 507,
-    "title_simp": "补充本 507",
-    "title_trad": "補充本 507",
+    "hymn_num_simp": "补充本 507",
+    "hymn_num_trad": "補充本 507",
     "url": "https://www.hymnal.net/cn/hymn/ts/507",
+    "title_simp": "聚集在耶路撒冷",
+    "title_trad": "聚集在耶路撒冷",
     "lyrics": [
       {
         "type": "verse",
@@ -28889,9 +29431,11 @@
   },
   {
     "id": 508,
-    "title_simp": "补充本 508",
-    "title_trad": "補充本 508",
+    "hymn_num_simp": "补充本 508",
+    "hymn_num_trad": "補充本 508",
     "url": "https://www.hymnal.net/cn/hymn/ts/508",
+    "title_simp": "哦，基督有一荣耀召会",
+    "title_trad": "哦，基督有一榮耀召會",
     "lyrics": [
       {
         "type": "verse",
@@ -29033,9 +29577,11 @@
   },
   {
     "id": 509,
-    "title_simp": "补充本 509",
-    "title_trad": "補充本 509",
+    "hymn_num_simp": "补充本 509",
+    "hymn_num_trad": "補充本 509",
     "url": "https://www.hymnal.net/cn/hymn/ts/509",
+    "title_simp": "在灵里我看见",
+    "title_trad": "在靈裏我看見",
     "lyrics": [
       {
         "type": "verse",
@@ -29241,9 +29787,11 @@
   },
   {
     "id": 510,
-    "title_simp": "补充本 510",
-    "title_trad": "補充本 510",
+    "hymn_num_simp": "补充本 510",
+    "hymn_num_trad": "補充本 510",
     "url": "https://www.hymnal.net/cn/hymn/ts/510",
+    "title_simp": "启示录的异象",
+    "title_trad": "啓示錄的異象",
     "lyrics": [
       {
         "type": "verse",
@@ -29345,9 +29893,11 @@
   },
   {
     "id": 511,
-    "title_simp": "补充本 511",
-    "title_trad": "補充本 511",
+    "hymn_num_simp": "补充本 511",
+    "hymn_num_trad": "補充本 511",
     "url": "https://www.hymnal.net/cn/hymn/ts/511",
+    "title_simp": "金灯台是灵的复制",
+    "title_trad": "金燈臺是靈的複製",
     "lyrics": [
       {
         "type": "verse",
@@ -29505,9 +30055,11 @@
   },
   {
     "id": 512,
-    "title_simp": "补充本 512",
-    "title_trad": "補充本 512",
+    "hymn_num_simp": "补充本 512",
+    "hymn_num_trad": "補充本 512",
     "url": "https://www.hymnal.net/cn/hymn/ts/512",
+    "title_simp": "七个召会真相",
+    "title_trad": "七個召會真相",
     "lyrics": [
       {
         "type": "verse",
@@ -29785,9 +30337,11 @@
   },
   {
     "id": 513,
-    "title_simp": "补充本 513",
-    "title_trad": "補充本 513",
+    "hymn_num_simp": "补充本 513",
+    "hymn_num_trad": "補充本 513",
     "url": "https://www.hymnal.net/cn/hymn/ts/513",
+    "title_simp": "救赎者的赞美",
+    "title_trad": "救贖者的讚美",
     "lyrics": [
       {
         "type": "verse",
@@ -29833,9 +30387,11 @@
   },
   {
     "id": 514,
-    "title_simp": "补充本 514",
-    "title_trad": "補充本 514",
+    "hymn_num_simp": "补充本 514",
+    "hymn_num_trad": "補充本 514",
     "url": "https://www.hymnal.net/cn/hymn/ts/514",
+    "title_simp": "这是地方召会",
+    "title_trad": "這是地方召會",
     "lyrics": [
       {
         "type": "verse",
@@ -29997,9 +30553,11 @@
   },
   {
     "id": 515,
-    "title_simp": "补充本 515",
-    "title_trad": "補充本 515",
+    "hymn_num_simp": "补充本 515",
+    "hymn_num_trad": "補充本 515",
     "url": "https://www.hymnal.net/cn/hymn/ts/515",
+    "title_simp": "这是地方召会宣告",
+    "title_trad": "這是地方召會宣告",
     "lyrics": [
       {
         "type": "verse",
@@ -30101,9 +30659,11 @@
   },
   {
     "id": 516,
-    "title_simp": "补充本 516",
-    "title_trad": "補充本 516",
+    "hymn_num_simp": "补充本 516",
+    "hymn_num_trad": "補充本 516",
     "url": "https://www.hymnal.net/cn/hymn/ts/516",
+    "title_simp": "在地方召会中",
+    "title_trad": "在地方召會中",
     "lyrics": [
       {
         "type": "verse",
@@ -30135,9 +30695,11 @@
   },
   {
     "id": 517,
-    "title_simp": "补充本 517",
-    "title_trad": "補充本 517",
+    "hymn_num_simp": "补充本 517",
+    "hymn_num_trad": "補充本 517",
     "url": "https://www.hymnal.net/cn/hymn/ts/517",
+    "title_simp": "基督是元首，在地方召会",
+    "title_trad": "基督是元首，在地方召會",
     "lyrics": [
       {
         "type": "verse",
@@ -30207,9 +30769,11 @@
   },
   {
     "id": 518,
-    "title_simp": "补充本 518",
-    "title_trad": "補充本 518",
+    "hymn_num_simp": "补充本 518",
+    "hymn_num_trad": "補充本 518",
     "url": "https://www.hymnal.net/cn/hymn/ts/518",
+    "title_simp": "地方召会─可爱的召会",
+    "title_trad": "地方召會─可愛的召會",
     "lyrics": [
       {
         "type": "verse",
@@ -30241,9 +30805,11 @@
   },
   {
     "id": 519,
-    "title_simp": "补充本 519",
-    "title_trad": "補充本 519",
+    "hymn_num_simp": "补充本 519",
+    "hymn_num_trad": "補充本 519",
     "url": "https://www.hymnal.net/cn/hymn/ts/519",
+    "title_simp": "地方召会，主何等祝福你",
+    "title_trad": "地方召會，主何等祝福你",
     "lyrics": [
       {
         "type": "verse",
@@ -30357,9 +30923,11 @@
   },
   {
     "id": 520,
-    "title_simp": "补充本 520",
-    "title_trad": "補充本 520",
+    "hymn_num_simp": "补充本 520",
+    "hymn_num_trad": "補充本 520",
     "url": "https://www.hymnal.net/cn/hymn/ts/520",
+    "title_simp": "我们已寻到实际",
+    "title_trad": "我們已尋到實際",
     "lyrics": [
       {
         "type": "verse",
@@ -30433,9 +31001,11 @@
   },
   {
     "id": 521,
-    "title_simp": "补充本 521",
-    "title_trad": "補充本 521",
+    "hymn_num_simp": "补充本 521",
+    "hymn_num_trad": "補充本 521",
     "url": "https://www.hymnal.net/cn/hymn/ts/521",
+    "title_simp": "来这美妙住处",
+    "title_trad": "來這美妙住處",
     "lyrics": [
       {
         "type": "verse",
@@ -30537,9 +31107,11 @@
   },
   {
     "id": 522,
-    "title_simp": "补充本 522",
-    "title_trad": "補充本 522",
+    "hymn_num_simp": "补充本 522",
+    "hymn_num_trad": "補充本 522",
     "url": "https://www.hymnal.net/cn/hymn/ts/522",
+    "title_simp": "站住地方的立场",
+    "title_trad": "站住地方的立場",
     "lyrics": [
       {
         "type": "verse",
@@ -30749,9 +31321,11 @@
   },
   {
     "id": 523,
-    "title_simp": "补充本 523",
-    "title_trad": "補充本 523",
+    "hymn_num_simp": "补充本 523",
+    "hymn_num_trad": "補充本 523",
     "url": "https://www.hymnal.net/cn/hymn/ts/523",
+    "title_simp": "绝不能再回头",
+    "title_trad": "絕不能再回頭",
     "lyrics": [
       {
         "type": "verse",
@@ -30945,9 +31519,11 @@
   },
   {
     "id": 524,
-    "title_simp": "补充本 524",
-    "title_trad": "補充本 524",
+    "hymn_num_simp": "补充本 524",
+    "hymn_num_trad": "補充本 524",
     "url": "https://www.hymnal.net/cn/hymn/ts/524",
+    "title_simp": "我们一生一定永定",
+    "title_trad": "我們一生一定永定",
     "lyrics": [
       {
         "type": "verse",
@@ -30977,9 +31553,11 @@
   },
   {
     "id": 525,
-    "title_simp": "补充本 525",
-    "title_trad": "補充本 525",
+    "hymn_num_simp": "补充本 525",
+    "hymn_num_trad": "補充本 525",
     "url": "https://www.hymnal.net/cn/hymn/ts/525",
+    "title_simp": "为着召会的恢复",
+    "title_trad": "爲着召會的恢復",
     "lyrics": [
       {
         "type": "verse",
@@ -31119,9 +31697,11 @@
   },
   {
     "id": 526,
-    "title_simp": "补充本 526",
-    "title_trad": "補充本 526",
+    "hymn_num_simp": "补充本 526",
+    "hymn_num_trad": "補充本 526",
     "url": "https://www.hymnal.net/cn/hymn/ts/526",
+    "title_simp": "这是神的恢复",
+    "title_trad": "這是神的恢復",
     "lyrics": [
       {
         "type": "verse",
@@ -31343,9 +31923,11 @@
   },
   {
     "id": 527,
-    "title_simp": "补充本 527",
-    "title_trad": "補充本 527",
+    "hymn_num_simp": "补充本 527",
+    "hymn_num_trad": "補充本 527",
     "url": "https://www.hymnal.net/cn/hymn/ts/527",
+    "title_simp": "恢复",
+    "title_trad": "恢復",
     "lyrics": [
       {
         "type": "verse",
@@ -31405,9 +31987,11 @@
   },
   {
     "id": 528,
-    "title_simp": "补充本 528",
-    "title_trad": "補充本 528",
+    "hymn_num_simp": "补充本 528",
+    "hymn_num_trad": "補充本 528",
     "url": "https://www.hymnal.net/cn/hymn/ts/528",
+    "title_simp": "奉献为主恢复",
+    "title_trad": "奉獻爲主恢復",
     "lyrics": [
       {
         "type": "verse",
@@ -31503,9 +32087,11 @@
   },
   {
     "id": 529,
-    "title_simp": "补充本 529",
-    "title_trad": "補充本 529",
+    "hymn_num_simp": "补充本 529",
+    "hymn_num_trad": "補充本 529",
     "url": "https://www.hymnal.net/cn/hymn/ts/529",
+    "title_simp": "主与焚烧召会",
+    "title_trad": "主與焚燒召會",
     "lyrics": [
       {
         "type": "verse",
@@ -31553,9 +32139,11 @@
   },
   {
     "id": 530,
-    "title_simp": "补充本 530",
-    "title_trad": "補充本 530",
+    "hymn_num_simp": "补充本 530",
+    "hymn_num_trad": "補充本 530",
     "url": "https://www.hymnal.net/cn/hymn/ts/530",
+    "title_simp": "焚烧，焚烧",
+    "title_trad": "焚燒，焚燒",
     "lyrics": [
       {
         "type": "verse",
@@ -31657,9 +32245,11 @@
   },
   {
     "id": 531,
-    "title_simp": "补充本 531",
-    "title_trad": "補充本 531",
+    "hymn_num_simp": "补充本 531",
+    "hymn_num_trad": "補充本 531",
     "url": "https://www.hymnal.net/cn/hymn/ts/531",
+    "title_simp": "我们在流中",
+    "title_trad": "我們在流中",
     "lyrics": [
       {
         "type": "verse",
@@ -31697,9 +32287,11 @@
   },
   {
     "id": 532,
-    "title_simp": "补充本 532",
-    "title_trad": "補充本 532",
+    "hymn_num_simp": "补充本 532",
+    "hymn_num_trad": "補充本 532",
     "url": "https://www.hymnal.net/cn/hymn/ts/532",
+    "title_simp": "我竟成为你基业",
+    "title_trad": "我竟成爲你基業",
     "lyrics": [
       {
         "type": "verse",
@@ -31905,9 +32497,11 @@
   },
   {
     "id": 533,
-    "title_simp": "补充本 533",
-    "title_trad": "補充本 533",
+    "hymn_num_simp": "补充本 533",
+    "hymn_num_trad": "補充本 533",
     "url": "https://www.hymnal.net/cn/hymn/ts/533",
+    "title_simp": "荣耀在望",
+    "title_trad": "榮耀在望",
     "lyrics": [
       {
         "type": "verse",
@@ -32053,9 +32647,11 @@
   },
   {
     "id": 534,
-    "title_simp": "补充本 534",
-    "title_trad": "補充本 534",
+    "hymn_num_simp": "补充本 534",
+    "hymn_num_trad": "補充本 534",
     "url": "https://www.hymnal.net/cn/hymn/ts/534",
+    "title_simp": "使我知你恢复所是",
+    "title_trad": "使我知你恢復所是",
     "lyrics": [
       {
         "type": "verse",
@@ -32173,9 +32769,11 @@
   },
   {
     "id": 535,
-    "title_simp": "补充本 535",
-    "title_trad": "補充本 535",
+    "hymn_num_simp": "补充本 535",
+    "hymn_num_trad": "補充本 535",
     "url": "https://www.hymnal.net/cn/hymn/ts/535",
+    "title_simp": "基督心爱惟有召会",
+    "title_trad": "基督心愛惟有召會",
     "lyrics": [
       {
         "type": "verse",
@@ -32301,9 +32899,11 @@
   },
   {
     "id": 536,
-    "title_simp": "补充本 536",
-    "title_trad": "補充本 536",
+    "hymn_num_simp": "补充本 536",
+    "hymn_num_trad": "補充本 536",
     "url": "https://www.hymnal.net/cn/hymn/ts/536",
+    "title_simp": "羡慕渴想你的院宇",
+    "title_trad": "羨慕渴想你的院宇",
     "lyrics": [
       {
         "type": "verse",
@@ -32381,9 +32981,11 @@
   },
   {
     "id": 537,
-    "title_simp": "补充本 537",
-    "title_trad": "補充本 537",
+    "hymn_num_simp": "补充本 537",
+    "hymn_num_trad": "補充本 537",
     "url": "https://www.hymnal.net/cn/hymn/ts/537",
+    "title_simp": "献上自己建造方舟",
+    "title_trad": "獻上自己建造方舟",
     "lyrics": [
       {
         "type": "verse",
@@ -32557,9 +33159,11 @@
   },
   {
     "id": 538,
-    "title_simp": "补充本 538",
-    "title_trad": "補充本 538",
+    "hymn_num_simp": "补充本 538",
+    "hymn_num_trad": "補充本 538",
     "url": "https://www.hymnal.net/cn/hymn/ts/538",
+    "title_simp": "非拉铁非─弟兄相爱",
+    "title_trad": "非拉鐵非─弟兄相愛",
     "lyrics": [
       {
         "type": "verse",
@@ -32655,9 +33259,11 @@
   },
   {
     "id": 539,
-    "title_simp": "补充本 539",
-    "title_trad": "補充本 539",
+    "hymn_num_simp": "补充本 539",
+    "hymn_num_trad": "補充本 539",
     "url": "https://www.hymnal.net/cn/hymn/ts/539",
+    "title_simp": "爱的召会─非拉铁非",
+    "title_trad": "愛的召會─非拉鐵非",
     "lyrics": [
       {
         "type": "verse",
@@ -32783,9 +33389,11 @@
   },
   {
     "id": 540,
-    "title_simp": "补充本 540",
-    "title_trad": "補充本 540",
+    "hymn_num_simp": "补充本 540",
+    "hymn_num_trad": "補充本 540",
     "url": "https://www.hymnal.net/cn/hymn/ts/540",
+    "title_simp": "主恢复的独特",
+    "title_trad": "主恢復的獨特",
     "lyrics": [
       {
         "type": "verse",
@@ -32919,9 +33527,11 @@
   },
   {
     "id": 541,
-    "title_simp": "补充本 541",
-    "title_trad": "補充本 541",
+    "hymn_num_simp": "补充本 541",
+    "hymn_num_trad": "補充本 541",
     "url": "https://www.hymnal.net/cn/hymn/ts/541",
+    "title_simp": "召会显明神国实际",
+    "title_trad": "召會顯明神國實際",
     "lyrics": [
       {
         "type": "verse",
@@ -33095,9 +33705,11 @@
   },
   {
     "id": 542,
-    "title_simp": "补充本 542",
-    "title_trad": "補充本 542",
+    "hymn_num_simp": "补充本 542",
+    "hymn_num_trad": "補充本 542",
     "url": "https://www.hymnal.net/cn/hymn/ts/542",
+    "title_simp": "作你独特子民",
+    "title_trad": "作你獨特子民",
     "lyrics": [
       {
         "type": "verse",
@@ -33295,9 +33907,11 @@
   },
   {
     "id": 543,
-    "title_simp": "补充本 543",
-    "title_trad": "補充本 543",
+    "hymn_num_simp": "补充本 543",
+    "hymn_num_trad": "補充本 543",
     "url": "https://www.hymnal.net/cn/hymn/ts/543",
+    "title_simp": "敬虔的奥秘",
+    "title_trad": "敬虔的奧祕",
     "lyrics": [
       {
         "type": "verse",
@@ -33331,9 +33945,11 @@
   },
   {
     "id": 601,
-    "title_simp": "补充本 601",
-    "title_trad": "補充本 601",
+    "hymn_num_simp": "补充本 601",
+    "hymn_num_trad": "補充本 601",
     "url": "https://www.hymnal.net/cn/hymn/ts/601",
+    "title_simp": "建造是神的目标",
+    "title_trad": "建造是神的目標",
     "lyrics": [
       {
         "type": "verse",
@@ -33469,9 +34085,11 @@
   },
   {
     "id": 602,
-    "title_simp": "补充本 602",
-    "title_trad": "補充本 602",
+    "hymn_num_simp": "补充本 602",
+    "hymn_num_trad": "補充本 602",
     "url": "https://www.hymnal.net/cn/hymn/ts/602",
+    "title_simp": "为你计画我们献自己",
+    "title_trad": "爲你計畫我們獻自己",
     "lyrics": [
       {
         "type": "verse",
@@ -33553,9 +34171,11 @@
   },
   {
     "id": 603,
-    "title_simp": "补充本 603",
-    "title_trad": "補充本 603",
+    "hymn_num_simp": "补充本 603",
+    "hymn_num_trad": "補充本 603",
     "url": "https://www.hymnal.net/cn/hymn/ts/603",
+    "title_simp": "建造当趁今日",
+    "title_trad": "建造當趁今日",
     "lyrics": [
       {
         "type": "verse",
@@ -33661,9 +34281,11 @@
   },
   {
     "id": 604,
-    "title_simp": "补充本 604",
-    "title_trad": "補充本 604",
+    "hymn_num_simp": "补充本 604",
+    "hymn_num_trad": "補充本 604",
     "url": "https://www.hymnal.net/cn/hymn/ts/604",
+    "title_simp": "我们手拿线铊",
+    "title_trad": "我們手拿線鉈",
     "lyrics": [
       {
         "type": "verse",
@@ -33813,9 +34435,11 @@
   },
   {
     "id": 605,
-    "title_simp": "补充本 605",
-    "title_trad": "補充本 605",
+    "hymn_num_simp": "补充本 605",
+    "hymn_num_trad": "補充本 605",
     "url": "https://www.hymnal.net/cn/hymn/ts/605",
+    "title_simp": "为建造",
+    "title_trad": "爲建造",
     "lyrics": [
       {
         "type": "verse",
@@ -34005,9 +34629,11 @@
   },
   {
     "id": 606,
-    "title_simp": "补充本 606",
-    "title_trad": "補充本 606",
+    "hymn_num_simp": "补充本 606",
+    "hymn_num_trad": "補充本 606",
     "url": "https://www.hymnal.net/cn/hymn/ts/606",
+    "title_simp": "建造神的圣殿",
+    "title_trad": "建造神的聖殿",
     "lyrics": [
       {
         "type": "verse",
@@ -34197,9 +34823,11 @@
   },
   {
     "id": 607,
-    "title_simp": "补充本 607",
-    "title_trad": "補充本 607",
+    "hymn_num_simp": "补充本 607",
+    "hymn_num_trad": "補充本 607",
     "url": "https://www.hymnal.net/cn/hymn/ts/607",
+    "title_simp": "我是活石",
+    "title_trad": "我是活石",
     "lyrics": [
       {
         "type": "verse",
@@ -34227,9 +34855,11 @@
   },
   {
     "id": 608,
-    "title_simp": "补充本 608",
-    "title_trad": "補充本 608",
+    "hymn_num_simp": "补充本 608",
+    "hymn_num_trad": "補充本 608",
     "url": "https://www.hymnal.net/cn/hymn/ts/608",
+    "title_simp": "活石同来建造",
+    "title_trad": "活石同來建造",
     "lyrics": [
       {
         "type": "verse",
@@ -34365,9 +34995,11 @@
   },
   {
     "id": 609,
-    "title_simp": "补充本 609",
-    "title_trad": "補充本 609",
+    "hymn_num_simp": "补充本 609",
+    "hymn_num_trad": "補充本 609",
     "url": "https://www.hymnal.net/cn/hymn/ts/609",
+    "title_simp": "相调建造",
+    "title_trad": "相調建造",
     "lyrics": [
       {
         "type": "verse",
@@ -34451,9 +35083,11 @@
   },
   {
     "id": 610,
-    "title_simp": "补充本 610",
-    "title_trad": "補充本 610",
+    "hymn_num_simp": "补充本 610",
+    "hymn_num_trad": "補充本 610",
     "url": "https://www.hymnal.net/cn/hymn/ts/610",
+    "title_simp": "荣耀，荣耀，今看见",
+    "title_trad": "榮耀，榮耀，今看見",
     "lyrics": [
       {
         "type": "verse",
@@ -34579,9 +35213,11 @@
   },
   {
     "id": 611,
-    "title_simp": "补充本 611",
-    "title_trad": "補充本 611",
+    "hymn_num_simp": "补充本 611",
+    "hymn_num_trad": "補充本 611",
     "url": "https://www.hymnal.net/cn/hymn/ts/611",
+    "title_simp": "在宇宙中只有一个身体",
+    "title_trad": "在宇宙中只有一個身體",
     "lyrics": [
       {
         "type": "verse",
@@ -34775,9 +35411,11 @@
   },
   {
     "id": 612,
-    "title_simp": "补充本 612",
-    "title_trad": "補充本 612",
+    "hymn_num_simp": "补充本 612",
+    "hymn_num_trad": "補充本 612",
     "url": "https://www.hymnal.net/cn/hymn/ts/612",
+    "title_simp": "召会是在合一里面",
+    "title_trad": "召會是在合一里面",
     "lyrics": [
       {
         "type": "verse",
@@ -34901,9 +35539,11 @@
   },
   {
     "id": 613,
-    "title_simp": "补充本 613",
-    "title_trad": "補充本 613",
+    "hymn_num_simp": "补充本 613",
+    "hymn_num_trad": "補充本 613",
     "url": "https://www.hymnal.net/cn/hymn/ts/613",
+    "title_simp": "我们在主里是一",
+    "title_trad": "我們在主裏是一",
     "lyrics": [
       {
         "type": "verse",
@@ -35069,9 +35709,11 @@
   },
   {
     "id": 614,
-    "title_simp": "补充本 614",
-    "title_trad": "補充本 614",
+    "hymn_num_simp": "补充本 614",
+    "hymn_num_trad": "補充本 614",
     "url": "https://www.hymnal.net/cn/hymn/ts/614",
+    "title_simp": "主灵使我们合一",
+    "title_trad": "主靈使我們合一",
     "lyrics": [
       {
         "type": "chorus",
@@ -35157,9 +35799,11 @@
   },
   {
     "id": 615,
-    "title_simp": "补充本 615",
-    "title_trad": "補充本 615",
+    "hymn_num_simp": "补充本 615",
+    "hymn_num_trad": "補充本 615",
     "url": "https://www.hymnal.net/cn/hymn/ts/615",
+    "title_simp": "合而为一，建造成神家",
+    "title_trad": "合而爲一，建造成神家",
     "lyrics": [
       {
         "type": "verse",
@@ -35285,9 +35929,11 @@
   },
   {
     "id": 616,
-    "title_simp": "补充本 616",
-    "title_trad": "補充本 616",
+    "hymn_num_simp": "补充本 616",
+    "hymn_num_trad": "補充本 616",
     "url": "https://www.hymnal.net/cn/hymn/ts/616",
+    "title_simp": "耶稣聚集我们在一起",
+    "title_trad": "耶穌聚集我們在一起",
     "lyrics": [
       {
         "type": "verse",
@@ -35511,9 +36157,11 @@
   },
   {
     "id": 617,
-    "title_simp": "补充本 617",
-    "title_trad": "補充本 617",
+    "hymn_num_simp": "补充本 617",
+    "hymn_num_trad": "補充本 617",
     "url": "https://www.hymnal.net/cn/hymn/ts/617",
+    "title_simp": "我们聚在一起来吃主的晚餐",
+    "title_trad": "我們聚在一起來喫主的晚餐",
     "lyrics": [
       {
         "type": "verse",
@@ -35615,9 +36263,11 @@
   },
   {
     "id": 618,
-    "title_simp": "补充本 618",
-    "title_trad": "補充本 618",
+    "hymn_num_simp": "补充本 618",
+    "hymn_num_trad": "補充本 618",
     "url": "https://www.hymnal.net/cn/hymn/ts/618",
+    "title_simp": "我们在一起",
+    "title_trad": "我們在一起",
     "lyrics": [
       {
         "type": "verse",
@@ -35743,9 +36393,11 @@
   },
   {
     "id": 619,
-    "title_simp": "补充本 619",
-    "title_trad": "補充本 619",
+    "hymn_num_simp": "补充本 619",
+    "hymn_num_trad": "補充本 619",
     "url": "https://www.hymnal.net/cn/hymn/ts/619",
+    "title_simp": "同心合意",
+    "title_trad": "同心合意",
     "lyrics": [
       {
         "type": "verse",
@@ -35815,9 +36467,11 @@
   },
   {
     "id": 620,
-    "title_simp": "补充本 620",
-    "title_trad": "補充本 620",
+    "hymn_num_simp": "补充本 620",
+    "hymn_num_trad": "補充本 620",
     "url": "https://www.hymnal.net/cn/hymn/ts/620",
+    "title_simp": "父使我们成为一",
+    "title_trad": "父使我們成爲一",
     "lyrics": [
       {
         "type": "verse",
@@ -35895,9 +36549,11 @@
   },
   {
     "id": 621,
-    "title_simp": "补充本 621",
-    "title_trad": "補充本 621",
+    "hymn_num_simp": "补充本 621",
+    "hymn_num_trad": "補充本 621",
     "url": "https://www.hymnal.net/cn/hymn/ts/621",
+    "title_simp": "让我们同来聚集擘饼",
+    "title_trad": "讓我們同來聚集擘餅",
     "lyrics": [
       {
         "type": "verse",
@@ -36047,9 +36703,11 @@
   },
   {
     "id": 622,
-    "title_simp": "补充本 622",
-    "title_trad": "補充本 622",
+    "hymn_num_simp": "补充本 622",
+    "hymn_num_trad": "補充本 622",
     "url": "https://www.hymnal.net/cn/hymn/ts/622",
+    "title_simp": "与祂同席",
+    "title_trad": "與祂同席",
     "lyrics": [
       {
         "type": "verse",
@@ -36103,9 +36761,11 @@
   },
   {
     "id": 623,
-    "title_simp": "补充本 623",
-    "title_trad": "補充本 623",
+    "hymn_num_simp": "补充本 623",
+    "hymn_num_trad": "補充本 623",
     "url": "https://www.hymnal.net/cn/hymn/ts/623",
+    "title_simp": "主，你筵席荣耀无比",
+    "title_trad": "主，你筵席榮耀無比",
     "lyrics": [
       {
         "type": "verse",
@@ -36303,9 +36963,11 @@
   },
   {
     "id": 624,
-    "title_simp": "补充本 624",
-    "title_trad": "補充本 624",
+    "hymn_num_simp": "补充本 624",
+    "hymn_num_trad": "補充本 624",
     "url": "https://www.hymnal.net/cn/hymn/ts/624",
+    "title_simp": "你已显为身体基督",
+    "title_trad": "你已顯爲身體基督",
     "lyrics": [
       {
         "type": "verse",
@@ -36407,9 +37069,11 @@
   },
   {
     "id": 625,
-    "title_simp": "补充本 625",
-    "title_trad": "補充本 625",
+    "hymn_num_simp": "补充本 625",
+    "hymn_num_trad": "補充本 625",
     "url": "https://www.hymnal.net/cn/hymn/ts/625",
+    "title_simp": "照神计画成为新人",
+    "title_trad": "照神計畫成爲新人",
     "lyrics": [
       {
         "type": "verse",
@@ -36487,9 +37151,11 @@
   },
   {
     "id": 626,
-    "title_simp": "补充本 626",
-    "title_trad": "補充本 626",
+    "hymn_num_simp": "补充本 626",
+    "hymn_num_trad": "補充本 626",
     "url": "https://www.hymnal.net/cn/hymn/ts/626",
+    "title_simp": "我们在灵里是一",
+    "title_trad": "我們在靈裏是一",
     "lyrics": [
       {
         "type": "verse",
@@ -36679,9 +37345,11 @@
   },
   {
     "id": 627,
-    "title_simp": "补充本 627",
-    "title_trad": "補充本 627",
+    "hymn_num_simp": "补充本 627",
+    "hymn_num_trad": "補充本 627",
     "url": "https://www.hymnal.net/cn/hymn/ts/627",
+    "title_simp": "何等美善，弟兄和睦是一",
+    "title_trad": "何等美善，弟兄和睦是一",
     "lyrics": [
       {
         "type": "verse",
@@ -36795,9 +37463,11 @@
   },
   {
     "id": 628,
-    "title_simp": "补充本 628",
-    "title_trad": "補充本 628",
+    "hymn_num_simp": "补充本 628",
+    "hymn_num_trad": "補充本 628",
     "url": "https://www.hymnal.net/cn/hymn/ts/628",
+    "title_simp": "何等美善，弟兄和睦是一",
+    "title_trad": "何等美善，弟兄和睦是一",
     "lyrics": [
       {
         "type": "verse",
@@ -36901,9 +37571,11 @@
   },
   {
     "id": 629,
-    "title_simp": "补充本 629",
-    "title_trad": "補充本 629",
+    "hymn_num_simp": "补充本 629",
+    "hymn_num_trad": "補充本 629",
     "url": "https://www.hymnal.net/cn/hymn/ts/629",
+    "title_simp": "建造神的家",
+    "title_trad": "建造神的家",
     "lyrics": [
       {
         "type": "verse",
@@ -36947,9 +37619,11 @@
   },
   {
     "id": 701,
-    "title_simp": "补充本 701",
-    "title_trad": "補充本 701",
+    "hymn_num_simp": "补充本 701",
+    "hymn_num_trad": "補充本 701",
     "url": "https://www.hymnal.net/cn/hymn/ts/701",
+    "title_simp": "结束流浪的生活",
+    "title_trad": "結束流浪的生活",
     "lyrics": [
       {
         "type": "verse",
@@ -37107,9 +37781,11 @@
   },
   {
     "id": 702,
-    "title_simp": "补充本 702",
-    "title_trad": "補充本 702",
+    "hymn_num_simp": "补充本 702",
+    "hymn_num_trad": "補充本 702",
     "url": "https://www.hymnal.net/cn/hymn/ts/702",
+    "title_simp": "是你吗？",
+    "title_trad": "是你嗎？",
     "lyrics": [
       {
         "type": "verse",
@@ -37331,9 +38007,11 @@
   },
   {
     "id": 703,
-    "title_simp": "补充本 703",
-    "title_trad": "補充本 703",
+    "hymn_num_simp": "补充本 703",
+    "hymn_num_trad": "補充本 703",
     "url": "https://www.hymnal.net/cn/hymn/ts/703",
+    "title_simp": "我已得着归宿",
+    "title_trad": "我已得着歸宿",
     "lyrics": [
       {
         "type": "verse",
@@ -37387,9 +38065,11 @@
   },
   {
     "id": 704,
-    "title_simp": "补充本 704",
-    "title_trad": "補充本 704",
+    "hymn_num_simp": "补充本 704",
+    "hymn_num_trad": "補充本 704",
     "url": "https://www.hymnal.net/cn/hymn/ts/704",
+    "title_simp": "你如今活在召会里",
+    "title_trad": "你如今活在召會里",
     "lyrics": [
       {
         "type": "verse",
@@ -37459,9 +38139,11 @@
   },
   {
     "id": 705,
-    "title_simp": "补充本 705",
-    "title_trad": "補充本 705",
+    "hymn_num_simp": "补充本 705",
+    "hymn_num_trad": "補充本 705",
     "url": "https://www.hymnal.net/cn/hymn/ts/705",
+    "title_simp": "召会是我甜美家",
+    "title_trad": "召會是我甜美家",
     "lyrics": [
       {
         "type": "verse",
@@ -37523,9 +38205,11 @@
   },
   {
     "id": 706,
-    "title_simp": "补充本 706",
-    "title_trad": "補充本 706",
+    "hymn_num_simp": "补充本 706",
+    "hymn_num_trad": "補充本 706",
     "url": "https://www.hymnal.net/cn/hymn/ts/706",
+    "title_simp": "快乐日，我们回家来",
+    "title_trad": "快樂日，我們回家來",
     "lyrics": [
       {
         "type": "verse",
@@ -37595,9 +38279,11 @@
   },
   {
     "id": 707,
-    "title_simp": "补充本 707",
-    "title_trad": "補充本 707",
+    "hymn_num_simp": "补充本 707",
+    "hymn_num_trad": "補充本 707",
     "url": "https://www.hymnal.net/cn/hymn/ts/707",
+    "title_simp": "何喜乐",
+    "title_trad": "何喜樂",
     "lyrics": [
       {
         "type": "verse",
@@ -37621,9 +38307,11 @@
   },
   {
     "id": 708,
-    "title_simp": "补充本 708",
-    "title_trad": "補充本 708",
+    "hymn_num_simp": "补充本 708",
+    "hymn_num_trad": "補充本 708",
     "url": "https://www.hymnal.net/cn/hymn/ts/708",
+    "title_simp": "我们今已在家",
+    "title_trad": "我們今已在家",
     "lyrics": [
       {
         "type": "verse",
@@ -37677,9 +38365,11 @@
   },
   {
     "id": 709,
-    "title_simp": "补充本 709",
-    "title_trad": "補充本 709",
+    "hymn_num_simp": "补充本 709",
+    "hymn_num_trad": "補充本 709",
     "url": "https://www.hymnal.net/cn/hymn/ts/709",
+    "title_simp": "安家在召会",
+    "title_trad": "安家在召會",
     "lyrics": [
       {
         "type": "verse",
@@ -37745,9 +38435,11 @@
   },
   {
     "id": 710,
-    "title_simp": "补充本 710",
-    "title_trad": "補充本 710",
+    "hymn_num_simp": "补充本 710",
+    "hymn_num_trad": "補充本 710",
     "url": "https://www.hymnal.net/cn/hymn/ts/710",
+    "title_simp": "出所多玛进方舟",
+    "title_trad": "出所多瑪進方舟",
     "lyrics": [
       {
         "type": "verse",
@@ -37825,9 +38517,11 @@
   },
   {
     "id": 711,
-    "title_simp": "补充本 711",
-    "title_trad": "補充本 711",
+    "hymn_num_simp": "补充本 711",
+    "hymn_num_trad": "補充本 711",
     "url": "https://www.hymnal.net/cn/hymn/ts/711",
+    "title_simp": "召会生活无比荣耀",
+    "title_trad": "召會生活無比榮耀",
     "lyrics": [
       {
         "type": "verse",
@@ -37993,9 +38687,11 @@
   },
   {
     "id": 712,
-    "title_simp": "补充本 712",
-    "title_trad": "補充本 712",
+    "hymn_num_simp": "补充本 712",
+    "hymn_num_trad": "補充本 712",
     "url": "https://www.hymnal.net/cn/hymn/ts/712",
+    "title_simp": "召会生活辉煌之至",
+    "title_trad": "召會生活輝煌之至",
     "lyrics": [
       {
         "type": "verse",
@@ -38221,9 +38917,11 @@
   },
   {
     "id": 713,
-    "title_simp": "补充本 713",
-    "title_trad": "補充本 713",
+    "hymn_num_simp": "补充本 713",
+    "hymn_num_trad": "補充本 713",
     "url": "https://www.hymnal.net/cn/hymn/ts/713",
+    "title_simp": "阿！可爱的召会生活",
+    "title_trad": "阿！可愛的召會生活",
     "lyrics": [
       {
         "type": "verse",
@@ -38429,9 +39127,11 @@
   },
   {
     "id": 714,
-    "title_simp": "补充本 714",
-    "title_trad": "補充本 714",
+    "hymn_num_simp": "补充本 714",
+    "hymn_num_trad": "補充本 714",
     "url": "https://www.hymnal.net/cn/hymn/ts/714",
+    "title_simp": "我爱召会生活",
+    "title_trad": "我愛召會生活",
     "lyrics": [
       {
         "type": "verse",
@@ -38579,9 +39279,11 @@
   },
   {
     "id": 715,
-    "title_simp": "补充本 715",
-    "title_trad": "補充本 715",
+    "hymn_num_simp": "补充本 715",
+    "hymn_num_trad": "補充本 715",
     "url": "https://www.hymnal.net/cn/hymn/ts/715",
+    "title_simp": "过召会生活",
+    "title_trad": "過召會生活",
     "lyrics": [
       {
         "type": "verse",
@@ -38697,9 +39399,11 @@
   },
   {
     "id": 716,
-    "title_simp": "补充本 716",
-    "title_trad": "補充本 716",
+    "hymn_num_simp": "补充本 716",
+    "hymn_num_trad": "補充本 716",
     "url": "https://www.hymnal.net/cn/hymn/ts/716",
+    "title_simp": "同过召会",
+    "title_trad": "同過召會",
     "lyrics": [
       {
         "type": "verse",
@@ -38887,9 +39591,11 @@
   },
   {
     "id": 717,
-    "title_simp": "补充本 717",
-    "title_trad": "補充本 717",
+    "hymn_num_simp": "补充本 717",
+    "hymn_num_trad": "補充本 717",
     "url": "https://www.hymnal.net/cn/hymn/ts/717",
+    "title_simp": "豫尝那日",
+    "title_trad": "豫嘗那日",
     "lyrics": [
       {
         "type": "verse",
@@ -38947,9 +39653,11 @@
   },
   {
     "id": 718,
-    "title_simp": "补充本 718",
-    "title_trad": "補充本 718",
+    "hymn_num_simp": "补充本 718",
+    "hymn_num_trad": "補充本 718",
     "url": "https://www.hymnal.net/cn/hymn/ts/718",
+    "title_simp": "过节",
+    "title_trad": "過節",
     "lyrics": [
       {
         "type": "verse",
@@ -39063,9 +39771,11 @@
   },
   {
     "id": 719,
-    "title_simp": "补充本 719",
-    "title_trad": "補充本 719",
+    "hymn_num_simp": "补充本 719",
+    "hymn_num_trad": "補充本 719",
     "url": "https://www.hymnal.net/cn/hymn/ts/719",
+    "title_simp": "新酒灌满",
+    "title_trad": "新酒灌滿",
     "lyrics": [
       {
         "type": "verse",
@@ -39167,9 +39877,11 @@
   },
   {
     "id": 720,
-    "title_simp": "补充本 720",
-    "title_trad": "補充本 720",
+    "hymn_num_simp": "补充本 720",
+    "hymn_num_trad": "補充本 720",
     "url": "https://www.hymnal.net/cn/hymn/ts/720",
+    "title_simp": "我们同聚集是好得无比",
+    "title_trad": "我們同聚集是好得無比",
     "lyrics": [
       {
         "type": "verse",
@@ -39243,9 +39955,11 @@
   },
   {
     "id": 721,
-    "title_simp": "补充本 721",
-    "title_trad": "補充本 721",
+    "hymn_num_simp": "补充本 721",
+    "hymn_num_trad": "補充本 721",
     "url": "https://www.hymnal.net/cn/hymn/ts/721",
+    "title_simp": "在主的召会中",
+    "title_trad": "在主的召會中",
     "lyrics": [
       {
         "type": "verse",
@@ -39347,9 +40061,11 @@
   },
   {
     "id": 722,
-    "title_simp": "补充本 722",
-    "title_trad": "補充本 722",
+    "hymn_num_simp": "补充本 722",
+    "hymn_num_trad": "補充本 722",
     "url": "https://www.hymnal.net/cn/hymn/ts/722",
+    "title_simp": "何等的享受",
+    "title_trad": "何等的享受",
     "lyrics": [
       {
         "type": "verse",
@@ -39389,9 +40105,11 @@
   },
   {
     "id": 723,
-    "title_simp": "补充本 723",
-    "title_trad": "補充本 723",
+    "hymn_num_simp": "补充本 723",
+    "hymn_num_trad": "補充本 723",
     "url": "https://www.hymnal.net/cn/hymn/ts/723",
+    "title_simp": "又新又活的聚集",
+    "title_trad": "又新又活的聚集",
     "lyrics": [
       {
         "type": "verse",
@@ -39531,9 +40249,11 @@
   },
   {
     "id": 724,
-    "title_simp": "补充本 724",
-    "title_trad": "補充本 724",
+    "hymn_num_simp": "补充本 724",
+    "hymn_num_trad": "補充本 724",
     "url": "https://www.hymnal.net/cn/hymn/ts/724",
+    "title_simp": "我们是一群有雄心的人",
+    "title_trad": "我們是一羣有雄心的人",
     "lyrics": [
       {
         "type": "verse",
@@ -39587,9 +40307,11 @@
   },
   {
     "id": 725,
-    "title_simp": "补充本 725",
-    "title_trad": "補充本 725",
+    "hymn_num_simp": "补充本 725",
+    "hymn_num_trad": "補充本 725",
     "url": "https://www.hymnal.net/cn/hymn/ts/725",
+    "title_simp": "小孩子与小牛犊",
+    "title_trad": "小孩子與小牛犢",
     "lyrics": [
       {
         "type": "verse",
@@ -39647,9 +40369,11 @@
   },
   {
     "id": 726,
-    "title_simp": "补充本 726",
-    "title_trad": "補充本 726",
+    "hymn_num_simp": "补充本 726",
+    "hymn_num_trad": "補充本 726",
     "url": "https://www.hymnal.net/cn/hymn/ts/726",
+    "title_simp": "召会实际是灵",
+    "title_trad": "召會實際是靈",
     "lyrics": [
       {
         "type": "verse",
@@ -39703,9 +40427,11 @@
   },
   {
     "id": 727,
-    "title_simp": "补充本 727",
-    "title_trad": "補充本 727",
+    "hymn_num_simp": "补充本 727",
+    "hymn_num_trad": "補充本 727",
     "url": "https://www.hymnal.net/cn/hymn/ts/727",
+    "title_simp": "我要释放基督",
+    "title_trad": "我要釋放基督",
     "lyrics": [
       {
         "type": "verse",
@@ -39879,9 +40605,11 @@
   },
   {
     "id": 728,
-    "title_simp": "补充本 728",
-    "title_trad": "補充本 728",
+    "hymn_num_simp": "补充本 728",
+    "hymn_num_trad": "補充本 728",
     "url": "https://www.hymnal.net/cn/hymn/ts/728",
+    "title_simp": "让灵自由",
+    "title_trad": "讓靈自由",
     "lyrics": [
       {
         "type": "verse",
@@ -39967,9 +40695,11 @@
   },
   {
     "id": 729,
-    "title_simp": "补充本 729",
-    "title_trad": "補充本 729",
+    "hymn_num_simp": "补充本 729",
+    "hymn_num_trad": "補充本 729",
     "url": "https://www.hymnal.net/cn/hymn/ts/729",
+    "title_simp": "阿利路亚，自由",
+    "title_trad": "阿利路亞，自由",
     "lyrics": [
       {
         "type": "verse",
@@ -40095,9 +40825,11 @@
   },
   {
     "id": 730,
-    "title_simp": "补充本 730",
-    "title_trad": "補充本 730",
+    "hymn_num_simp": "补充本 730",
+    "hymn_num_trad": "補充本 730",
     "url": "https://www.hymnal.net/cn/hymn/ts/730",
+    "title_simp": "作贵重器皿",
+    "title_trad": "作貴重器皿",
     "lyrics": [
       {
         "type": "verse",
@@ -40205,9 +40937,11 @@
   },
   {
     "id": 731,
-    "title_simp": "补充本 731",
-    "title_trad": "補充本 731",
+    "hymn_num_simp": "补充本 731",
+    "hymn_num_trad": "補充本 731",
     "url": "https://www.hymnal.net/cn/hymn/ts/731",
+    "title_simp": "不走宗教仪文错路",
+    "title_trad": "不走宗教儀文錯路",
     "lyrics": [
       {
         "type": "verse",
@@ -40239,9 +40973,11 @@
   },
   {
     "id": 732,
-    "title_simp": "补充本 732",
-    "title_trad": "補充本 732",
+    "hymn_num_simp": "补充本 732",
+    "hymn_num_trad": "補充本 732",
     "url": "https://www.hymnal.net/cn/hymn/ts/732",
+    "title_simp": "流露祂的丰富",
+    "title_trad": "流露祂的豐富",
     "lyrics": [
       {
         "type": "verse",
@@ -40295,9 +41031,11 @@
   },
   {
     "id": 733,
-    "title_simp": "补充本 733",
-    "title_trad": "補充本 733",
+    "hymn_num_simp": "补充本 733",
+    "hymn_num_trad": "補充本 733",
     "url": "https://www.hymnal.net/cn/hymn/ts/733",
+    "title_simp": "享受众圣徒里面的基督",
+    "title_trad": "享受衆聖徒裏面的基督",
     "lyrics": [
       {
         "type": "verse",
@@ -40399,9 +41137,11 @@
   },
   {
     "id": 734,
-    "title_simp": "补充本 734",
-    "title_trad": "補充本 734",
+    "hymn_num_simp": "补充本 734",
+    "hymn_num_trad": "補充本 734",
     "url": "https://www.hymnal.net/cn/hymn/ts/734",
+    "title_simp": "彼此一同享受",
+    "title_trad": "彼此一同享受",
     "lyrics": [
       {
         "type": "verse",
@@ -40471,9 +41211,11 @@
   },
   {
     "id": 735,
-    "title_simp": "补充本 735",
-    "title_trad": "補充本 735",
+    "hymn_num_simp": "补充本 735",
+    "hymn_num_trad": "補充本 735",
     "url": "https://www.hymnal.net/cn/hymn/ts/735",
+    "title_simp": "为祂说话",
+    "title_trad": "爲祂說話",
     "lyrics": [
       {
         "type": "verse",
@@ -40631,9 +41373,11 @@
   },
   {
     "id": 736,
-    "title_simp": "补充本 736",
-    "title_trad": "補充本 736",
+    "hymn_num_simp": "补充本 736",
+    "hymn_num_trad": "補充本 736",
     "url": "https://www.hymnal.net/cn/hymn/ts/736",
+    "title_simp": "在召会中鉴赏",
+    "title_trad": "在召會中鑑賞",
     "lyrics": [
       {
         "type": "verse",
@@ -40781,9 +41525,11 @@
   },
   {
     "id": 737,
-    "title_simp": "补充本 737",
-    "title_trad": "補充本 737",
+    "hymn_num_simp": "补充本 737",
+    "hymn_num_trad": "補充本 737",
     "url": "https://www.hymnal.net/cn/hymn/ts/737",
+    "title_simp": "要将供物送仓库",
+    "title_trad": "要將供物送倉庫",
     "lyrics": [
       {
         "type": "verse",
@@ -40821,9 +41567,11 @@
   },
   {
     "id": 738,
-    "title_simp": "补充本 738",
-    "title_trad": "補充本 738",
+    "hymn_num_simp": "补充本 738",
+    "hymn_num_trad": "補充本 738",
     "url": "https://www.hymnal.net/cn/hymn/ts/738",
+    "title_simp": "你要给人",
+    "title_trad": "你要給人",
     "lyrics": [
       {
         "type": "verse",
@@ -40845,9 +41593,11 @@
   },
   {
     "id": 739,
-    "title_simp": "补充本 739",
-    "title_trad": "補充本 739",
+    "hymn_num_simp": "补充本 739",
+    "hymn_num_trad": "補充本 739",
     "url": "https://www.hymnal.net/cn/hymn/ts/739",
+    "title_simp": "接待圣徒",
+    "title_trad": "接待聖徒",
     "lyrics": [
       {
         "type": "verse",
@@ -40889,9 +41639,11 @@
   },
   {
     "id": 740,
-    "title_simp": "补充本 740",
-    "title_trad": "補充本 740",
+    "hymn_num_simp": "补充本 740",
+    "hymn_num_trad": "補充本 740",
     "url": "https://www.hymnal.net/cn/hymn/ts/740",
+    "title_simp": "谁是在主这边",
+    "title_trad": "誰是在主這邊",
     "lyrics": [
       {
         "type": "verse",
@@ -40929,9 +41681,11 @@
   },
   {
     "id": 741,
-    "title_simp": "补充本 741",
-    "title_trad": "補充本 741",
+    "hymn_num_simp": "补充本 741",
+    "hymn_num_trad": "補充本 741",
     "url": "https://www.hymnal.net/cn/hymn/ts/741",
+    "title_simp": "为着祂",
+    "title_trad": "爲着祂",
     "lyrics": [
       {
         "type": "verse",
@@ -40997,9 +41751,11 @@
   },
   {
     "id": 742,
-    "title_simp": "补充本 742",
-    "title_trad": "補充本 742",
+    "hymn_num_simp": "补充本 742",
+    "hymn_num_trad": "補充本 742",
     "url": "https://www.hymnal.net/cn/hymn/ts/742",
+    "title_simp": "为着祂的见证",
+    "title_trad": "爲着祂的見證",
     "lyrics": [
       {
         "type": "verse",
@@ -41149,9 +41905,11 @@
   },
   {
     "id": 743,
-    "title_simp": "补充本 743",
-    "title_trad": "補充本 743",
+    "hymn_num_simp": "补充本 743",
+    "hymn_num_trad": "補充本 743",
     "url": "https://www.hymnal.net/cn/hymn/ts/743",
+    "title_simp": "绝对分别出来",
+    "title_trad": "絕對分別出來",
     "lyrics": [
       {
         "type": "verse",
@@ -41397,9 +42155,11 @@
   },
   {
     "id": 744,
-    "title_simp": "补充本 744",
-    "title_trad": "補充本 744",
+    "hymn_num_simp": "补充本 744",
+    "hymn_num_trad": "補充本 744",
     "url": "https://www.hymnal.net/cn/hymn/ts/744",
+    "title_simp": "我只要神旨意",
+    "title_trad": "我只要神旨意",
     "lyrics": [
       {
         "type": "verse",
@@ -41477,9 +42237,11 @@
   },
   {
     "id": 745,
-    "title_simp": "补充本 745",
-    "title_trad": "補充本 745",
+    "hymn_num_simp": "补充本 745",
+    "hymn_num_trad": "補充本 745",
     "url": "https://www.hymnal.net/cn/hymn/ts/745",
+    "title_simp": "一切为召会",
+    "title_trad": "一切爲召會",
     "lyrics": [
       {
         "type": "verse",
@@ -41647,9 +42409,11 @@
   },
   {
     "id": 746,
-    "title_simp": "补充本 746",
-    "title_trad": "補充本 746",
+    "hymn_num_simp": "补充本 746",
+    "hymn_num_trad": "補充本 746",
     "url": "https://www.hymnal.net/cn/hymn/ts/746",
+    "title_simp": "花费",
+    "title_trad": "花費",
     "lyrics": [
       {
         "type": "verse",
@@ -41677,9 +42441,11 @@
   },
   {
     "id": 747,
-    "title_simp": "补充本 747",
-    "title_trad": "補充本 747",
+    "hymn_num_simp": "补充本 747",
+    "hymn_num_trad": "補充本 747",
     "url": "https://www.hymnal.net/cn/hymn/ts/747",
+    "title_simp": "哦主！我愿花费自己",
+    "title_trad": "哦主！我願花費自己",
     "lyrics": [
       {
         "type": "verse",
@@ -41877,9 +42643,11 @@
   },
   {
     "id": 748,
-    "title_simp": "补充本 748",
-    "title_trad": "補充本 748",
+    "hymn_num_simp": "补充本 748",
+    "hymn_num_trad": "補充本 748",
     "url": "https://www.hymnal.net/cn/hymn/ts/748",
+    "title_simp": "全为召会花费",
+    "title_trad": "全爲召會花費",
     "lyrics": [
       {
         "type": "verse",
@@ -41927,9 +42695,11 @@
   },
   {
     "id": 749,
-    "title_simp": "补充本 749",
-    "title_trad": "補充本 749",
+    "hymn_num_simp": "补充本 749",
+    "hymn_num_trad": "補充本 749",
     "url": "https://www.hymnal.net/cn/hymn/ts/749",
+    "title_simp": "同死同苦",
+    "title_trad": "同死同苦",
     "lyrics": [
       {
         "type": "verse",
@@ -41967,9 +42737,11 @@
   },
   {
     "id": 750,
-    "title_simp": "补充本 750",
-    "title_trad": "補充本 750",
+    "hymn_num_simp": "补充本 750",
+    "hymn_num_trad": "補充本 750",
     "url": "https://www.hymnal.net/cn/hymn/ts/750",
+    "title_simp": "背起十架为召会",
+    "title_trad": "背起十架爲召會",
     "lyrics": [
       {
         "type": "verse",
@@ -42095,9 +42867,11 @@
   },
   {
     "id": 751,
-    "title_simp": "补充本 751",
-    "title_trad": "補充本 751",
+    "hymn_num_simp": "补充本 751",
+    "hymn_num_trad": "補充本 751",
     "url": "https://www.hymnal.net/cn/hymn/ts/751",
+    "title_simp": "遇见你们",
+    "title_trad": "遇見你們",
     "lyrics": [
       {
         "type": "verse",
@@ -42183,9 +42957,11 @@
   },
   {
     "id": 752,
-    "title_simp": "补充本 752",
-    "title_trad": "補充本 752",
+    "hymn_num_simp": "补充本 752",
+    "hymn_num_trad": "補充本 752",
     "url": "https://www.hymnal.net/cn/hymn/ts/752",
+    "title_simp": "爱使我们相聚一起",
+    "title_trad": "愛使我們相聚一起",
     "lyrics": [
       {
         "type": "verse",
@@ -42231,9 +43007,11 @@
   },
   {
     "id": 753,
-    "title_simp": "补充本 753",
-    "title_trad": "補充本 753",
+    "hymn_num_simp": "补充本 753",
+    "hymn_num_trad": "補充本 753",
     "url": "https://www.hymnal.net/cn/hymn/ts/753",
+    "title_simp": "主，我爱你国度",
+    "title_trad": "主，我愛你國度",
     "lyrics": [
       {
         "type": "verse",
@@ -42319,9 +43097,11 @@
   },
   {
     "id": 754,
-    "title_simp": "补充本 754",
-    "title_trad": "補充本 754",
+    "hymn_num_simp": "补充本 754",
+    "hymn_num_trad": "補充本 754",
     "url": "https://www.hymnal.net/cn/hymn/ts/754",
+    "title_simp": "为主见证移民开展",
+    "title_trad": "爲主見證移民開展",
     "lyrics": [
       {
         "type": "verse",
@@ -42503,9 +43283,11 @@
   },
   {
     "id": 755,
-    "title_simp": "补充本 755",
-    "title_trad": "補充本 755",
+    "hymn_num_simp": "补充本 755",
+    "hymn_num_trad": "補充本 755",
     "url": "https://www.hymnal.net/cn/hymn/ts/755",
+    "title_simp": "跟随榜样",
+    "title_trad": "跟隨榜樣",
     "lyrics": [
       {
         "type": "verse",
@@ -42671,9 +43453,11 @@
   },
   {
     "id": 756,
-    "title_simp": "补充本 756",
-    "title_trad": "補充本 756",
+    "hymn_num_simp": "补充本 756",
+    "hymn_num_trad": "補充本 756",
     "url": "https://www.hymnal.net/cn/hymn/ts/756",
+    "title_simp": "单纯跟随莫迟误",
+    "title_trad": "單純跟隨莫遲誤",
     "lyrics": [
       {
         "type": "verse",
@@ -42871,9 +43655,11 @@
   },
   {
     "id": 757,
-    "title_simp": "补充本 757",
-    "title_trad": "補充本 757",
+    "hymn_num_simp": "补充本 757",
+    "hymn_num_trad": "補充本 757",
     "url": "https://www.hymnal.net/cn/hymn/ts/757",
+    "title_simp": "单纯跟随莫迟误",
+    "title_trad": "單純跟隨莫遲誤",
     "lyrics": [
       {
         "type": "verse",
@@ -42975,9 +43761,11 @@
   },
   {
     "id": 758,
-    "title_simp": "补充本 758",
-    "title_trad": "補充本 758",
+    "hymn_num_simp": "补充本 758",
+    "hymn_num_trad": "補充本 758",
     "url": "https://www.hymnal.net/cn/hymn/ts/758",
+    "title_simp": "欢喜聚集复活中",
+    "title_trad": "歡喜聚集復活中",
     "lyrics": [
       {
         "type": "verse",
@@ -43223,9 +44011,11 @@
   },
   {
     "id": 759,
-    "title_simp": "补充本 759",
-    "title_trad": "補充本 759",
+    "hymn_num_simp": "补充本 759",
+    "hymn_num_trad": "補充本 759",
     "url": "https://www.hymnal.net/cn/hymn/ts/759",
+    "title_simp": "在复活里聚集",
+    "title_trad": "在復活裏聚集",
     "lyrics": [
       {
         "type": "verse",
@@ -43327,9 +44117,11 @@
   },
   {
     "id": 760,
-    "title_simp": "补充本 760",
-    "title_trad": "補充本 760",
+    "hymn_num_simp": "补充本 760",
+    "hymn_num_trad": "補充本 760",
     "url": "https://www.hymnal.net/cn/hymn/ts/760",
+    "title_simp": "仇敌不能胜过召会",
+    "title_trad": "仇敵不能勝過召會",
     "lyrics": [
       {
         "type": "verse",
@@ -43431,9 +44223,11 @@
   },
   {
     "id": 761,
-    "title_simp": "补充本 761",
-    "title_trad": "補充本 761",
+    "hymn_num_simp": "补充本 761",
+    "hymn_num_trad": "補充本 761",
     "url": "https://www.hymnal.net/cn/hymn/ts/761",
+    "title_simp": "爱中的洗涤",
+    "title_trad": "愛中的洗滌",
     "lyrics": [
       {
         "type": "verse",
@@ -43503,9 +44297,11 @@
   },
   {
     "id": 762,
-    "title_simp": "补充本 762",
-    "title_trad": "補充本 762",
+    "hymn_num_simp": "补充本 762",
+    "hymn_num_trad": "補充本 762",
     "url": "https://www.hymnal.net/cn/hymn/ts/762",
+    "title_simp": "同活在主身体中",
+    "title_trad": "同活在主身體中",
     "lyrics": [
       {
         "type": "verse",
@@ -43623,9 +44419,11 @@
   },
   {
     "id": 801,
-    "title_simp": "补充本 801",
-    "title_trad": "補充本 801",
+    "hymn_num_simp": "补充本 801",
+    "hymn_num_trad": "補充本 801",
     "url": "https://www.hymnal.net/cn/hymn/ts/801",
+    "title_simp": "我们进入身体事奉",
+    "title_trad": "我們進入身體事奉",
     "lyrics": [
       {
         "type": "chorus",
@@ -43711,9 +44509,11 @@
   },
   {
     "id": 802,
-    "title_simp": "补充本 802",
-    "title_trad": "補充本 802",
+    "hymn_num_simp": "补充本 802",
+    "hymn_num_trad": "補充本 802",
     "url": "https://www.hymnal.net/cn/hymn/ts/802",
+    "title_simp": "与王同工",
+    "title_trad": "與王同工",
     "lyrics": [
       {
         "type": "verse",
@@ -43815,9 +44615,11 @@
   },
   {
     "id": 803,
-    "title_simp": "补充本 803",
-    "title_trad": "補充本 803",
+    "hymn_num_simp": "补充本 803",
+    "hymn_num_trad": "補充本 803",
     "url": "https://www.hymnal.net/cn/hymn/ts/803",
+    "title_simp": "我从来不后悔",
+    "title_trad": "我從來不後悔",
     "lyrics": [
       {
         "type": "verse",
@@ -43847,9 +44649,11 @@
   },
   {
     "id": 804,
-    "title_simp": "补充本 804",
-    "title_trad": "補充本 804",
+    "hymn_num_simp": "补充本 804",
+    "hymn_num_trad": "補充本 804",
     "url": "https://www.hymnal.net/cn/hymn/ts/804",
+    "title_simp": "赶工",
+    "title_trad": "趕工",
     "lyrics": [
       {
         "type": "verse",
@@ -43999,9 +44803,11 @@
   },
   {
     "id": 805,
-    "title_simp": "补充本 805",
-    "title_trad": "補充本 805",
+    "hymn_num_simp": "补充本 805",
+    "hymn_num_trad": "補充本 805",
     "url": "https://www.hymnal.net/cn/hymn/ts/805",
+    "title_simp": "基督我王正驱前",
+    "title_trad": "基督我王正驅前",
     "lyrics": [
       {
         "type": "verse",
@@ -44031,9 +44837,11 @@
   },
   {
     "id": 806,
-    "title_simp": "补充本 806",
-    "title_trad": "補充本 806",
+    "hymn_num_simp": "补充本 806",
+    "hymn_num_trad": "補充本 806",
     "url": "https://www.hymnal.net/cn/hymn/ts/806",
+    "title_simp": "向前进",
+    "title_trad": "向前進",
     "lyrics": [
       {
         "type": "verse",
@@ -44073,9 +44881,11 @@
   },
   {
     "id": 807,
-    "title_simp": "补充本 807",
-    "title_trad": "補充本 807",
+    "hymn_num_simp": "补充本 807",
+    "hymn_num_trad": "補充本 807",
     "url": "https://www.hymnal.net/cn/hymn/ts/807",
+    "title_simp": "新局面出现",
+    "title_trad": "新局面出現",
     "lyrics": [
       {
         "type": "verse",
@@ -44101,9 +44911,11 @@
   },
   {
     "id": 808,
-    "title_simp": "补充本 808",
-    "title_trad": "補充本 808",
+    "hymn_num_simp": "补充本 808",
+    "hymn_num_trad": "補充本 808",
     "url": "https://www.hymnal.net/cn/hymn/ts/808",
+    "title_simp": "到各城市去开展",
+    "title_trad": "到各城市去開展",
     "lyrics": [
       {
         "type": "verse",
@@ -44143,9 +44955,11 @@
   },
   {
     "id": 809,
-    "title_simp": "补充本 809",
-    "title_trad": "補充本 809",
+    "hymn_num_simp": "补充本 809",
+    "hymn_num_trad": "補充本 809",
     "url": "https://www.hymnal.net/cn/hymn/ts/809",
+    "title_simp": "在主里刚强",
+    "title_trad": "在主裏剛強",
     "lyrics": [
       {
         "type": "verse",
@@ -44185,9 +44999,11 @@
   },
   {
     "id": 810,
-    "title_simp": "补充本 810",
-    "title_trad": "補充本 810",
+    "hymn_num_simp": "补充本 810",
+    "hymn_num_trad": "補充本 810",
     "url": "https://www.hymnal.net/cn/hymn/ts/810",
+    "title_simp": "为主打美好胜仗",
+    "title_trad": "爲主打美好勝仗",
     "lyrics": [
       {
         "type": "verse",
@@ -44221,9 +45037,11 @@
   },
   {
     "id": 811,
-    "title_simp": "补充本 811",
-    "title_trad": "補充本 811",
+    "hymn_num_simp": "补充本 811",
+    "hymn_num_trad": "補充本 811",
     "url": "https://www.hymnal.net/cn/hymn/ts/811",
+    "title_simp": "得胜者",
+    "title_trad": "得勝者",
     "lyrics": [
       {
         "type": "verse",
@@ -44389,9 +45207,11 @@
   },
   {
     "id": 812,
-    "title_simp": "补充本 812",
-    "title_trad": "補充本 812",
+    "hymn_num_simp": "补充本 812",
+    "hymn_num_trad": "補充本 812",
     "url": "https://www.hymnal.net/cn/hymn/ts/812",
+    "title_simp": "已经得胜",
+    "title_trad": "已經得勝",
     "lyrics": [
       {
         "type": "verse",
@@ -44529,9 +45349,11 @@
   },
   {
     "id": 813,
-    "title_simp": "补充本 813",
-    "title_trad": "補充本 813",
+    "hymn_num_simp": "补充本 813",
+    "hymn_num_trad": "補充本 813",
     "url": "https://www.hymnal.net/cn/hymn/ts/813",
+    "title_simp": "得胜有馀",
+    "title_trad": "得勝有餘",
     "lyrics": [
       {
         "type": "verse",
@@ -44581,9 +45403,11 @@
   },
   {
     "id": 814,
-    "title_simp": "补充本 814",
-    "title_trad": "補充本 814",
+    "hymn_num_simp": "补充本 814",
+    "hymn_num_trad": "補充本 814",
     "url": "https://www.hymnal.net/cn/hymn/ts/814",
+    "title_simp": "夸胜",
+    "title_trad": "誇勝",
     "lyrics": [
       {
         "type": "verse",
@@ -44655,9 +45479,11 @@
   },
   {
     "id": 815,
-    "title_simp": "补充本 815",
-    "title_trad": "補充本 815",
+    "hymn_num_simp": "补充本 815",
+    "hymn_num_trad": "補充本 815",
     "url": "https://www.hymnal.net/cn/hymn/ts/815",
+    "title_simp": "瞧！我是人",
+    "title_trad": "瞧！我是人",
     "lyrics": [
       {
         "type": "verse",
@@ -44767,9 +45593,11 @@
   },
   {
     "id": 816,
-    "title_simp": "补充本 816",
-    "title_trad": "補充本 816",
+    "hymn_num_simp": "补充本 816",
+    "hymn_num_trad": "補充本 816",
     "url": "https://www.hymnal.net/cn/hymn/ts/816",
+    "title_simp": "你为何被造",
+    "title_trad": "你爲何被造",
     "lyrics": [
       {
         "type": "verse",
@@ -44879,9 +45707,11 @@
   },
   {
     "id": 817,
-    "title_simp": "补充本 817",
-    "title_trad": "補充本 817",
+    "hymn_num_simp": "补充本 817",
+    "hymn_num_trad": "補充本 817",
     "url": "https://www.hymnal.net/cn/hymn/ts/817",
+    "title_simp": "你为何得救？",
+    "title_trad": "你爲何得救？",
     "lyrics": [
       {
         "type": "verse",
@@ -44993,9 +45823,11 @@
   },
   {
     "id": 818,
-    "title_simp": "补充本 818",
-    "title_trad": "補充本 818",
+    "hymn_num_simp": "补充本 818",
+    "hymn_num_trad": "補充本 818",
     "url": "https://www.hymnal.net/cn/hymn/ts/818",
+    "title_simp": "人生意义",
+    "title_trad": "人生意義",
     "lyrics": [
       {
         "type": "verse",
@@ -45033,9 +45865,11 @@
   },
   {
     "id": 819,
-    "title_simp": "补充本 819",
-    "title_trad": "補充本 819",
+    "hymn_num_simp": "补充本 819",
+    "hymn_num_trad": "補充本 819",
     "url": "https://www.hymnal.net/cn/hymn/ts/819",
+    "title_simp": "归入甜美的你",
+    "title_trad": "歸入甜美的你",
     "lyrics": [
       {
         "type": "verse",
@@ -45089,9 +45923,11 @@
   },
   {
     "id": 820,
-    "title_simp": "补充本 820",
-    "title_trad": "補充本 820",
+    "hymn_num_simp": "补充本 820",
+    "hymn_num_trad": "補充本 820",
     "url": "https://www.hymnal.net/cn/hymn/ts/820",
+    "title_simp": "需要",
+    "title_trad": "需要",
     "lyrics": [
       {
         "type": "verse",
@@ -45181,9 +46017,11 @@
   },
   {
     "id": 821,
-    "title_simp": "补充本 821",
-    "title_trad": "補充本 821",
+    "hymn_num_simp": "补充本 821",
+    "hymn_num_trad": "補充本 821",
     "url": "https://www.hymnal.net/cn/hymn/ts/821",
+    "title_simp": "岂能说透",
+    "title_trad": "豈能說透",
     "lyrics": [
       {
         "type": "verse",
@@ -45319,9 +46157,11 @@
   },
   {
     "id": 822,
-    "title_simp": "补充本 822",
-    "title_trad": "補充本 822",
+    "hymn_num_simp": "补充本 822",
+    "hymn_num_trad": "補充本 822",
     "url": "https://www.hymnal.net/cn/hymn/ts/822",
+    "title_simp": "我曾虚空又痛苦",
+    "title_trad": "我曾虛空又痛苦",
     "lyrics": [
       {
         "type": "verse",
@@ -45393,9 +46233,11 @@
   },
   {
     "id": 823,
-    "title_simp": "补充本 823",
-    "title_trad": "補充本 823",
+    "hymn_num_simp": "补充本 823",
+    "hymn_num_trad": "補充本 823",
     "url": "https://www.hymnal.net/cn/hymn/ts/823",
+    "title_simp": "你若感觉孤单",
+    "title_trad": "你若感覺孤單",
     "lyrics": [
       {
         "type": "verse",
@@ -45437,9 +46279,11 @@
   },
   {
     "id": 824,
-    "title_simp": "补充本 824",
-    "title_trad": "補充本 824",
+    "hymn_num_simp": "补充本 824",
+    "hymn_num_trad": "補充本 824",
     "url": "https://www.hymnal.net/cn/hymn/ts/824",
+    "title_simp": "人生宛如走马看花",
+    "title_trad": "人生宛如走馬看花",
     "lyrics": [
       {
         "type": "verse",
@@ -45537,9 +46381,11 @@
   },
   {
     "id": 825,
-    "title_simp": "补充本 825",
-    "title_trad": "補充本 825",
+    "hymn_num_simp": "补充本 825",
+    "hymn_num_trad": "補充本 825",
     "url": "https://www.hymnal.net/cn/hymn/ts/825",
+    "title_simp": "寻回",
+    "title_trad": "尋回",
     "lyrics": [
       {
         "type": "verse",
@@ -45609,9 +46455,11 @@
   },
   {
     "id": 826,
-    "title_simp": "补充本 826",
-    "title_trad": "補充本 826",
+    "hymn_num_simp": "补充本 826",
+    "hymn_num_trad": "補充本 826",
     "url": "https://www.hymnal.net/cn/hymn/ts/826",
+    "title_simp": "前我生活",
+    "title_trad": "前我生活",
     "lyrics": [
       {
         "type": "verse",
@@ -45643,9 +46491,11 @@
   },
   {
     "id": 827,
-    "title_simp": "补充本 827",
-    "title_trad": "補充本 827",
+    "hymn_num_simp": "补充本 827",
+    "hymn_num_trad": "補充本 827",
     "url": "https://www.hymnal.net/cn/hymn/ts/827",
+    "title_simp": "何不呼喊",
+    "title_trad": "何不呼喊",
     "lyrics": [
       {
         "type": "verse",
@@ -45691,9 +46541,11 @@
   },
   {
     "id": 828,
-    "title_simp": "补充本 828",
-    "title_trad": "補充本 828",
+    "hymn_num_simp": "补充本 828",
+    "hymn_num_trad": "補充本 828",
     "url": "https://www.hymnal.net/cn/hymn/ts/828",
+    "title_simp": "敞开心！呼喊祂",
+    "title_trad": "敞開心！呼喊祂",
     "lyrics": [
       {
         "type": "verse",
@@ -45789,9 +46641,11 @@
   },
   {
     "id": 829,
-    "title_simp": "补充本 829",
-    "title_trad": "補充本 829",
+    "hymn_num_simp": "补充本 829",
+    "hymn_num_trad": "補充本 829",
     "url": "https://www.hymnal.net/cn/hymn/ts/829",
+    "title_simp": "你的答案乃是耶稣",
+    "title_trad": "你的答案乃是耶穌",
     "lyrics": [
       {
         "type": "verse",
@@ -45835,9 +46689,11 @@
   },
   {
     "id": 830,
-    "title_simp": "补充本 830",
-    "title_trad": "補充本 830",
+    "hymn_num_simp": "补充本 830",
+    "hymn_num_trad": "補充本 830",
     "url": "https://www.hymnal.net/cn/hymn/ts/830",
+    "title_simp": "呼喊主名必得救",
+    "title_trad": "呼喊主名必得救",
     "lyrics": [
       {
         "type": "verse",
@@ -45907,9 +46763,11 @@
   },
   {
     "id": 831,
-    "title_simp": "补充本 831",
-    "title_trad": "補充本 831",
+    "hymn_num_simp": "补充本 831",
+    "hymn_num_trad": "補充本 831",
     "url": "https://www.hymnal.net/cn/hymn/ts/831",
+    "title_simp": "呼召",
+    "title_trad": "呼召",
     "lyrics": [
       {
         "type": "verse",
@@ -45967,9 +46825,11 @@
   },
   {
     "id": 832,
-    "title_simp": "补充本 832",
-    "title_trad": "補充本 832",
+    "hymn_num_simp": "补充本 832",
+    "hymn_num_trad": "補充本 832",
     "url": "https://www.hymnal.net/cn/hymn/ts/832",
+    "title_simp": "我听见了主耶稣说",
+    "title_trad": "我聽見了主耶穌說",
     "lyrics": [
       {
         "type": "verse",
@@ -46047,9 +46907,11 @@
   },
   {
     "id": 833,
-    "title_simp": "补充本 833",
-    "title_trad": "補充本 833",
+    "hymn_num_simp": "补充本 833",
+    "hymn_num_trad": "補充本 833",
     "url": "https://www.hymnal.net/cn/hymn/ts/833",
+    "title_simp": "有一新生命",
+    "title_trad": "有一新生命",
     "lyrics": [
       {
         "type": "verse",
@@ -46119,9 +46981,11 @@
   },
   {
     "id": 834,
-    "title_simp": "补充本 834",
-    "title_trad": "補充本 834",
+    "hymn_num_simp": "补充本 834",
+    "hymn_num_trad": "補充本 834",
     "url": "https://www.hymnal.net/cn/hymn/ts/834",
+    "title_simp": "各样都齐备",
+    "title_trad": "各樣都齊備",
     "lyrics": [
       {
         "type": "verse",
@@ -46263,9 +47127,11 @@
   },
   {
     "id": 835,
-    "title_simp": "补充本 835",
-    "title_trad": "補充本 835",
+    "hymn_num_simp": "补充本 835",
+    "hymn_num_trad": "補充本 835",
     "url": "https://www.hymnal.net/cn/hymn/ts/835",
+    "title_simp": "全家得救",
+    "title_trad": "全家得救",
     "lyrics": [
       {
         "type": "verse",
@@ -46339,9 +47205,11 @@
   },
   {
     "id": 836,
-    "title_simp": "补充本 836",
-    "title_trad": "補充本 836",
+    "hymn_num_simp": "补充本 836",
+    "hymn_num_trad": "補充本 836",
     "url": "https://www.hymnal.net/cn/hymn/ts/836",
+    "title_simp": "清晨的日光",
+    "title_trad": "清晨的日光",
     "lyrics": [
       {
         "type": "verse",
@@ -46423,9 +47291,11 @@
   },
   {
     "id": 837,
-    "title_simp": "补充本 837",
-    "title_trad": "補充本 837",
+    "hymn_num_simp": "补充本 837",
+    "hymn_num_trad": "補充本 837",
     "url": "https://www.hymnal.net/cn/hymn/ts/837",
+    "title_simp": "信的故事",
+    "title_trad": "信的故事",
     "lyrics": [
       {
         "type": "verse",
@@ -46503,9 +47373,11 @@
   },
   {
     "id": 838,
-    "title_simp": "补充本 838",
-    "title_trad": "補充本 838",
+    "hymn_num_simp": "补充本 838",
+    "hymn_num_trad": "補充本 838",
     "url": "https://www.hymnal.net/cn/hymn/ts/838",
+    "title_simp": "我已得到真正自由",
+    "title_trad": "我已得到真正自由",
     "lyrics": [
       {
         "type": "verse",
@@ -46583,9 +47455,11 @@
   },
   {
     "id": 839,
-    "title_simp": "补充本 839",
-    "title_trad": "補充本 839",
+    "hymn_num_simp": "补充本 839",
+    "hymn_num_trad": "補充本 839",
     "url": "https://www.hymnal.net/cn/hymn/ts/839",
+    "title_simp": "云彩",
+    "title_trad": "雲彩",
     "lyrics": [
       {
         "type": "verse",
@@ -46703,9 +47577,11 @@
   },
   {
     "id": 840,
-    "title_simp": "补充本 840",
-    "title_trad": "補充本 840",
+    "hymn_num_simp": "补充本 840",
+    "hymn_num_trad": "補充本 840",
     "url": "https://www.hymnal.net/cn/hymn/ts/840",
+    "title_simp": "大好信息",
+    "title_trad": "大好信息",
     "lyrics": [
       {
         "type": "verse",
@@ -46795,9 +47671,11 @@
   },
   {
     "id": 841,
-    "title_simp": "补充本 841",
-    "title_trad": "補充本 841",
+    "hymn_num_simp": "补充本 841",
+    "hymn_num_trad": "補充本 841",
     "url": "https://www.hymnal.net/cn/hymn/ts/841",
+    "title_simp": "第一声呼求",
+    "title_trad": "第一聲呼求",
     "lyrics": [
       {
         "type": "verse",
@@ -46899,9 +47777,11 @@
   },
   {
     "id": 842,
-    "title_simp": "补充本 842",
-    "title_trad": "補充本 842",
+    "hymn_num_simp": "补充本 842",
+    "hymn_num_trad": "補充本 842",
     "url": "https://www.hymnal.net/cn/hymn/ts/842",
+    "title_simp": "耶稣─爱的名字",
+    "title_trad": "耶穌─愛的名字",
     "lyrics": [
       {
         "type": "verse",
@@ -46957,9 +47837,11 @@
   },
   {
     "id": 843,
-    "title_simp": "补充本 843",
-    "title_trad": "補充本 843",
+    "hymn_num_simp": "补充本 843",
+    "hymn_num_trad": "補充本 843",
     "url": "https://www.hymnal.net/cn/hymn/ts/843",
+    "title_simp": "活神的家",
+    "title_trad": "活神的家",
     "lyrics": [
       {
         "type": "verse",
@@ -47019,9 +47901,11 @@
   },
   {
     "id": 844,
-    "title_simp": "补充本 844",
-    "title_trad": "補充本 844",
+    "hymn_num_simp": "补充本 844",
+    "hymn_num_trad": "補充本 844",
     "url": "https://www.hymnal.net/cn/hymn/ts/844",
+    "title_simp": "我是个新约福音祭司",
+    "title_trad": "我是個新約福音祭司",
     "lyrics": [
       {
         "type": "verse",
@@ -47107,9 +47991,11 @@
   },
   {
     "id": 845,
-    "title_simp": "补充本 845",
-    "title_trad": "補充本 845",
+    "hymn_num_simp": "补充本 845",
+    "hymn_num_trad": "補充本 845",
     "url": "https://www.hymnal.net/cn/hymn/ts/845",
+    "title_simp": "至于我和我家",
+    "title_trad": "至於我和我家",
     "lyrics": [
       {
         "type": "verse",
@@ -47165,9 +48051,11 @@
   },
   {
     "id": 846,
-    "title_simp": "补充本 846",
-    "title_trad": "補充本 846",
+    "hymn_num_simp": "补充本 846",
+    "hymn_num_trad": "補充本 846",
     "url": "https://www.hymnal.net/cn/hymn/ts/846",
+    "title_simp": "黎明的光",
+    "title_trad": "黎明的光",
     "lyrics": [
       {
         "type": "verse",
@@ -47237,9 +48125,11 @@
   },
   {
     "id": 847,
-    "title_simp": "补充本 847",
-    "title_trad": "補充本 847",
+    "hymn_num_simp": "补充本 847",
+    "hymn_num_trad": "補充本 847",
     "url": "https://www.hymnal.net/cn/hymn/ts/847",
+    "title_simp": "真爱",
+    "title_trad": "真愛",
     "lyrics": [
       {
         "type": "verse",
@@ -47323,9 +48213,11 @@
   },
   {
     "id": 848,
-    "title_simp": "补充本 848",
-    "title_trad": "補充本 848",
+    "hymn_num_simp": "补充本 848",
+    "hymn_num_trad": "補充本 848",
     "url": "https://www.hymnal.net/cn/hymn/ts/848",
+    "title_simp": "听我唱奇妙爱",
+    "title_trad": "聽我唱奇妙愛",
     "lyrics": [
       {
         "type": "verse",
@@ -47379,9 +48271,11 @@
   },
   {
     "id": 849,
-    "title_simp": "补充本 849",
-    "title_trad": "補充本 849",
+    "hymn_num_simp": "补充本 849",
+    "hymn_num_trad": "補充本 849",
     "url": "https://www.hymnal.net/cn/hymn/ts/849",
+    "title_simp": "禧年的生活",
+    "title_trad": "禧年的生活",
     "lyrics": [
       {
         "type": "verse",
@@ -47483,9 +48377,11 @@
   },
   {
     "id": 850,
-    "title_simp": "补充本 850",
-    "title_trad": "補充本 850",
+    "hymn_num_simp": "补充本 850",
+    "hymn_num_trad": "補充本 850",
     "url": "https://www.hymnal.net/cn/hymn/ts/850",
+    "title_simp": "不愿自由外出",
+    "title_trad": "不願自由外出",
     "lyrics": [
       {
         "type": "verse",
@@ -47563,9 +48459,11 @@
   },
   {
     "id": 851,
-    "title_simp": "补充本 851",
-    "title_trad": "補充本 851",
+    "hymn_num_simp": "补充本 851",
+    "hymn_num_trad": "補充本 851",
     "url": "https://www.hymnal.net/cn/hymn/ts/851",
+    "title_simp": "让主作工我身",
+    "title_trad": "讓主作工我身",
     "lyrics": [
       {
         "type": "verse",
@@ -47683,9 +48581,11 @@
   },
   {
     "id": 852,
-    "title_simp": "补充本 852",
-    "title_trad": "補充本 852",
+    "hymn_num_simp": "补充本 852",
+    "hymn_num_trad": "補充本 852",
     "url": "https://www.hymnal.net/cn/hymn/ts/852",
+    "title_simp": "兴起！角声发出！",
+    "title_trad": "興起！角聲發出！",
     "lyrics": [
       {
         "type": "verse",
@@ -47755,9 +48655,11 @@
   },
   {
     "id": 853,
-    "title_simp": "补充本 853",
-    "title_trad": "補充本 853",
+    "hymn_num_simp": "补充本 853",
+    "hymn_num_trad": "補充本 853",
     "url": "https://www.hymnal.net/cn/hymn/ts/853",
+    "title_simp": "速兴起传福音",
+    "title_trad": "速興起傳福音",
     "lyrics": [
       {
         "type": "verse",
@@ -47875,9 +48777,11 @@
   },
   {
     "id": 854,
-    "title_simp": "补充本 854",
-    "title_trad": "補充本 854",
+    "hymn_num_simp": "补充本 854",
+    "hymn_num_trad": "補充本 854",
     "url": "https://www.hymnal.net/cn/hymn/ts/854",
+    "title_simp": "洗罪之泉何其深广",
+    "title_trad": "洗罪之泉何其深廣",
     "lyrics": [
       {
         "type": "verse",
@@ -47979,9 +48883,11 @@
   },
   {
     "id": 855,
-    "title_simp": "补充本 855",
-    "title_trad": "補充本 855",
+    "hymn_num_simp": "补充本 855",
+    "hymn_num_trad": "補充本 855",
     "url": "https://www.hymnal.net/cn/hymn/ts/855",
+    "title_simp": "祂血永是我保障",
+    "title_trad": "祂血永是我保障",
     "lyrics": [
       {
         "type": "verse",
@@ -48131,9 +49037,11 @@
   },
   {
     "id": 856,
-    "title_simp": "补充本 856",
-    "title_trad": "補充本 856",
+    "hymn_num_simp": "补充本 856",
+    "hymn_num_trad": "補充本 856",
     "url": "https://www.hymnal.net/cn/hymn/ts/856",
+    "title_simp": "耶稣流宝血，成就平息",
+    "title_trad": "耶穌流寶血，成就平息",
     "lyrics": [
       {
         "type": "verse",
@@ -48237,9 +49145,11 @@
   },
   {
     "id": 857,
-    "title_simp": "补充本 857",
-    "title_trad": "補充本 857",
+    "hymn_num_simp": "补充本 857",
+    "hymn_num_trad": "補充本 857",
     "url": "https://www.hymnal.net/cn/hymn/ts/857",
+    "title_simp": "宣扬直到国度临",
+    "title_trad": "宣揚直到國度臨",
     "lyrics": [
       {
         "type": "verse",
@@ -48327,9 +49237,11 @@
   },
   {
     "id": 858,
-    "title_simp": "补充本 858",
-    "title_trad": "補充本 858",
+    "hymn_num_simp": "补充本 858",
+    "hymn_num_trad": "補充本 858",
     "url": "https://www.hymnal.net/cn/hymn/ts/858",
+    "title_simp": "应当传扬高品福音",
+    "title_trad": "應當傳揚高品福音",
     "lyrics": [
       {
         "type": "verse",
@@ -48407,9 +49319,11 @@
   },
   {
     "id": 859,
-    "title_simp": "补充本 859",
-    "title_trad": "補充本 859",
+    "hymn_num_simp": "补充本 859",
+    "hymn_num_trad": "補充本 859",
     "url": "https://www.hymnal.net/cn/hymn/ts/859",
+    "title_simp": "为福音而活",
+    "title_trad": "爲福音而活",
     "lyrics": [
       {
         "type": "verse",
@@ -48511,9 +49425,11 @@
   },
   {
     "id": 860,
-    "title_simp": "补充本 860",
-    "title_trad": "補充本 860",
+    "hymn_num_simp": "补充本 860",
+    "hymn_num_trad": "補充本 860",
     "url": "https://www.hymnal.net/cn/hymn/ts/860",
+    "title_simp": "去使万民作主的门徒",
+    "title_trad": "去使萬民作主的門徒",
     "lyrics": [
       {
         "type": "verse",
@@ -48639,9 +49555,11 @@
   },
   {
     "id": 861,
-    "title_simp": "补充本 861",
-    "title_trad": "補充本 861",
+    "hymn_num_simp": "补充本 861",
+    "hymn_num_trad": "補充本 861",
     "url": "https://www.hymnal.net/cn/hymn/ts/861",
+    "title_simp": "神今日的行动",
+    "title_trad": "神今日的行動",
     "lyrics": [
       {
         "type": "verse",
@@ -48679,9 +49597,11 @@
   },
   {
     "id": 862,
-    "title_simp": "补充本 862",
-    "title_trad": "補充本 862",
+    "hymn_num_simp": "补充本 862",
+    "hymn_num_trad": "補充本 862",
     "url": "https://www.hymnal.net/cn/hymn/ts/862",
+    "title_simp": "有祂无我",
+    "title_trad": "有祂無我",
     "lyrics": [
       {
         "type": "verse",
@@ -48751,9 +49671,11 @@
   },
   {
     "id": 863,
-    "title_simp": "补充本 863",
-    "title_trad": "補充本 863",
+    "hymn_num_simp": "补充本 863",
+    "hymn_num_trad": "補充本 863",
     "url": "https://www.hymnal.net/cn/hymn/ts/863",
+    "title_simp": "跟上神的行动",
+    "title_trad": "跟上神的行動",
     "lyrics": [
       {
         "type": "verse",
@@ -48951,9 +49873,11 @@
   },
   {
     "id": 864,
-    "title_simp": "补充本 864",
-    "title_trad": "補充本 864",
+    "hymn_num_simp": "补充本 864",
+    "hymn_num_trad": "補充本 864",
     "url": "https://www.hymnal.net/cn/hymn/ts/864",
+    "title_simp": "我要飞翔",
+    "title_trad": "我要飛翔",
     "lyrics": [
       {
         "type": "verse",
@@ -49043,9 +49967,11 @@
   },
   {
     "id": 865,
-    "title_simp": "补充本 865",
-    "title_trad": "補充本 865",
+    "hymn_num_simp": "补充本 865",
+    "hymn_num_trad": "補充本 865",
     "url": "https://www.hymnal.net/cn/hymn/ts/865",
+    "title_simp": "奉献为神家",
+    "title_trad": "奉獻爲神家",
     "lyrics": [
       {
         "type": "verse",
@@ -49243,9 +50169,11 @@
   },
   {
     "id": 866,
-    "title_simp": "补充本 866",
-    "title_trad": "補充本 866",
+    "hymn_num_simp": "补充本 866",
+    "hymn_num_trad": "補充本 866",
     "url": "https://www.hymnal.net/cn/hymn/ts/866",
+    "title_simp": "一盏灯光",
+    "title_trad": "一盞燈光",
     "lyrics": [
       {
         "type": "verse",
@@ -49295,9 +50223,11 @@
   },
   {
     "id": 867,
-    "title_simp": "补充本 867",
-    "title_trad": "補充本 867",
+    "hymn_num_simp": "补充本 867",
+    "hymn_num_trad": "補充本 867",
     "url": "https://www.hymnal.net/cn/hymn/ts/867",
+    "title_simp": "写神今日的历史",
+    "title_trad": "寫神今日的歷史",
     "lyrics": [
       {
         "type": "verse",
@@ -49495,9 +50425,11 @@
   },
   {
     "id": 868,
-    "title_simp": "补充本 868",
-    "title_trad": "補充本 868",
+    "hymn_num_simp": "补充本 868",
+    "hymn_num_trad": "補充本 868",
     "url": "https://www.hymnal.net/cn/hymn/ts/868",
+    "title_simp": "寻找、光照、接纳",
+    "title_trad": "尋找、光照、接納",
     "lyrics": [
       {
         "type": "verse",
@@ -49559,9 +50491,11 @@
   },
   {
     "id": 869,
-    "title_simp": "补充本 869",
-    "title_trad": "補充本 869",
+    "hymn_num_simp": "补充本 869",
+    "hymn_num_trad": "補充本 869",
     "url": "https://www.hymnal.net/cn/hymn/ts/869",
+    "title_simp": "前进！刚强开拓",
+    "title_trad": "前進！剛強開拓",
     "lyrics": [
       {
         "type": "verse",
@@ -49631,9 +50565,11 @@
   },
   {
     "id": 870,
-    "title_simp": "补充本 870",
-    "title_trad": "補充本 870",
+    "hymn_num_simp": "补充本 870",
+    "hymn_num_trad": "補充本 870",
     "url": "https://www.hymnal.net/cn/hymn/ts/870",
+    "title_simp": "兴起！同主前进",
+    "title_trad": "興起！同主前進",
     "lyrics": [
       {
         "type": "verse",
@@ -49753,9 +50689,11 @@
   },
   {
     "id": 871,
-    "title_simp": "补充本 871",
-    "title_trad": "補充本 871",
+    "hymn_num_simp": "补充本 871",
+    "hymn_num_trad": "補充本 871",
     "url": "https://www.hymnal.net/cn/hymn/ts/871",
+    "title_simp": "在今天，更新奉献",
+    "title_trad": "在今天，更新奉獻",
     "lyrics": [
       {
         "type": "verse",
@@ -49921,9 +50859,11 @@
   },
   {
     "id": 872,
-    "title_simp": "补充本 872",
-    "title_trad": "補充本 872",
+    "hymn_num_simp": "补充本 872",
+    "hymn_num_trad": "補充本 872",
     "url": "https://www.hymnal.net/cn/hymn/ts/872",
+    "title_simp": "属天的家乡",
+    "title_trad": "屬天的家鄉",
     "lyrics": [
       {
         "type": "verse",
@@ -49993,9 +50933,11 @@
   },
   {
     "id": 873,
-    "title_simp": "补充本 873",
-    "title_trad": "補充本 873",
+    "hymn_num_simp": "补充本 873",
+    "hymn_num_trad": "補充本 873",
     "url": "https://www.hymnal.net/cn/hymn/ts/873",
+    "title_simp": "同祂步武，迈向荣耀",
+    "title_trad": "同祂步武，邁向榮耀",
     "lyrics": [
       {
         "type": "verse",
@@ -50115,9 +51057,11 @@
   },
   {
     "id": 874,
-    "title_simp": "补充本 874",
-    "title_trad": "補充本 874",
+    "hymn_num_simp": "补充本 874",
+    "hymn_num_trad": "補充本 874",
     "url": "https://www.hymnal.net/cn/hymn/ts/874",
+    "title_simp": "等候耶和华，重新得力",
+    "title_trad": "等候耶和華，重新得力",
     "lyrics": [
       {
         "type": "verse",
@@ -50195,9 +51139,11 @@
   },
   {
     "id": 875,
-    "title_simp": "补充本 875",
-    "title_trad": "補充本 875",
+    "hymn_num_simp": "补充本 875",
+    "hymn_num_trad": "補充本 875",
     "url": "https://www.hymnal.net/cn/hymn/ts/875",
+    "title_simp": "西布伦，扬帆起行",
+    "title_trad": "西布倫，揚帆起行",
     "lyrics": [
       {
         "type": "verse",
@@ -50371,9 +51317,11 @@
   },
   {
     "id": 876,
-    "title_simp": "补充本 876",
-    "title_trad": "補充本 876",
+    "hymn_num_simp": "补充本 876",
+    "hymn_num_trad": "補充本 876",
     "url": "https://www.hymnal.net/cn/hymn/ts/876",
+    "title_simp": "神就是爱",
+    "title_trad": "神就是愛",
     "lyrics": [
       {
         "type": "verse",
@@ -50461,9 +51409,11 @@
   },
   {
     "id": 877,
-    "title_simp": "补充本 877",
-    "title_trad": "補充本 877",
+    "hymn_num_simp": "补充本 877",
+    "hymn_num_trad": "補充本 877",
     "url": "https://www.hymnal.net/cn/hymn/ts/877",
+    "title_simp": "甚么使你为我舍命",
+    "title_trad": "甚麼使你爲我捨命",
     "lyrics": [
       {
         "type": "verse",
@@ -50581,9 +51531,11 @@
   },
   {
     "id": 878,
-    "title_simp": "补充本 878",
-    "title_trad": "補充本 878",
+    "hymn_num_simp": "补充本 878",
+    "hymn_num_trad": "補充本 878",
     "url": "https://www.hymnal.net/cn/hymn/ts/878",
+    "title_simp": "祂来过",
+    "title_trad": "祂來過",
     "lyrics": [
       {
         "type": "verse",
@@ -50693,9 +51645,11 @@
   },
   {
     "id": 879,
-    "title_simp": "补充本 879",
-    "title_trad": "補充本 879",
+    "hymn_num_simp": "补充本 879",
+    "hymn_num_trad": "補充本 879",
     "url": "https://www.hymnal.net/cn/hymn/ts/879",
+    "title_simp": "真神是我耶稣",
+    "title_trad": "真神是我耶穌",
     "lyrics": [
       {
         "type": "verse",
@@ -50761,9 +51715,11 @@
   },
   {
     "id": 880,
-    "title_simp": "补充本 880",
-    "title_trad": "補充本 880",
+    "hymn_num_simp": "补充本 880",
+    "hymn_num_trad": "補充本 880",
     "url": "https://www.hymnal.net/cn/hymn/ts/880",
+    "title_simp": "当信靠主耶稣",
+    "title_trad": "當信靠主耶穌",
     "lyrics": [
       {
         "type": "verse",
@@ -50817,9 +51773,11 @@
   },
   {
     "id": 901,
-    "title_simp": "补充本 901",
-    "title_trad": "補充本 901",
+    "hymn_num_simp": "补充本 901",
+    "hymn_num_trad": "補充本 901",
     "url": "https://www.hymnal.net/cn/hymn/ts/901",
+    "title_simp": "主要再临",
+    "title_trad": "主要再臨",
     "lyrics": [
       {
         "type": "verse",
@@ -51077,9 +52035,11 @@
   },
   {
     "id": 902,
-    "title_simp": "补充本 902",
-    "title_trad": "補充本 902",
+    "hymn_num_simp": "补充本 902",
+    "hymn_num_trad": "補充本 902",
     "url": "https://www.hymnal.net/cn/hymn/ts/902",
+    "title_simp": "主必要快来",
+    "title_trad": "主必要快來",
     "lyrics": [
       {
         "type": "verse",
@@ -51245,9 +52205,11 @@
   },
   {
     "id": 903,
-    "title_simp": "补充本 903",
-    "title_trad": "補充本 903",
+    "hymn_num_simp": "补充本 903",
+    "hymn_num_trad": "補充本 903",
     "url": "https://www.hymnal.net/cn/hymn/ts/903",
+    "title_simp": "主随时随刻都可能回来",
+    "title_trad": "主隨時隨刻都可能回來",
     "lyrics": [
       {
         "type": "verse",
@@ -51323,9 +52285,11 @@
   },
   {
     "id": 904,
-    "title_simp": "补充本 904",
-    "title_trad": "補充本 904",
+    "hymn_num_simp": "补充本 904",
+    "hymn_num_trad": "補充本 904",
     "url": "https://www.hymnal.net/cn/hymn/ts/904",
+    "title_simp": "我们的主快再来",
+    "title_trad": "我們的主快再來",
     "lyrics": [
       {
         "type": "verse",
@@ -51423,9 +52387,11 @@
   },
   {
     "id": 905,
-    "title_simp": "补充本 905",
-    "title_trad": "補充本 905",
+    "hymn_num_simp": "补充本 905",
+    "hymn_num_trad": "補充本 905",
     "url": "https://www.hymnal.net/cn/hymn/ts/905",
+    "title_simp": "新郎快来到",
+    "title_trad": "新郎快來到",
     "lyrics": [
       {
         "type": "verse",
@@ -51619,9 +52585,11 @@
   },
   {
     "id": 906,
-    "title_simp": "补充本 906",
-    "title_trad": "補充本 906",
+    "hymn_num_simp": "补充本 906",
+    "hymn_num_trad": "補充本 906",
     "url": "https://www.hymnal.net/cn/hymn/ts/906",
+    "title_simp": "我的良人哪！求你快来",
+    "title_trad": "我的良人哪！求你快來",
     "lyrics": [
       {
         "type": "verse",
@@ -51765,9 +52733,11 @@
   },
   {
     "id": 907,
-    "title_simp": "补充本 907",
-    "title_trad": "補充本 907",
+    "hymn_num_simp": "补充本 907",
+    "hymn_num_trad": "補充本 907",
     "url": "https://www.hymnal.net/cn/hymn/ts/907",
+    "title_simp": "别了！世界",
+    "title_trad": "別了！世界",
     "lyrics": [
       {
         "type": "verse",
@@ -51801,9 +52771,11 @@
   },
   {
     "id": 908,
-    "title_simp": "补充本 908",
-    "title_trad": "補充本 908",
+    "hymn_num_simp": "补充本 908",
+    "hymn_num_trad": "補充本 908",
     "url": "https://www.hymnal.net/cn/hymn/ts/908",
+    "title_simp": "把主迎接回来",
+    "title_trad": "把主迎接回來",
     "lyrics": [
       {
         "type": "verse",
@@ -51883,9 +52855,11 @@
   },
   {
     "id": 909,
-    "title_simp": "补充本 909",
-    "title_trad": "補充本 909",
+    "hymn_num_simp": "补充本 909",
+    "hymn_num_trad": "補充本 909",
     "url": "https://www.hymnal.net/cn/hymn/ts/909",
+    "title_simp": "基督已经得胜",
+    "title_trad": "基督已經得勝",
     "lyrics": [
       {
         "type": "verse",
@@ -52197,9 +53171,11 @@
   },
   {
     "id": 910,
-    "title_simp": "补充本 910",
-    "title_trad": "補充本 910",
+    "hymn_num_simp": "补充本 910",
+    "hymn_num_trad": "補充本 910",
     "url": "https://www.hymnal.net/cn/hymn/ts/910",
+    "title_simp": "改变",
+    "title_trad": "改變",
     "lyrics": [
       {
         "type": "verse",
@@ -52301,9 +53277,11 @@
   },
   {
     "id": 911,
-    "title_simp": "补充本 911",
-    "title_trad": "補充本 911",
+    "hymn_num_simp": "补充本 911",
+    "hymn_num_trad": "補充本 911",
     "url": "https://www.hymnal.net/cn/hymn/ts/911",
+    "title_simp": "作初熟的果子",
+    "title_trad": "作初熟的果子",
     "lyrics": [
       {
         "type": "verse",
@@ -52417,9 +53395,11 @@
   },
   {
     "id": 912,
-    "title_simp": "补充本 912",
-    "title_trad": "補充本 912",
+    "hymn_num_simp": "补充本 912",
+    "hymn_num_trad": "補充本 912",
     "url": "https://www.hymnal.net/cn/hymn/ts/912",
+    "title_simp": "我们灯里有油",
+    "title_trad": "我們燈裏有油",
     "lyrics": [
       {
         "type": "verse",
@@ -52505,9 +53485,11 @@
   },
   {
     "id": 913,
-    "title_simp": "补充本 913",
-    "title_trad": "補充本 913",
+    "hymn_num_simp": "补充本 913",
+    "hymn_num_trad": "補充本 913",
     "url": "https://www.hymnal.net/cn/hymn/ts/913",
+    "title_simp": "童女与仆人",
+    "title_trad": "童女與僕人",
     "lyrics": [
       {
         "type": "verse",
@@ -52585,9 +53567,11 @@
   },
   {
     "id": 914,
-    "title_simp": "补充本 914",
-    "title_trad": "補充本 914",
+    "hymn_num_simp": "补充本 914",
+    "hymn_num_trad": "補充本 914",
     "url": "https://www.hymnal.net/cn/hymn/ts/914",
+    "title_simp": "十个童女拿着灯",
+    "title_trad": "十個童女拿着燈",
     "lyrics": [
       {
         "type": "verse",
@@ -52689,9 +53673,11 @@
   },
   {
     "id": 915,
-    "title_simp": "补充本 915",
-    "title_trad": "補充本 915",
+    "hymn_num_simp": "补充本 915",
+    "hymn_num_trad": "補充本 915",
     "url": "https://www.hymnal.net/cn/hymn/ts/915",
+    "title_simp": "哦，快快豫备",
+    "title_trad": "哦，快快豫備",
     "lyrics": [
       {
         "type": "verse",
@@ -52829,9 +53815,11 @@
   },
   {
     "id": 916,
-    "title_simp": "补充本 916",
-    "title_trad": "補充本 916",
+    "hymn_num_simp": "补充本 916",
+    "hymn_num_trad": "補充本 916",
     "url": "https://www.hymnal.net/cn/hymn/ts/916",
+    "title_simp": "神的圣城居高华美",
+    "title_trad": "神的聖城居高華美",
     "lyrics": [
       {
         "type": "verse",
@@ -52933,9 +53921,11 @@
   },
   {
     "id": 917,
-    "title_simp": "补充本 917",
-    "title_trad": "補充本 917",
+    "hymn_num_simp": "补充本 917",
+    "hymn_num_trad": "補充本 917",
     "url": "https://www.hymnal.net/cn/hymn/ts/917",
+    "title_simp": "看哪！主必快来！",
+    "title_trad": "看哪！主必快來！",
     "lyrics": [
       {
         "type": "verse",
@@ -53085,9 +54075,11 @@
   },
   {
     "id": 918,
-    "title_simp": "补充本 918",
-    "title_trad": "補充本 918",
+    "hymn_num_simp": "补充本 918",
+    "hymn_num_trad": "補充本 918",
     "url": "https://www.hymnal.net/cn/hymn/ts/918",
+    "title_simp": "更亲、更近、更甘甜",
+    "title_trad": "更親、更近、更甘甜",
     "lyrics": [
       {
         "type": "verse",
@@ -53125,9 +54117,11 @@
   },
   {
     "id": 919,
-    "title_simp": "补充本 919",
-    "title_trad": "補充本 919",
+    "hymn_num_simp": "补充本 919",
+    "hymn_num_trad": "補充本 919",
     "url": "https://www.hymnal.net/cn/hymn/ts/919",
+    "title_simp": "神将得着国度",
+    "title_trad": "神將得着國度",
     "lyrics": [
       {
         "type": "verse",
@@ -53253,9 +54247,11 @@
   },
   {
     "id": 920,
-    "title_simp": "补充本 920",
-    "title_trad": "補充本 920",
+    "hymn_num_simp": "补充本 920",
+    "hymn_num_trad": "補充本 920",
     "url": "https://www.hymnal.net/cn/hymn/ts/920",
+    "title_simp": "豫备主来要及时",
+    "title_trad": "豫備主來要及時",
     "lyrics": [
       {
         "type": "verse",
@@ -53453,9 +54449,11 @@
   },
   {
     "id": 921,
-    "title_simp": "补充本 921",
-    "title_trad": "補充本 921",
+    "hymn_num_simp": "补充本 921",
+    "hymn_num_trad": "補充本 921",
     "url": "https://www.hymnal.net/cn/hymn/ts/921",
+    "title_simp": "成为神的杰作",
+    "title_trad": "成爲神的傑作",
     "lyrics": [
       {
         "type": "verse",
@@ -53557,9 +54555,11 @@
   },
   {
     "id": 922,
-    "title_simp": "补充本 922",
-    "title_trad": "補充本 922",
+    "hymn_num_simp": "补充本 922",
+    "hymn_num_trad": "補充本 922",
     "url": "https://www.hymnal.net/cn/hymn/ts/922",
+    "title_simp": "信心的工作、爱心的劳苦、盼望的忍耐",
+    "title_trad": "信心的工作、愛心的勞苦、盼望的忍耐",
     "lyrics": [
       {
         "type": "verse",
@@ -53693,9 +54693,11 @@
   },
   {
     "id": 923,
-    "title_simp": "补充本 923",
-    "title_trad": "補充本 923",
+    "hymn_num_simp": "补充本 923",
+    "hymn_num_trad": "補充本 923",
     "url": "https://www.hymnal.net/cn/hymn/ts/923",
+    "title_simp": "那日如在眼前",
+    "title_trad": "那日如在眼前",
     "lyrics": [
       {
         "type": "verse",
@@ -53781,9 +54783,11 @@
   },
   {
     "id": 924,
-    "title_simp": "补充本 924",
-    "title_trad": "補充本 924",
+    "hymn_num_simp": "补充本 924",
+    "hymn_num_trad": "補充本 924",
     "url": "https://www.hymnal.net/cn/hymn/ts/924",
+    "title_simp": "与基督同作后嗣",
+    "title_trad": "與基督同作後嗣",
     "lyrics": [
       {
         "type": "verse",
@@ -53933,9 +54937,11 @@
   },
   {
     "id": 925,
-    "title_simp": "补充本 925",
-    "title_trad": "補充本 925",
+    "hymn_num_simp": "补充本 925",
+    "hymn_num_trad": "補充本 925",
     "url": "https://www.hymnal.net/cn/hymn/ts/925",
+    "title_simp": "永远之神荣耀定旨",
+    "title_trad": "永遠之神榮耀定旨",
     "lyrics": [
       {
         "type": "verse",
@@ -54085,9 +55091,11 @@
   },
   {
     "id": 926,
-    "title_simp": "补充本 926",
-    "title_trad": "補充本 926",
+    "hymn_num_simp": "补充本 926",
+    "hymn_num_trad": "補充本 926",
     "url": "https://www.hymnal.net/cn/hymn/ts/926",
+    "title_simp": "一道生命的水流",
+    "title_trad": "一道生命的水流",
     "lyrics": [
       {
         "type": "verse",
@@ -54193,9 +55201,11 @@
   },
   {
     "id": 927,
-    "title_simp": "补充本 927",
-    "title_trad": "補充本 927",
+    "hymn_num_simp": "补充本 927",
+    "hymn_num_trad": "補充本 927",
     "url": "https://www.hymnal.net/cn/hymn/ts/927",
+    "title_simp": "新耶路撒冷的构成",
+    "title_trad": "新耶路撒冷的構成",
     "lyrics": [
       {
         "type": "verse",
@@ -54269,9 +55279,11 @@
   },
   {
     "id": 928,
-    "title_simp": "补充本 928",
-    "title_trad": "補充本 928",
+    "hymn_num_simp": "补充本 928",
+    "hymn_num_trad": "補充本 928",
     "url": "https://www.hymnal.net/cn/hymn/ts/928",
+    "title_simp": "新耶路撒冷是神恩典的展示",
+    "title_trad": "新耶路撒冷是神恩典的展示",
     "lyrics": [
       {
         "type": "verse",
@@ -54349,9 +55361,11 @@
   },
   {
     "id": 929,
-    "title_simp": "补充本 929",
-    "title_trad": "補充本 929",
+    "hymn_num_simp": "补充本 929",
+    "hymn_num_trad": "補充本 929",
     "url": "https://www.hymnal.net/cn/hymn/ts/929",
+    "title_simp": "主耶稣阿，我愿你来",
+    "title_trad": "主耶穌阿，我願你來",
     "lyrics": [
       {
         "type": "verse",
@@ -54383,9 +55397,11 @@
   },
   {
     "id": 930,
-    "title_simp": "补充本 930",
-    "title_trad": "補充本 930",
+    "hymn_num_simp": "补充本 930",
+    "hymn_num_trad": "補充本 930",
     "url": "https://www.hymnal.net/cn/hymn/ts/930",
+    "title_simp": "日近一日",
+    "title_trad": "日近一日",
     "lyrics": [
       {
         "type": "verse",
@@ -54519,9 +55535,11 @@
   },
   {
     "id": 1001,
-    "title_simp": "补充本 1001",
-    "title_trad": "補充本 1001",
+    "hymn_num_simp": "补充本 1001",
+    "hymn_num_trad": "補充本 1001",
     "url": "https://www.hymnal.net/cn/hymn/ts/1001",
+    "title_simp": "在基督的生命中作王",
+    "title_trad": "在基督的生命中作王",
     "lyrics": [
       {
         "type": "verse",
@@ -54559,9 +55577,11 @@
   },
   {
     "id": 1002,
-    "title_simp": "补充本 1002",
-    "title_trad": "補充本 1002",
+    "hymn_num_simp": "补充本 1002",
+    "hymn_num_trad": "補充本 1002",
     "url": "https://www.hymnal.net/cn/hymn/ts/1002",
+    "title_simp": "经历神生机的救恩",
+    "title_trad": "經歷神生機的救恩",
     "lyrics": [
       {
         "type": "verse",
@@ -54609,9 +55629,11 @@
   },
   {
     "id": 1003,
-    "title_simp": "补充本 1003",
-    "title_trad": "補充本 1003",
+    "hymn_num_simp": "补充本 1003",
+    "hymn_num_trad": "補充本 1003",
     "url": "https://www.hymnal.net/cn/hymn/ts/1003",
+    "title_simp": "一个活祭",
+    "title_trad": "一個活祭",
     "lyrics": [
       {
         "type": "verse",
@@ -54663,9 +55685,11 @@
   },
   {
     "id": 1004,
-    "title_simp": "补充本 1004",
-    "title_trad": "補充本 1004",
+    "hymn_num_simp": "补充本 1004",
+    "hymn_num_trad": "補充本 1004",
     "url": "https://www.hymnal.net/cn/hymn/ts/1004",
+    "title_simp": "神永远的经纶",
+    "title_trad": "神永遠的經綸",
     "lyrics": [
       {
         "type": "verse",
@@ -54699,9 +55723,11 @@
   },
   {
     "id": 1005,
-    "title_simp": "补充本 1005",
-    "title_trad": "補充本 1005",
+    "hymn_num_simp": "补充本 1005",
+    "hymn_num_trad": "補充本 1005",
     "url": "https://www.hymnal.net/cn/hymn/ts/1005",
+    "title_simp": "神在宇宙中历世历代独一中心的工作",
+    "title_trad": "神在宇宙中歷世歷代獨一中心的工作",
     "lyrics": [
       {
         "type": "verse",

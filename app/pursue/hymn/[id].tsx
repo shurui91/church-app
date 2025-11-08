@@ -71,17 +71,29 @@ export default function HymnDetail() {
       <ScrollView
         style={[styles.container, { backgroundColor: colors.background }]}
         contentContainerStyle={{ paddingBottom: 40 }}>
-        {/* 标题 */}
+        {/* ✅ 显示 “大本诗歌 1” 或 “补充本诗歌 1” */}
+        <Text
+          style={{
+            color: colors.text,
+            opacity: 0.7,
+            fontSize: getFontSizeValue(18),
+            marginBottom: 20,
+            textAlign: 'center',
+          }}>
+          {isTraditional ? hymn.hymn_num_trad : hymn.hymn_num_simp}
+        </Text>
+
+        {/* ✅ 显示诗歌标题（简/繁） */}
         <Text
           style={[
             styles.title,
             {
               color: colors.text,
-              fontSize: getFontSizeValue(24),
-              lineHeight: getFontSizeValue(24) * 1.3,
+              fontSize: getFontSizeValue(26),
+              lineHeight: getFontSizeValue(26) * 1.3,
             },
           ]}>
-          {hymn.title}
+          {isTraditional ? hymn.title_trad : hymn.title_simp}
         </Text>
 
         {/* ✅ 遍历歌词并根据语言选择 lines_simp / lines_trad */}
