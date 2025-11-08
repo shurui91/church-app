@@ -19,11 +19,12 @@ export class VerificationCode {
 
     try {
       // Delete any existing codes for this phone number
-      await db.run('DELETE FROM verification_codes WHERE "phoneNumber" = ?', [phoneNumber]);
+      // PostgreSQL stores field names in lowercase
+      await db.run('DELETE FROM verification_codes WHERE phonenumber = ?', [phoneNumber]);
 
       // Insert new code
       const result = await db.run(
-        `INSERT INTO verification_codes ("phoneNumber", code, "expiresAt", "createdAt", attempts)
+        `INSERT INTO verification_codes (phonenumber, code, expiresat, createdat, attempts)
          VALUES (?, ?, ?, ?, 0) RETURNING id`,
         [phoneNumber, code, expiresAt, now]
       );
@@ -51,8 +52,9 @@ export class VerificationCode {
     const db = await getDatabase();
     try {
       // Find the latest code for this phone number
+      // PostgreSQL stores field names in lowercase
       const record = await db.get(
-        'SELECT * FROM verification_codes WHERE "phoneNumber" = ? ORDER BY "createdAt" DESC LIMIT 1',
+        'SELECT * FROM verification_codes WHERE phonenumber = ? ORDER BY createdat DESC LIMIT 1',
         [phoneNumber]
       );
 
@@ -118,8 +120,9 @@ export class VerificationCode {
   static async findByPhoneNumber(phoneNumber) {
     const db = await getDatabase();
     try {
+      // PostgreSQL stores field names in lowercase
       const record = await db.get(
-        'SELECT * FROM verification_codes WHERE "phoneNumber" = ? ORDER BY "createdAt" DESC LIMIT 1',
+        'SELECT * FROM verification_codes WHERE phonenumber = ? ORDER BY createdat DESC LIMIT 1',
         [phoneNumber]
       );
       return record || null;
@@ -136,8 +139,9 @@ export class VerificationCode {
     const db = await getDatabase();
     const now = getCurrentTimestamp();
     try {
+      // PostgreSQL stores field names in lowercase
       const result = await db.run(
-        'DELETE FROM verification_codes WHERE "expiresAt" < ?',
+        'DELETE FROM verification_codes WHERE expiresat < ?',
         [now]
       );
       return result.changes;
@@ -154,8 +158,9 @@ export class VerificationCode {
   static async deleteByPhoneNumber(phoneNumber) {
     const db = await getDatabase();
     try {
+      // PostgreSQL stores field names in lowercase
       const result = await db.run(
-        'DELETE FROM verification_codes WHERE "phoneNumber" = ?',
+        'DELETE FROM verification_codes WHERE phonenumber = ?',
         [phoneNumber]
       );
       return result.changes;

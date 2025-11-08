@@ -39,10 +39,11 @@ export class Attendance {
       // Normalize scopeValue: null for full_congregation
       const normalizedScopeValue = scope === 'full_congregation' ? null : (scopeValue || null);
 
+      // PostgreSQL stores field names in lowercase
       if (scope === 'full_congregation') {
         // For full_congregation, always insert new record (allow multiple records)
         const result = await db.run(
-          `INSERT INTO attendance (date, "meetingType", scope, "scopeValue", "adultCount", "youthChildCount", "createdBy", district, notes, "createdAt", "updatedAt")
+          `INSERT INTO attendance (date, meetingtype, scope, scopevalue, adultcount, youthchildcount, createdby, district, notes, createdat, updatedat)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
           [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
         );
@@ -52,8 +53,8 @@ export class Attendance {
         // (regardless of createdBy - new data overwrites old)
         const existing = await db.get(
           `SELECT id FROM attendance 
-           WHERE date = ? AND "meetingType" = ? AND scope = ? 
-           AND ("scopeValue" = ? OR ("scopeValue" IS NULL AND ? IS NULL))`,
+           WHERE date = ? AND meetingtype = ? AND scope = ? 
+           AND (scopevalue = ? OR (scopevalue IS NULL AND ? IS NULL))`,
           [date, meetingType, scope, normalizedScopeValue, normalizedScopeValue]
         );
 
@@ -61,7 +62,7 @@ export class Attendance {
           // Update existing record (overwrite with new data)
           await db.run(
             `UPDATE attendance 
-             SET "adultCount" = ?, "youthChildCount" = ?, "createdBy" = ?, district = ?, notes = ?, "updatedAt" = ?
+             SET adultcount = ?, youthchildcount = ?, createdby = ?, district = ?, notes = ?, updatedat = ?
              WHERE id = ?`,
             [adultCount, youthChildCount, createdBy, district, notes, now, existing.id]
           );
@@ -69,7 +70,7 @@ export class Attendance {
         } else {
           // Insert new record
           const result = await db.run(
-            `INSERT INTO attendance (date, "meetingType", scope, "scopeValue", "adultCount", "youthChildCount", "createdBy", district, notes, "createdAt", "updatedAt")
+            `INSERT INTO attendance (date, meetingtype, scope, scopevalue, adultcount, youthchildcount, createdby, district, notes, createdat, updatedat)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
             [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
           );
@@ -81,17 +82,18 @@ export class Attendance {
       if (error.message && (error.message.includes('UNIQUE constraint') || error.message.includes('duplicate key'))) {
         // Try to find and update the existing record
         const normalizedScopeValue = scope === 'full_congregation' ? null : (scopeValue || null);
+        // PostgreSQL stores field names in lowercase
         const existing = await db.get(
           `SELECT id FROM attendance 
-           WHERE date = ? AND "meetingType" = ? AND scope = ? 
-           AND ("scopeValue" = ? OR ("scopeValue" IS NULL AND ? IS NULL))`,
+           WHERE date = ? AND meetingtype = ? AND scope = ? 
+           AND (scopevalue = ? OR (scopevalue IS NULL AND ? IS NULL))`,
           [date, meetingType, scope, normalizedScopeValue, normalizedScopeValue]
         );
         
         if (existing) {
           await db.run(
             `UPDATE attendance 
-             SET "adultCount" = ?, "youthChildCount" = ?, "createdBy" = ?, district = ?, notes = ?, "updatedAt" = ?
+             SET adultcount = ?, youthchildcount = ?, createdby = ?, district = ?, notes = ?, updatedat = ?
              WHERE id = ?`,
             [adultCount, youthChildCount, createdBy, district, notes, now, existing.id]
           );
@@ -132,7 +134,8 @@ export class Attendance {
   static async findByUser(createdBy, limit = null, offset = 0) {
     const db = await getDatabase();
     try {
-      let sql = 'SELECT * FROM attendance WHERE "createdBy" = ? ORDER BY date DESC, "createdAt" DESC';
+      // PostgreSQL stores field names in lowercase
+      let sql = 'SELECT * FROM attendance WHERE createdby = ? ORDER BY date DESC, createdat DESC';
       const params = [createdBy];
 
       if (limit !== null) {
@@ -156,7 +159,8 @@ export class Attendance {
   static async findAll(limit = null, offset = 0) {
     const db = await getDatabase();
     try {
-      let sql = 'SELECT * FROM attendance ORDER BY date DESC, "createdAt" DESC';
+      // PostgreSQL stores field names in lowercase
+      let sql = 'SELECT * FROM attendance ORDER BY date DESC, createdat DESC';
       const params = [];
 
       if (limit !== null) {
@@ -211,8 +215,9 @@ export class Attendance {
   static async countByUser(createdBy) {
     const db = await getDatabase();
     try {
+      // PostgreSQL stores field names in lowercase
       const result = await db.get(
-        'SELECT COUNT(*) as count FROM attendance WHERE "createdBy" = ?',
+        'SELECT COUNT(*) as count FROM attendance WHERE createdby = ?',
         [createdBy]
       );
       return result?.count || 0;

@@ -43,8 +43,9 @@ export class User {
     const now = getCurrentTimestamp();
 
     try {
+      // PostgreSQL stores field names in lowercase, so use lowercase field names
       const result = await db.run(
-        `INSERT INTO users ("phoneNumber", name, "nameZh", "nameEn", role, district, "groupNum", email, status, gender, birthdate, "joinDate", "preferredLanguage", notes, "createdAt", "updatedAt")
+        `INSERT INTO users (phonenumber, name, namezh, nameen, role, district, groupnum, email, status, gender, birthdate, joindate, preferredlanguage, notes, createdat, updatedat)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
         [phoneNumber, name, nameZh, nameEn, role, district, groupNum, email, status, gender, birthdate, joinDate, preferredLanguage, notes, now, now]
       );
@@ -81,31 +82,11 @@ export class User {
   static async findByPhoneNumber(phoneNumber) {
     const db = await getDatabase();
     try {
-      // Try with quoted identifier first, fall back to lowercase if needed
-      let user;
-      try {
-        user = await db.get(
-          'SELECT * FROM users WHERE "phoneNumber" = ?',
-          [phoneNumber]
-        );
-      } catch (err) {
-        // If quoted identifier fails, try lowercase
-        if (err.code === '42703' || err.message?.includes('column') || err.message?.includes('does not exist')) {
-          console.log(`[User.findByPhoneNumber] Quoted identifier failed, trying lowercase for phoneNumber: ${phoneNumber}`);
-          try {
-            user = await db.get(
-              'SELECT * FROM users WHERE phonenumber = ?',
-              [phoneNumber]
-            );
-          } catch (err2) {
-            console.error('[User.findByPhoneNumber] Both quoted and lowercase queries failed:', err2.message);
-            throw err2;
-          }
-        } else {
-          console.error('[User.findByPhoneNumber] Query error:', err.message);
-          throw err;
-        }
-      }
+      // PostgreSQL stores field names in lowercase, so use lowercase field names
+      const user = await db.get(
+        'SELECT * FROM users WHERE phonenumber = ?',
+        [phoneNumber]
+      );
       return this.normalizeUserFields(user);
     } catch (error) {
       console.error('[User.findByPhoneNumber] Error:', error);
@@ -163,28 +144,11 @@ export class User {
   static async findById(id) {
     const db = await getDatabase();
     try {
-      // Try to select with quoted identifiers first (for properly created tables)
-      // If that fails, fall back to unquoted (for lowercase field names)
-      let user;
-      try {
-        user = await db.get(
-          `SELECT id, "phoneNumber", name, "nameZh", "nameEn", role, district, "groupNum", 
-           email, status, gender, birthdate, "joinDate", "preferredLanguage", notes, 
-           "lastLoginAt", "createdAt", "updatedAt" 
-           FROM users WHERE id = ?`,
-          [id]
-        );
-      } catch (err) {
-        // If quoted identifiers fail, try without quotes (for lowercase field names)
-        if (err.code === '42703' || err.message.includes('column') || err.message.includes('does not exist')) {
-          user = await db.get(
-            `SELECT * FROM users WHERE id = ?`,
-            [id]
-          );
-        } else {
-          throw err;
-        }
-      }
+      // PostgreSQL stores field names in lowercase, so use SELECT * to get all fields
+      const user = await db.get(
+        'SELECT * FROM users WHERE id = ?',
+        [id]
+      );
       return this.normalizeUserFields(user);
     } catch (error) {
       console.error('Error in User.findById:', error);
@@ -205,9 +169,9 @@ export class User {
     try {
       let users;
       if (role) {
-        users = await db.all('SELECT * FROM users WHERE role = ? ORDER BY "createdAt" DESC', [role]);
+        users = await db.all('SELECT * FROM users WHERE role = ? ORDER BY createdat DESC', [role]);
       } else {
-        users = await db.all('SELECT * FROM users ORDER BY "createdAt" DESC');
+        users = await db.all('SELECT * FROM users ORDER BY createdat DESC');
       }
       return users.map(user => this.normalizeUserFields(user));
     } catch (error) {
@@ -230,7 +194,7 @@ export class User {
 
     try {
       const result = await db.run(
-        'UPDATE users SET role = ?, "updatedAt" = ? WHERE id = ?',
+        'UPDATE users SET role = ?, updatedat = ? WHERE id = ?',
         [role, now, id]
       );
 
@@ -256,7 +220,7 @@ export class User {
 
     try {
       const result = await db.run(
-        'UPDATE users SET name = ?, "updatedAt" = ? WHERE id = ?',
+        'UPDATE users SET name = ?, updatedat = ? WHERE id = ?',
         [name, now, id]
       );
 
@@ -283,7 +247,7 @@ export class User {
 
     try {
       const result = await db.run(
-        'UPDATE users SET "nameZh" = ?, "nameEn" = ?, "updatedAt" = ? WHERE id = ?',
+        'UPDATE users SET namezh = ?, nameen = ?, updatedat = ? WHERE id = ?',
         [nameZh, nameEn, now, id]
       );
 
@@ -310,7 +274,7 @@ export class User {
 
     try {
       const result = await db.run(
-        'UPDATE users SET district = ?, "groupNum" = ?, "updatedAt" = ? WHERE id = ?',
+        'UPDATE users SET district = ?, groupnum = ?, updatedat = ? WHERE id = ?',
         [district, groupNum, now, id]
       );
 
@@ -335,7 +299,7 @@ export class User {
 
     try {
       const result = await db.run(
-        'UPDATE users SET "lastLoginAt" = ?, "updatedAt" = ? WHERE id = ?',
+        'UPDATE users SET lastloginat = ?, updatedat = ? WHERE id = ?',
         [now, now, id]
       );
 
@@ -358,7 +322,7 @@ export class User {
     const db = await getDatabase();
     try {
       const users = await db.all(
-        'SELECT * FROM users WHERE district = ? ORDER BY "groupNum", "createdAt" DESC',
+        'SELECT * FROM users WHERE district = ? ORDER BY groupnum, createdat DESC',
         [district]
       );
       return users.map(user => this.normalizeUserFields(user));
@@ -380,7 +344,7 @@ export class User {
     const db = await getDatabase();
     try {
       const users = await db.all(
-        'SELECT * FROM users WHERE district = ? AND "groupNum" = ? ORDER BY "createdAt" DESC',
+        'SELECT * FROM users WHERE district = ? AND groupnum = ? ORDER BY createdat DESC',
         [district, groupNum]
       );
       return users.map(user => this.normalizeUserFields(user));
