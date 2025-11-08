@@ -1,6 +1,6 @@
+import dotenv from 'dotenv';
 import pg from 'pg';
 const { Pool } = pg;
-import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -9,26 +9,53 @@ dotenv.config();
  * Supports both DATABASE_URL (Railway/Heroku style) and individual PG* variables
  */
 function getPostgreSQLConfig() {
-  // If DATABASE_URL is provided, use it (Railway/Heroku style)
-  if (process.env.DATABASE_URL) {
+  // Check for DATABASE_URL first (Railway/Heroku style)
+  const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRIVATE_URL;
+  
+  if (databaseUrl) {
+    // Parse DATABASE_URL to check if it needs SSL
+    const isRailway = process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_SERVICE_NAME;
+    const isProduction = process.env.NODE_ENV === 'production';
+    
     return {
-      connectionString: process.env.DATABASE_URL,
-      ssl: process.env.RAILWAY_ENVIRONMENT || process.env.NODE_ENV === 'production' 
-        ? { rejectUnauthorized: false } 
-        : false,
+      connectionString: databaseUrl,
+      ssl: (isRailway || isProduction) ? { rejectUnauthorized: false } : false,
     };
   }
 
-  // Otherwise, use individual environment variables
+  // Check for Railway-specific PostgreSQL variables
+  // Railway sometimes uses PGHOST, PGPORT, etc. when PostgreSQL service is added
+  const host = process.env.PGHOST || process.env.DB_HOST || process.env.POSTGRES_HOST;
+  const port = process.env.PGPORT || process.env.DB_PORT || process.env.POSTGRES_PORT;
+  const database = process.env.PGDATABASE || process.env.DB_NAME || process.env.POSTGRES_DATABASE;
+  const user = process.env.PGUSER || process.env.DB_USER || process.env.POSTGRES_USER;
+  const password = process.env.PGPASSWORD || process.env.DB_PASSWORD || process.env.POSTGRES_PASSWORD;
+
+  // If we have Railway PostgreSQL variables, use them
+  if (host && database && user && password) {
+    const isRailway = process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_SERVICE_NAME;
+    
+    return {
+      host,
+      port: parseInt(port || '5432'),
+      database,
+      user,
+      password,
+      ssl: isRailway ? { rejectUnauthorized: false } : false,
+      max: 20,
+      idleTimeoutMillis: 30000,
+      connectionTimeoutMillis: 2000,
+    };
+  }
+
+  // Fallback to defaults (for local development)
   return {
-    host: process.env.DB_HOST || process.env.PGHOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || process.env.PGPORT || '5432'),
-    database: process.env.DB_NAME || process.env.PGDATABASE || 'church_cerritos',
-    user: process.env.DB_USER || process.env.PGUSER || 'postgres',
-    password: process.env.DB_PASSWORD || process.env.PGPASSWORD || '',
-    ssl: process.env.DB_SSL === 'true' || process.env.RAILWAY_ENVIRONMENT 
-      ? { rejectUnauthorized: false } 
-      : false,
+    host: 'localhost',
+    port: 5432,
+    database: 'church_cerritos',
+    user: 'postgres',
+    password: '',
+    ssl: false,
     max: 20,
     idleTimeoutMillis: 30000,
     connectionTimeoutMillis: 2000,
@@ -37,13 +64,30 @@ function getPostgreSQLConfig() {
 
 const pgConfig = getPostgreSQLConfig();
 
-// Log database connection info (without password)
-if (process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT) {
+// Log database connection info (without password) - always log in production
+const isProduction = process.env.NODE_ENV === 'production' || process.env.RAILWAY_ENVIRONMENT;
+if (isProduction) {
   console.log(`[Database] Connecting to PostgreSQL`);
-  if (process.env.DATABASE_URL) {
-    console.log(`[Database] Using DATABASE_URL (connection string)`);
+  
+  const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRIVATE_URL;
+  if (databaseUrl) {
+    // Mask password in connection string for logging
+    const maskedUrl = databaseUrl.replace(/:([^:@]+)@/, ':****@');
+    console.log(`[Database] Using DATABASE_URL: ${maskedUrl}`);
+  } else if (pgConfig.host) {
+    console.log(`[Database] Using individual variables - Host: ${pgConfig.host}, Port: ${pgConfig.port}, Database: ${pgConfig.database}, User: ${pgConfig.user}`);
   } else {
-    console.log(`[Database] Host: ${pgConfig.host}, Port: ${pgConfig.port}, Database: ${pgConfig.database}, User: ${pgConfig.user}`);
+    console.log(`[Database] Using connection string (SSL: ${pgConfig.ssl ? 'enabled' : 'disabled'})`);
+  }
+  
+  // Debug: Log available PostgreSQL-related environment variables (without values)
+  const pgVars = Object.keys(process.env).filter(key => 
+    key.includes('POSTGRES') || key.includes('DATABASE') || key.includes('PG') || key.includes('DB_')
+  );
+  if (pgVars.length > 0) {
+    console.log(`[Database] Available PostgreSQL env vars: ${pgVars.join(', ')}`);
+  } else {
+    console.log(`[Database] WARNING: No PostgreSQL environment variables found!`);
   }
 }
 

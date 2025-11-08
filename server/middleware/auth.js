@@ -75,9 +75,11 @@ export async function authenticate(req, res, next) {
     next();
   } catch (error) {
     console.error('Authentication error:', error);
+    console.error('Error stack:', error.stack);
     return res.status(500).json({
       success: false,
       message: '认证过程出错',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 }

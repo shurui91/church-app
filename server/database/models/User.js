@@ -85,10 +85,50 @@ export class User {
         'SELECT * FROM users WHERE "phoneNumber" = ?',
         [phoneNumber]
       );
-      return user || null;
+      return this.normalizeUserFields(user);
+    } catch (error) {
+      console.error('Error in User.findByPhoneNumber:', error);
+      throw error;
     } finally {
       await db.close();
     }
+  }
+
+  /**
+   * Normalize field names from database (handle PostgreSQL case sensitivity)
+   * PostgreSQL may return field names in different cases depending on how they were created
+   */
+  static normalizeUserFields(user) {
+    if (!user) return null;
+    
+    // Map possible lowercase or different case field names to camelCase
+    const fieldMap = {
+      'phonenumber': 'phoneNumber',
+      'namezh': 'nameZh',
+      'nameen': 'nameEn',
+      'groupnum': 'groupNum',
+      'createdat': 'createdAt',
+      'updatedat': 'updatedAt',
+      'lastloginat': 'lastLoginAt',
+      'joindate': 'joinDate',
+      'preferredlanguage': 'preferredLanguage',
+    };
+    
+    // If user already has correct camelCase fields, return as-is
+    // Otherwise, normalize field names
+    const normalized = {};
+    for (const [key, value] of Object.entries(user)) {
+      const lowerKey = key.toLowerCase();
+      // Only map if the key is in lowercase form and we have a mapping
+      if (fieldMap[lowerKey] && key === lowerKey) {
+        normalized[fieldMap[lowerKey]] = value;
+      } else {
+        // Keep original key (already in correct format)
+        normalized[key] = value;
+      }
+    }
+    
+    return normalized;
   }
 
   /**
@@ -99,8 +139,19 @@ export class User {
   static async findById(id) {
     const db = await getDatabase();
     try {
-      const user = await db.get('SELECT * FROM users WHERE id = ?', [id]);
-      return user || null;
+      // Explicitly select all fields to ensure correct field names
+      const user = await db.get(
+        `SELECT id, "phoneNumber", name, "nameZh", "nameEn", role, district, "groupNum", 
+         email, status, gender, birthdate, "joinDate", "preferredLanguage", notes, 
+         "lastLoginAt", "createdAt", "updatedAt" 
+         FROM users WHERE id = ?`,
+        [id]
+      );
+      return this.normalizeUserFields(user);
+    } catch (error) {
+      console.error('Error in User.findById:', error);
+      console.error('Query parameters:', { id });
+      throw error;
     } finally {
       await db.close();
     }
@@ -114,13 +165,16 @@ export class User {
   static async findAll(role = null) {
     const db = await getDatabase();
     try {
+      let users;
       if (role) {
-        const users = await db.all('SELECT * FROM users WHERE role = ? ORDER BY "createdAt" DESC', [role]);
-        return users;
+        users = await db.all('SELECT * FROM users WHERE role = ? ORDER BY "createdAt" DESC', [role]);
       } else {
-        const users = await db.all('SELECT * FROM users ORDER BY "createdAt" DESC');
-        return users;
+        users = await db.all('SELECT * FROM users ORDER BY "createdAt" DESC');
       }
+      return users.map(user => this.normalizeUserFields(user));
+    } catch (error) {
+      console.error('Error in User.findAll:', error);
+      throw error;
     } finally {
       await db.close();
     }
@@ -269,7 +323,10 @@ export class User {
         'SELECT * FROM users WHERE district = ? ORDER BY "groupNum", "createdAt" DESC',
         [district]
       );
-      return users;
+      return users.map(user => this.normalizeUserFields(user));
+    } catch (error) {
+      console.error('Error in User.findByDistrict:', error);
+      throw error;
     } finally {
       await db.close();
     }
@@ -288,7 +345,10 @@ export class User {
         'SELECT * FROM users WHERE district = ? AND "groupNum" = ? ORDER BY "createdAt" DESC',
         [district, groupNum]
       );
-      return users;
+      return users.map(user => this.normalizeUserFields(user));
+    } catch (error) {
+      console.error('Error in User.findByDistrictAndGroup:', error);
+      throw error;
     } finally {
       await db.close();
     }
