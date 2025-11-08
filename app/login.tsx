@@ -338,7 +338,7 @@ export default function LoginScreen() {
                 styles.label,
                 { color: colors.text, fontSize: getFontSizeValue(14) },
               ]}>
-              {t('login.phoneNumber') || '手机号'}
+              {t('login.phonenumber') || '手机号'}
             </Text>
             <View
               style={[

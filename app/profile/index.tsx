@@ -143,7 +143,7 @@ export default function ProfileScreen() {
                       fontSize: getFontSizeValue(12),
                     },
                   ]}>
-                  {t('profile.phoneNumber') || '手机号'}
+                  {t('profile.phonenumber') || '手机号'}
                 </Text>
                 <Text
                   style={[
@@ -204,7 +204,7 @@ export default function ProfileScreen() {
                         fontSize: getFontSizeValue(12),
                       },
                     ]}>
-                    {t('profile.districtGroup') || '大区/小组'}
+                    {t('profile.district') || '大区/小组'}
                   </Text>
                   <Text
                     style={[
