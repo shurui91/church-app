@@ -185,9 +185,9 @@ export default function ProfileScreen() {
                     ]}>
                     {user.nameZh || user.nameEn || user.name || 'N/A'}
                   </Text>
-                </View>
               </View>
-            )}
+            </View>
+			)}
             {(user.district || user.groupNum) && (
               <View style={styles.userInfoRow}>
                 <Ionicons
