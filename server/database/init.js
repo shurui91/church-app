@@ -102,10 +102,11 @@ const DEFAULT_USERS = [
  */
 async function addColumnIfNotExists(db, tableName, columnName, columnDefinition) {
   try {
-    // Extract column name without quotes for checking
-    const columnNameForCheck = columnName.replace(/"/g, '');
+    // Extract column name without quotes and convert to lowercase for checking
+    // PostgreSQL stores field names in lowercase
+    const columnNameForCheck = columnName.replace(/"/g, '').toLowerCase();
     
-    // Check if column exists (PostgreSQL stores table_name in lowercase in information_schema)
+    // Check if column exists (PostgreSQL stores table_name and column_name in lowercase in information_schema)
     const result = await db.get(
       `SELECT column_name 
        FROM information_schema.columns 
@@ -114,15 +115,16 @@ async function addColumnIfNotExists(db, tableName, columnName, columnDefinition)
     );
     
     if (!result) {
+      // Use lowercase column name when adding column
       await db.run(
-        `ALTER TABLE "${tableName}" ADD COLUMN ${columnName} ${columnDefinition}`,
+        `ALTER TABLE ${tableName} ADD COLUMN ${columnNameForCheck} ${columnDefinition}`,
         []
       );
-      console.log(`  Added column ${columnName} to ${tableName}`);
+      console.log(`  Added column ${columnNameForCheck} to ${tableName}`);
     }
   } catch (err) {
     // Column might already exist or other error
-    if (!err.message.includes('duplicate column') && !err.message.includes('already exists') && !err.message.includes('duplicate key')) {
+    if (!err.message?.includes('duplicate column') && !err.message?.includes('already exists') && !err.message?.includes('duplicate key')) {
       console.error(`Error adding column ${columnName} to ${tableName}:`, err.message);
     }
   }
@@ -134,9 +136,9 @@ async function addColumnIfNotExists(db, tableName, columnName, columnDefinition)
 async function createIndexIfColumnExists(db, indexName, tableName, columnName) {
   try {
     // Extract column name without quotes for checking
-    const columnNameForCheck = columnName.replace(/"/g, '');
+    const columnNameForCheck = columnName.replace(/"/g, '').toLowerCase();
     
-    // Check if column exists (PostgreSQL stores table_name in lowercase in information_schema)
+    // Check if column exists (PostgreSQL stores table_name and column_name in lowercase in information_schema)
     const result = await db.get(
       `SELECT column_name 
        FROM information_schema.columns 
@@ -145,17 +147,18 @@ async function createIndexIfColumnExists(db, indexName, tableName, columnName) {
     );
     
     if (result) {
-      // Column exists, create index
+      // Column exists, create index using lowercase column name
+      // PostgreSQL stores field names in lowercase, so use lowercase in index creation
       await db.run(
-        `CREATE INDEX IF NOT EXISTS ${indexName} ON "${tableName}"(${columnName})`,
+        `CREATE INDEX IF NOT EXISTS ${indexName} ON ${tableName}(${columnNameForCheck})`,
         []
       );
     } else {
-      console.log(`  Skipping index ${indexName} - column ${columnName} does not exist in table ${tableName}`);
+      console.log(`  Skipping index ${indexName} - column ${columnNameForCheck} does not exist in table ${tableName}`);
     }
   } catch (err) {
     // Index might already exist or other error
-    if (!err.message.includes('already exists') && err.code !== '42703') {
+    if (!err.message?.includes('already exists') && err.code !== '42703') {
       console.error(`Error creating index ${indexName}:`, err.message);
     }
   }
@@ -200,24 +203,26 @@ export async function initDatabase() {
     }
 
     // Add additional columns if they don't exist
-    await addColumnIfNotExists(db, 'users', '"nameZh"', 'TEXT');
-    await addColumnIfNotExists(db, 'users', '"nameEn"', 'TEXT');
+    // PostgreSQL stores field names in lowercase, so use lowercase field names
+    await addColumnIfNotExists(db, 'users', 'namezh', 'TEXT');
+    await addColumnIfNotExists(db, 'users', 'nameen', 'TEXT');
     await addColumnIfNotExists(db, 'users', 'district', 'TEXT');
-    await addColumnIfNotExists(db, 'users', '"groupNum"', 'TEXT');
+    await addColumnIfNotExists(db, 'users', 'groupnum', 'TEXT');
     await addColumnIfNotExists(db, 'users', 'email', 'TEXT');
-    await addColumnIfNotExists(db, 'users', '"lastLoginAt"', 'TEXT');
+    await addColumnIfNotExists(db, 'users', 'lastloginat', 'TEXT');
     await addColumnIfNotExists(db, 'users', 'status', 'TEXT DEFAULT \'active\' CHECK(status IN (\'active\', \'inactive\', \'suspended\'))');
     await addColumnIfNotExists(db, 'users', 'gender', 'TEXT CHECK(gender IN (\'male\', \'female\', \'other\'))');
     await addColumnIfNotExists(db, 'users', 'birthdate', 'TEXT');
-    await addColumnIfNotExists(db, 'users', '"joinDate"', 'TEXT');
-    await addColumnIfNotExists(db, 'users', '"preferredLanguage"', 'TEXT DEFAULT \'zh\'');
+    await addColumnIfNotExists(db, 'users', 'joindate', 'TEXT');
+    await addColumnIfNotExists(db, 'users', 'preferredlanguage', 'TEXT DEFAULT \'zh\'');
     await addColumnIfNotExists(db, 'users', 'notes', 'TEXT');
 
     // Create indexes for users table (only on columns that exist)
-    await createIndexIfColumnExists(db, 'idx_users_phoneNumber', 'users', '"phoneNumber"');
+    // PostgreSQL stores field names in lowercase, so use lowercase field names
+    await createIndexIfColumnExists(db, 'idx_users_phonenumber', 'users', 'phonenumber');
     await createIndexIfColumnExists(db, 'idx_users_role', 'users', 'role');
     await createIndexIfColumnExists(db, 'idx_users_district', 'users', 'district');
-    await createIndexIfColumnExists(db, 'idx_users_groupNum', 'users', '"groupNum"');
+    await createIndexIfColumnExists(db, 'idx_users_groupnum', 'users', 'groupnum');
     await createIndexIfColumnExists(db, 'idx_users_email', 'users', 'email');
     await createIndexIfColumnExists(db, 'idx_users_status', 'users', 'status');
 
@@ -235,8 +240,9 @@ export async function initDatabase() {
     console.log('Verification codes table created or already exists');
 
     // Create indexes for verification_codes table
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_verification_codes_phoneNumber ON verification_codes("phoneNumber")`, []);
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_verification_codes_expiresAt ON verification_codes("expiresAt")`, []);
+    // PostgreSQL stores field names in lowercase, so use lowercase field names
+    await createIndexIfColumnExists(db, 'idx_verification_codes_phonenumber', 'verification_codes', 'phonenumber');
+    await createIndexIfColumnExists(db, 'idx_verification_codes_expiresat', 'verification_codes', 'expiresat');
 
     // Create sessions table
     await db.run(`
@@ -253,8 +259,9 @@ export async function initDatabase() {
     console.log('Sessions table created or already exists');
 
     // Create indexes for sessions table
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_sessions_userId ON sessions("userId")`, []);
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_sessions_token ON sessions(token)`, []);
+    // PostgreSQL stores field names in lowercase, so use lowercase field names
+    await createIndexIfColumnExists(db, 'idx_sessions_userid', 'sessions', 'userid');
+    await createIndexIfColumnExists(db, 'idx_sessions_token', 'sessions', 'token');
 
     // Create attendance table
     await db.run(`
@@ -277,10 +284,28 @@ export async function initDatabase() {
     console.log('Attendance table created or already exists');
 
     // Create indexes for attendance table
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_date ON attendance(date)`, []);
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_meetingType ON attendance("meetingType")`, []);
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_createdBy ON attendance("createdBy")`, []);
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_date_type_scope ON attendance(date, "meetingType", scope, "scopeValue")`, []);
+    // PostgreSQL stores field names in lowercase, so use lowercase field names
+    await createIndexIfColumnExists(db, 'idx_attendance_date', 'attendance', 'date');
+    await createIndexIfColumnExists(db, 'idx_attendance_meetingtype', 'attendance', 'meetingtype');
+    await createIndexIfColumnExists(db, 'idx_attendance_createdby', 'attendance', 'createdby');
+    
+    // For composite index, check if all columns exist first
+    try {
+      const dateCol = await db.get(`SELECT column_name FROM information_schema.columns WHERE LOWER(table_name) = 'attendance' AND LOWER(column_name) = 'date'`, []);
+      const meetingTypeCol = await db.get(`SELECT column_name FROM information_schema.columns WHERE LOWER(table_name) = 'attendance' AND LOWER(column_name) = 'meetingtype'`, []);
+      const scopeCol = await db.get(`SELECT column_name FROM information_schema.columns WHERE LOWER(table_name) = 'attendance' AND LOWER(column_name) = 'scope'`, []);
+      const scopeValueCol = await db.get(`SELECT column_name FROM information_schema.columns WHERE LOWER(table_name) = 'attendance' AND LOWER(column_name) = 'scopevalue'`, []);
+      
+      if (dateCol && meetingTypeCol && scopeCol && scopeValueCol) {
+        await db.run(`CREATE INDEX IF NOT EXISTS idx_attendance_date_type_scope ON attendance(date, meetingtype, scope, scopevalue)`, []);
+      } else {
+        console.log('  Skipping composite index idx_attendance_date_type_scope - some columns do not exist');
+      }
+    } catch (err) {
+      if (err.code !== '42703' && !err.message?.includes('already exists')) {
+        console.error('Error creating composite index idx_attendance_date_type_scope:', err.message);
+      }
+    }
 
     console.log('Database initialization completed');
 
