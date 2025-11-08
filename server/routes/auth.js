@@ -41,27 +41,41 @@ router.post('/check-phone', async (req, res) => {
     }
 
     // Check if phone number is in whitelist (user exists in database)
-    const userExists = await User.exists(normalizedPhone);
+    try {
+      const userExists = await User.exists(normalizedPhone);
 
-    if (!userExists) {
-      return res.json({
+      if (!userExists) {
+        return res.json({
+          success: true,
+          isWhitelisted: false,
+          message: '该手机号未在邀请列表中',
+        });
+      }
+
+      res.json({
         success: true,
+        isWhitelisted: true,
+        message: '手机号已验证',
+      });
+    } catch (dbError) {
+      console.error('[check-phone] Database error:', dbError);
+      console.error('[check-phone] Error stack:', dbError.stack);
+      // Return error response instead of letting it crash
+      return res.status(500).json({
+        success: false,
+        message: '检查手机号失败，请稍后重试',
         isWhitelisted: false,
-        message: '该手机号未在邀请列表中',
+        error: process.env.NODE_ENV === 'development' ? dbError.message : undefined,
       });
     }
-
-    res.json({
-      success: true,
-      isWhitelisted: true,
-      message: '手机号已验证',
-    });
   } catch (error) {
-    console.error('Error checking phone number:', error);
+    console.error('[check-phone] Unexpected error:', error);
+    console.error('[check-phone] Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: '检查手机号失败',
       isWhitelisted: false,
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 });

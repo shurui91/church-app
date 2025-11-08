@@ -81,13 +81,36 @@ export class User {
   static async findByPhoneNumber(phoneNumber) {
     const db = await getDatabase();
     try {
-      const user = await db.get(
-        'SELECT * FROM users WHERE "phoneNumber" = ?',
-        [phoneNumber]
-      );
+      // Try with quoted identifier first, fall back to lowercase if needed
+      let user;
+      try {
+        user = await db.get(
+          'SELECT * FROM users WHERE "phoneNumber" = ?',
+          [phoneNumber]
+        );
+      } catch (err) {
+        // If quoted identifier fails, try lowercase
+        if (err.code === '42703' || err.message?.includes('column') || err.message?.includes('does not exist')) {
+          console.log(`[User.findByPhoneNumber] Quoted identifier failed, trying lowercase for phoneNumber: ${phoneNumber}`);
+          try {
+            user = await db.get(
+              'SELECT * FROM users WHERE phonenumber = ?',
+              [phoneNumber]
+            );
+          } catch (err2) {
+            console.error('[User.findByPhoneNumber] Both quoted and lowercase queries failed:', err2.message);
+            throw err2;
+          }
+        } else {
+          console.error('[User.findByPhoneNumber] Query error:', err.message);
+          throw err;
+        }
+      }
       return this.normalizeUserFields(user);
     } catch (error) {
-      console.error('Error in User.findByPhoneNumber:', error);
+      console.error('[User.findByPhoneNumber] Error:', error);
+      console.error('[User.findByPhoneNumber] Error code:', error.code);
+      console.error('[User.findByPhoneNumber] Error message:', error.message);
       throw error;
     } finally {
       await db.close();
@@ -97,11 +120,13 @@ export class User {
   /**
    * Normalize field names from database (handle PostgreSQL case sensitivity)
    * PostgreSQL may return field names in different cases depending on how they were created
+   * This function handles: lowercase, camelCase, and quoted identifiers
    */
   static normalizeUserFields(user) {
     if (!user) return null;
     
-    // Map possible lowercase or different case field names to camelCase
+    // Map lowercase field names to camelCase
+    // PostgreSQL may return field names in lowercase if they weren't created with quotes
     const fieldMap = {
       'phonenumber': 'phoneNumber',
       'namezh': 'nameZh',
@@ -114,16 +139,15 @@ export class User {
       'preferredlanguage': 'preferredLanguage',
     };
     
-    // If user already has correct camelCase fields, return as-is
-    // Otherwise, normalize field names
     const normalized = {};
     for (const [key, value] of Object.entries(user)) {
       const lowerKey = key.toLowerCase();
-      // Only map if the key is in lowercase form and we have a mapping
+      
+      // If the key is lowercase and we have a mapping, use the mapped camelCase name
       if (fieldMap[lowerKey] && key === lowerKey) {
         normalized[fieldMap[lowerKey]] = value;
       } else {
-        // Keep original key (already in correct format)
+        // Keep original key (already in correct format: camelCase, quoted, or simple fields)
         normalized[key] = value;
       }
     }
@@ -139,14 +163,28 @@ export class User {
   static async findById(id) {
     const db = await getDatabase();
     try {
-      // Explicitly select all fields to ensure correct field names
-      const user = await db.get(
-        `SELECT id, "phoneNumber", name, "nameZh", "nameEn", role, district, "groupNum", 
-         email, status, gender, birthdate, "joinDate", "preferredLanguage", notes, 
-         "lastLoginAt", "createdAt", "updatedAt" 
-         FROM users WHERE id = ?`,
-        [id]
-      );
+      // Try to select with quoted identifiers first (for properly created tables)
+      // If that fails, fall back to unquoted (for lowercase field names)
+      let user;
+      try {
+        user = await db.get(
+          `SELECT id, "phoneNumber", name, "nameZh", "nameEn", role, district, "groupNum", 
+           email, status, gender, birthdate, "joinDate", "preferredLanguage", notes, 
+           "lastLoginAt", "createdAt", "updatedAt" 
+           FROM users WHERE id = ?`,
+          [id]
+        );
+      } catch (err) {
+        // If quoted identifiers fail, try without quotes (for lowercase field names)
+        if (err.code === '42703' || err.message.includes('column') || err.message.includes('does not exist')) {
+          user = await db.get(
+            `SELECT * FROM users WHERE id = ?`,
+            [id]
+          );
+        } else {
+          throw err;
+        }
+      }
       return this.normalizeUserFields(user);
     } catch (error) {
       console.error('Error in User.findById:', error);
@@ -375,7 +413,14 @@ export class User {
    * @returns {Promise<boolean>} True if exists, false otherwise
    */
   static async exists(phoneNumber) {
-    const user = await this.findByPhoneNumber(phoneNumber);
-    return user !== null;
+    try {
+      const user = await this.findByPhoneNumber(phoneNumber);
+      return user !== null;
+    } catch (error) {
+      console.error('[User.exists] Error checking if phone number exists:', error);
+      // Return false on error to prevent blocking the login flow
+      // But log the error for debugging
+      return false;
+    }
   }
 }

@@ -105,11 +105,11 @@ async function addColumnIfNotExists(db, tableName, columnName, columnDefinition)
     // Extract column name without quotes for checking
     const columnNameForCheck = columnName.replace(/"/g, '');
     
-    // Check if column exists (PostgreSQL stores column names in lowercase in information_schema)
+    // Check if column exists (PostgreSQL stores table_name in lowercase in information_schema)
     const result = await db.get(
       `SELECT column_name 
        FROM information_schema.columns 
-       WHERE table_name = $1 AND LOWER(column_name) = LOWER($2)`,
+       WHERE LOWER(table_name) = LOWER($1) AND LOWER(column_name) = LOWER($2)`,
       [tableName, columnNameForCheck]
     );
     
@@ -129,6 +129,39 @@ async function addColumnIfNotExists(db, tableName, columnName, columnDefinition)
 }
 
 /**
+ * Helper function to create index if column exists (PostgreSQL)
+ */
+async function createIndexIfColumnExists(db, indexName, tableName, columnName) {
+  try {
+    // Extract column name without quotes for checking
+    const columnNameForCheck = columnName.replace(/"/g, '');
+    
+    // Check if column exists (PostgreSQL stores table_name in lowercase in information_schema)
+    const result = await db.get(
+      `SELECT column_name 
+       FROM information_schema.columns 
+       WHERE LOWER(table_name) = LOWER($1) AND LOWER(column_name) = LOWER($2)`,
+      [tableName, columnNameForCheck]
+    );
+    
+    if (result) {
+      // Column exists, create index
+      await db.run(
+        `CREATE INDEX IF NOT EXISTS ${indexName} ON "${tableName}"(${columnName})`,
+        []
+      );
+    } else {
+      console.log(`  Skipping index ${indexName} - column ${columnName} does not exist in table ${tableName}`);
+    }
+  } catch (err) {
+    // Index might already exist or other error
+    if (!err.message.includes('already exists') && err.code !== '42703') {
+      console.error(`Error creating index ${indexName}:`, err.message);
+    }
+  }
+}
+
+/**
  * Initialize database and create tables
  */
 export async function initDatabase() {
@@ -137,22 +170,34 @@ export async function initDatabase() {
   try {
     console.log('Connected to PostgreSQL database');
 
-    // Create users table
-    await db.run(`
-      CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        "phoneNumber" TEXT NOT NULL UNIQUE,
-        name TEXT,
-        "nameZh" TEXT,
-        "nameEn" TEXT,
-        role TEXT NOT NULL DEFAULT 'member' CHECK(role IN ('super_admin', 'admin', 'leader', 'member', 'usher')),
-        district TEXT,
-        "groupNum" TEXT,
-        "createdAt" TEXT NOT NULL,
-        "updatedAt" TEXT NOT NULL
+    // Check if users table exists
+    const tableExists = await db.get(`
+      SELECT EXISTS (
+        SELECT FROM information_schema.tables 
+        WHERE table_name = 'users'
       )
     `, []);
-    console.log('Users table created or already exists');
+
+    if (!tableExists || !tableExists.exists) {
+      // Create users table only if it doesn't exist
+      await db.run(`
+        CREATE TABLE users (
+          id SERIAL PRIMARY KEY,
+          "phoneNumber" TEXT NOT NULL UNIQUE,
+          name TEXT,
+          "nameZh" TEXT,
+          "nameEn" TEXT,
+          role TEXT NOT NULL DEFAULT 'member' CHECK(role IN ('super_admin', 'admin', 'leader', 'member', 'usher')),
+          district TEXT,
+          "groupNum" TEXT,
+          "createdAt" TEXT NOT NULL,
+          "updatedAt" TEXT NOT NULL
+        )
+      `, []);
+      console.log('Users table created');
+    } else {
+      console.log('Users table already exists, skipping creation');
+    }
 
     // Add additional columns if they don't exist
     await addColumnIfNotExists(db, 'users', '"nameZh"', 'TEXT');
@@ -168,13 +213,13 @@ export async function initDatabase() {
     await addColumnIfNotExists(db, 'users', '"preferredLanguage"', 'TEXT DEFAULT \'zh\'');
     await addColumnIfNotExists(db, 'users', 'notes', 'TEXT');
 
-    // Create indexes for users table
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_users_phoneNumber ON users("phoneNumber")`, []);
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_users_role ON users(role)`, []);
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_users_district ON users(district)`, []);
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_users_groupNum ON users("groupNum")`, []);
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`, []);
-    await db.run(`CREATE INDEX IF NOT EXISTS idx_users_status ON users(status)`, []);
+    // Create indexes for users table (only on columns that exist)
+    await createIndexIfColumnExists(db, 'idx_users_phoneNumber', 'users', '"phoneNumber"');
+    await createIndexIfColumnExists(db, 'idx_users_role', 'users', 'role');
+    await createIndexIfColumnExists(db, 'idx_users_district', 'users', 'district');
+    await createIndexIfColumnExists(db, 'idx_users_groupNum', 'users', '"groupNum"');
+    await createIndexIfColumnExists(db, 'idx_users_email', 'users', 'email');
+    await createIndexIfColumnExists(db, 'idx_users_status', 'users', 'status');
 
     // Create verification_codes table
     await db.run(`
