@@ -84,6 +84,7 @@ export class Attendance {
       if (scope === 'full_congregation') {
         // For full_congregation, always insert new record (allow multiple records)
         // Use lowercase field names (PostgreSQL converts unquoted identifiers to lowercase)
+        // Note: id is SERIAL PRIMARY KEY, so it's automatically generated and should not be included in INSERT
         const result = await db.run(
           `INSERT INTO attendance (date, meetingtype, scope, scopevalue, adultcount, youthchildcount, createdby, district, notes, createdat, updatedat)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
@@ -133,6 +134,7 @@ export class Attendance {
         } else {
           // Insert new record
           // Use lowercase field names (PostgreSQL converts unquoted identifiers to lowercase)
+          // Note: id is SERIAL PRIMARY KEY, so it's automatically generated and should not be included in INSERT
           const result = await db.run(
             `INSERT INTO attendance (date, meetingtype, scope, scopevalue, adultcount, youthchildcount, createdby, district, notes, createdat, updatedat)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,

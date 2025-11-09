@@ -148,8 +148,11 @@ export async function getDatabase() {
         // PostgreSQL returns the id in the first row
         if (result.rows && result.rows.length > 0) {
           // Check for 'id' field (PostgreSQL returns lowercase field names)
-          const id = result.rows[0].id || result.rows[0].ID || result.rows[0].Id;
-          console.log('[db.run] Extracted id:', id, 'from row:', result.rows[0]);
+          // Also check all possible key variations
+          const row = result.rows[0];
+          const id = row.id || row.ID || row.Id || row['id'] || row['ID'] || row['Id'];
+          console.log('[db.run] Extracted id:', id, 'from row:', row);
+          console.log('[db.run] Row keys:', Object.keys(row));
           if (id !== undefined && id !== null) {
             return {
               lastID: id,
