@@ -274,10 +274,20 @@ router.get('/', authenticate, authorizeAttendance, async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Error getting attendance records:', error);
+    console.error('[attendance GET] Error getting attendance records:', error);
+    console.error('[attendance GET] Error code:', error.code);
+    console.error('[attendance GET] Error message:', error.message);
+    console.error('[attendance GET] Error stack:', error.stack);
+    const isDevelopment = process.env.NODE_ENV !== 'production' || process.env.RAILWAY_ENVIRONMENT;
     res.status(500).json({
       success: false,
       message: '获取出席记录失败',
+      error: error.message || 'Unknown error',
+      errorCode: error.code,
+      details: isDevelopment ? {
+        stack: error.stack,
+        name: error.name,
+      } : undefined,
     });
   }
 });

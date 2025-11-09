@@ -6,6 +6,46 @@ import { getCurrentTimestamp, getDatabase } from '../db.js';
  */
 export class Attendance {
   /**
+   * Normalize field names from database (handle PostgreSQL case sensitivity)
+   * PostgreSQL returns field names with quotes (e.g., "meetingType", "scopeValue")
+   * This function converts them to camelCase for the application layer
+   */
+  static normalizeAttendanceFields(attendance) {
+    if (!attendance) return null;
+    
+    // Map various field name formats to camelCase
+    // PostgreSQL may return: lowercase, camelCase, or quoted identifiers
+    const fieldMap = {
+      'meetingtype': 'meetingType',
+      'scopevalue': 'scopeValue',
+      'adultcount': 'adultCount',
+      'youthchildcount': 'youthChildCount',
+      'createdby': 'createdBy',
+      'createdat': 'createdAt',
+      'updatedat': 'updatedAt',
+    };
+    
+    const normalized = {};
+    for (const [key, value] of Object.entries(attendance)) {
+      // Remove quotes if present
+      const cleanKey = key.replace(/"/g, '');
+      const lowerKey = cleanKey.toLowerCase();
+      
+      // Check if we have a mapping for this field (try lowercase first, then original)
+      if (fieldMap[lowerKey]) {
+        normalized[fieldMap[lowerKey]] = value;
+      } else if (fieldMap[cleanKey]) {
+        normalized[fieldMap[cleanKey]] = value;
+      } else {
+        // Keep original key for fields that don't need normalization (id, date, scope, district, notes)
+        normalized[cleanKey] = value;
+      }
+    }
+    
+    return normalized;
+  }
+
+  /**
    * Create or update an attendance record
    * Logic:
    * - For full_congregation: Allows multiple records (same date + meetingType can have multiple entries)
@@ -175,7 +215,7 @@ export class Attendance {
         'SELECT * FROM attendance WHERE id = ?',
         [id]
       );
-      return attendance || null;
+      return this.normalizeAttendanceFields(attendance);
     } finally {
       await db.close();
     }
@@ -201,7 +241,7 @@ export class Attendance {
       }
 
       const records = await db.all(sql, params);
-      return records || [];
+      return (records || []).map(record => this.normalizeAttendanceFields(record));
     } finally {
       await db.close();
     }
@@ -226,7 +266,7 @@ export class Attendance {
       }
 
       const records = await db.all(sql, params);
-      return records || [];
+      return (records || []).map(record => this.normalizeAttendanceFields(record));
     } finally {
       await db.close();
     }
