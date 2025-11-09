@@ -35,9 +35,10 @@ export class Attendance {
     const db = await getDatabase();
     const now = getCurrentTimestamp();
 
+    // Normalize scopeValue: null for full_congregation (define outside try block for use in catch)
+    const normalizedScopeValue = scope === 'full_congregation' ? null : (scopeValue || null);
+
     try {
-      // Normalize scopeValue: null for full_congregation
-      const normalizedScopeValue = scope === 'full_congregation' ? null : (scopeValue || null);
 
       // PostgreSQL stores field names in lowercase
       if (scope === 'full_congregation') {
@@ -47,6 +48,10 @@ export class Attendance {
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
           [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
         );
+        console.log('[Attendance.createOrUpdate] Insert result:', result);
+        if (!result.lastID) {
+          throw new Error('Failed to get inserted record ID');
+        }
         return await this.findById(result.lastID);
       } else {
         // For small_group/district, check if record with same date + meetingType + scope + scopeValue exists
@@ -74,14 +79,31 @@ export class Attendance {
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
             [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
           );
+          console.log('[Attendance.createOrUpdate] Insert result:', result);
+          if (!result.lastID) {
+            throw new Error('Failed to get inserted record ID');
+          }
           return await this.findById(result.lastID);
         }
       }
     } catch (error) {
+      console.error('[Attendance.createOrUpdate] Error:', error);
+      console.error('[Attendance.createOrUpdate] Error code:', error.code);
+      console.error('[Attendance.createOrUpdate] Error message:', error.message);
+      console.error('[Attendance.createOrUpdate] Parameters:', {
+        date,
+        meetingType,
+        scope,
+        scopeValue: normalizedScopeValue,
+        adultCount,
+        youthChildCount,
+        createdBy,
+        district,
+      });
+      
       // Handle UNIQUE constraint violation (fallback)
       if (error.message && (error.message.includes('UNIQUE constraint') || error.message.includes('duplicate key'))) {
         // Try to find and update the existing record
-        const normalizedScopeValue = scope === 'full_congregation' ? null : (scopeValue || null);
         // PostgreSQL stores field names in lowercase
         const existing = await db.get(
           `SELECT id FROM attendance 

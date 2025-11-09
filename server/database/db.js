@@ -138,11 +138,16 @@ export async function getDatabase() {
         const convertedSql = convertPlaceholders(sql);
         const result = await client.query(convertedSql, params);
         // For INSERT with RETURNING id, extract the id
-        if (result.rows && result.rows.length > 0 && result.rows[0].id) {
-          return {
-            lastID: result.rows[0].id,
-            changes: result.rowCount || 0,
-          };
+        // PostgreSQL returns the id in the first row
+        if (result.rows && result.rows.length > 0) {
+          // Check for 'id' field (PostgreSQL returns lowercase field names)
+          const id = result.rows[0].id || result.rows[0].ID || result.rows[0].Id;
+          if (id !== undefined && id !== null) {
+            return {
+              lastID: id,
+              changes: result.rowCount || 0,
+            };
+          }
         }
         return {
           lastID: null,

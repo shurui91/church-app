@@ -221,10 +221,14 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
       },
     });
   } catch (error) {
-    console.error('Error creating/updating attendance:', error);
+    console.error('[attendance POST] Error creating/updating attendance:', error);
+    console.error('[attendance POST] Error code:', error.code);
+    console.error('[attendance POST] Error message:', error.message);
+    console.error('[attendance POST] Error stack:', error.stack);
     res.status(500).json({
       success: false,
       message: '保存出席记录失败',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
     });
   }
 });
