@@ -225,10 +225,18 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
     console.error('[attendance POST] Error code:', error.code);
     console.error('[attendance POST] Error message:', error.message);
     console.error('[attendance POST] Error stack:', error.stack);
+    
+    // Always include error details in response for debugging
+    const isDevelopment = process.env.NODE_ENV !== 'production' || process.env.RAILWAY_ENVIRONMENT;
     res.status(500).json({
       success: false,
       message: '保存出席记录失败',
-      error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      error: error.message || 'Unknown error',
+      errorCode: error.code,
+      details: isDevelopment ? {
+        stack: error.stack,
+        name: error.name,
+      } : undefined,
     });
   }
 });

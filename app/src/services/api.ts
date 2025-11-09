@@ -98,7 +98,13 @@ async function parseResponse<T>(response: Response): Promise<T> {
     const data = JSON.parse(text);
 
     if (!response.ok) {
-      throw new Error(data.message || '请求失败');
+      // Include error details if available
+      const errorMessage = data.message || data.error || '请求失败';
+      const error = new Error(errorMessage);
+      // Attach response data for debugging
+      (error as any).responseData = data;
+      (error as any).status = response.status;
+      throw error;
     }
 
     return data as T;

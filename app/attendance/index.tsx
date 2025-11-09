@@ -288,7 +288,14 @@ export default function AttendanceScreen() {
       }
     } catch (error: any) {
       console.error('Failed to submit attendance:', error);
-      Alert.alert(t('attendance.submitFailed') || '提交失败', error.message || '网络错误');
+      console.error('Error details:', {
+        message: error.message,
+        status: error.status,
+        responseData: error.responseData,
+      });
+      // Show more detailed error message if available
+      const errorMessage = error.responseData?.error || error.message || '网络错误';
+      Alert.alert(t('attendance.submitFailed') || '提交失败', errorMessage);
     } finally {
       setSubmitting(false);
     }

@@ -64,14 +64,18 @@ export class Attendance {
         );
 
         if (existing) {
+          // Get the id (PostgreSQL returns lowercase field names)
+          const existingId = existing.id || existing.ID || existing.Id;
+          console.log('[Attendance.createOrUpdate] Found existing record with id:', existingId);
+          
           // Update existing record (overwrite with new data)
           await db.run(
             `UPDATE attendance 
              SET adultcount = ?, youthchildcount = ?, createdby = ?, district = ?, notes = ?, updatedat = ?
              WHERE id = ?`,
-            [adultCount, youthChildCount, createdBy, district, notes, now, existing.id]
+            [adultCount, youthChildCount, createdBy, district, notes, now, existingId]
           );
-          return await this.findById(existing.id);
+          return await this.findById(existingId);
         } else {
           // Insert new record
           const result = await db.run(
@@ -113,13 +117,17 @@ export class Attendance {
         );
         
         if (existing) {
+          // Get the id (PostgreSQL returns lowercase field names)
+          const existingId = existing.id || existing.ID || existing.Id;
+          console.log('[Attendance.createOrUpdate] Found existing record (fallback) with id:', existingId);
+          
           await db.run(
             `UPDATE attendance 
              SET adultcount = ?, youthchildcount = ?, createdby = ?, district = ?, notes = ?, updatedat = ?
              WHERE id = ?`,
-            [adultCount, youthChildCount, createdBy, district, notes, now, existing.id]
+            [adultCount, youthChildCount, createdBy, district, notes, now, existingId]
           );
-          return await this.findById(existing.id);
+          return await this.findById(existingId);
         }
       }
       throw error;
