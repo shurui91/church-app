@@ -43,8 +43,9 @@ export class Attendance {
       // PostgreSQL stores field names in lowercase
       if (scope === 'full_congregation') {
         // For full_congregation, always insert new record (allow multiple records)
+        // Use quoted field names to match table schema (PostgreSQL is case-sensitive for quoted identifiers)
         const result = await db.run(
-          `INSERT INTO attendance (date, meetingtype, scope, scopevalue, adultcount, youthchildcount, createdby, district, notes, createdat, updatedat)
+          `INSERT INTO attendance (date, "meetingType", scope, "scopeValue", "adultCount", "youthChildCount", "createdBy", district, notes, "createdAt", "updatedAt")
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
           [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
         );
@@ -57,19 +58,20 @@ export class Attendance {
         // For small_group/district, check if record with same date + meetingType + scope + scopeValue exists
         // (regardless of createdBy - new data overwrites old)
         // PostgreSQL requires explicit type handling for NULL comparisons
+        // Use quoted field names to match table schema
         let existing;
         if (normalizedScopeValue === null || normalizedScopeValue === undefined) {
           existing = await db.get(
             `SELECT id FROM attendance 
-             WHERE date = ? AND meetingtype = ? AND scope = ? 
-             AND scopevalue IS NULL`,
+             WHERE date = ? AND "meetingType" = ? AND scope = ? 
+             AND "scopeValue" IS NULL`,
             [date, meetingType, scope]
           );
         } else {
           existing = await db.get(
             `SELECT id FROM attendance 
-             WHERE date = ? AND meetingtype = ? AND scope = ? 
-             AND scopevalue = ?`,
+             WHERE date = ? AND "meetingType" = ? AND scope = ? 
+             AND "scopeValue" = ?`,
             [date, meetingType, scope, normalizedScopeValue]
           );
         }
@@ -80,17 +82,19 @@ export class Attendance {
           console.log('[Attendance.createOrUpdate] Found existing record with id:', existingId);
           
           // Update existing record (overwrite with new data)
+          // Use quoted field names to match table schema
           await db.run(
             `UPDATE attendance 
-             SET adultcount = ?, youthchildcount = ?, createdby = ?, district = ?, notes = ?, updatedat = ?
+             SET "adultCount" = ?, "youthChildCount" = ?, "createdBy" = ?, district = ?, notes = ?, "updatedAt" = ?
              WHERE id = ?`,
             [adultCount, youthChildCount, createdBy, district, notes, now, existingId]
           );
           return await this.findById(existingId);
         } else {
           // Insert new record
+          // Use quoted field names to match table schema (PostgreSQL is case-sensitive for quoted identifiers)
           const result = await db.run(
-            `INSERT INTO attendance (date, meetingtype, scope, scopevalue, adultcount, youthchildcount, createdby, district, notes, createdat, updatedat)
+            `INSERT INTO attendance (date, "meetingType", scope, "scopeValue", "adultCount", "youthChildCount", "createdBy", district, notes, "createdAt", "updatedAt")
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
             [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
           );
@@ -119,21 +123,21 @@ export class Attendance {
       // Handle UNIQUE constraint violation (fallback)
       if (error.message && (error.message.includes('UNIQUE constraint') || error.message.includes('duplicate key'))) {
         // Try to find and update the existing record
-        // PostgreSQL stores field names in lowercase
+        // Use quoted field names to match table schema
         // PostgreSQL requires explicit type handling for NULL comparisons
         let existing;
         if (normalizedScopeValue === null || normalizedScopeValue === undefined) {
           existing = await db.get(
             `SELECT id FROM attendance 
-             WHERE date = ? AND meetingtype = ? AND scope = ? 
-             AND scopevalue IS NULL`,
+             WHERE date = ? AND "meetingType" = ? AND scope = ? 
+             AND "scopeValue" IS NULL`,
             [date, meetingType, scope]
           );
         } else {
           existing = await db.get(
             `SELECT id FROM attendance 
-             WHERE date = ? AND meetingtype = ? AND scope = ? 
-             AND scopevalue = ?`,
+             WHERE date = ? AND "meetingType" = ? AND scope = ? 
+             AND "scopeValue" = ?`,
             [date, meetingType, scope, normalizedScopeValue]
           );
         }
@@ -143,9 +147,10 @@ export class Attendance {
           const existingId = existing.id || existing.ID || existing.Id;
           console.log('[Attendance.createOrUpdate] Found existing record (fallback) with id:', existingId);
           
+          // Use quoted field names to match table schema
           await db.run(
             `UPDATE attendance 
-             SET adultcount = ?, youthchildcount = ?, createdby = ?, district = ?, notes = ?, updatedat = ?
+             SET "adultCount" = ?, "youthChildCount" = ?, "createdBy" = ?, district = ?, notes = ?, "updatedAt" = ?
              WHERE id = ?`,
             [adultCount, youthChildCount, createdBy, district, notes, now, existingId]
           );
@@ -186,8 +191,8 @@ export class Attendance {
   static async findByUser(createdBy, limit = null, offset = 0) {
     const db = await getDatabase();
     try {
-      // PostgreSQL stores field names in lowercase
-      let sql = 'SELECT * FROM attendance WHERE createdby = ? ORDER BY date DESC, createdat DESC';
+      // Use quoted field names to match table schema
+      let sql = 'SELECT * FROM attendance WHERE "createdBy" = ? ORDER BY date DESC, "createdAt" DESC';
       const params = [createdBy];
 
       if (limit !== null) {
@@ -211,8 +216,8 @@ export class Attendance {
   static async findAll(limit = null, offset = 0) {
     const db = await getDatabase();
     try {
-      // PostgreSQL stores field names in lowercase
-      let sql = 'SELECT * FROM attendance ORDER BY date DESC, createdat DESC';
+      // Use quoted field names to match table schema
+      let sql = 'SELECT * FROM attendance ORDER BY date DESC, "createdAt" DESC';
       const params = [];
 
       if (limit !== null) {
@@ -269,7 +274,7 @@ export class Attendance {
     try {
       // PostgreSQL stores field names in lowercase
       const result = await db.get(
-        'SELECT COUNT(*) as count FROM attendance WHERE createdby = ?',
+        'SELECT COUNT(*) as count FROM attendance WHERE "createdBy" = ?',
         [createdBy]
       );
       return result?.count || 0;

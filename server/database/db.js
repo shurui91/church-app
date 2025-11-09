@@ -136,12 +136,20 @@ export async function getDatabase() {
       const client = await pool.connect();
       try {
         const convertedSql = convertPlaceholders(sql);
+        console.log('[db.run] SQL:', convertedSql);
+        console.log('[db.run] Params:', params);
         const result = await client.query(convertedSql, params);
+        console.log('[db.run] Query result:', {
+          rowCount: result.rowCount,
+          rows: result.rows,
+          command: result.command,
+        });
         // For INSERT with RETURNING id, extract the id
         // PostgreSQL returns the id in the first row
         if (result.rows && result.rows.length > 0) {
           // Check for 'id' field (PostgreSQL returns lowercase field names)
           const id = result.rows[0].id || result.rows[0].ID || result.rows[0].Id;
+          console.log('[db.run] Extracted id:', id, 'from row:', result.rows[0]);
           if (id !== undefined && id !== null) {
             return {
               lastID: id,
@@ -153,6 +161,12 @@ export async function getDatabase() {
           lastID: null,
           changes: result.rowCount || 0,
         };
+      } catch (error) {
+        console.error('[db.run] Error executing query:', error);
+        console.error('[db.run] SQL:', sql);
+        console.error('[db.run] Converted SQL:', convertPlaceholders(sql));
+        console.error('[db.run] Params:', params);
+        throw error;
       } finally {
         client.release();
       }
