@@ -56,12 +56,23 @@ export class Attendance {
       } else {
         // For small_group/district, check if record with same date + meetingType + scope + scopeValue exists
         // (regardless of createdBy - new data overwrites old)
-        const existing = await db.get(
-          `SELECT id FROM attendance 
-           WHERE date = ? AND meetingtype = ? AND scope = ? 
-           AND (scopevalue = ? OR (scopevalue IS NULL AND ? IS NULL))`,
-          [date, meetingType, scope, normalizedScopeValue, normalizedScopeValue]
-        );
+        // PostgreSQL requires explicit type handling for NULL comparisons
+        let existing;
+        if (normalizedScopeValue === null || normalizedScopeValue === undefined) {
+          existing = await db.get(
+            `SELECT id FROM attendance 
+             WHERE date = ? AND meetingtype = ? AND scope = ? 
+             AND scopevalue IS NULL`,
+            [date, meetingType, scope]
+          );
+        } else {
+          existing = await db.get(
+            `SELECT id FROM attendance 
+             WHERE date = ? AND meetingtype = ? AND scope = ? 
+             AND scopevalue = ?`,
+            [date, meetingType, scope, normalizedScopeValue]
+          );
+        }
 
         if (existing) {
           // Get the id (PostgreSQL returns lowercase field names)
@@ -109,12 +120,23 @@ export class Attendance {
       if (error.message && (error.message.includes('UNIQUE constraint') || error.message.includes('duplicate key'))) {
         // Try to find and update the existing record
         // PostgreSQL stores field names in lowercase
-        const existing = await db.get(
-          `SELECT id FROM attendance 
-           WHERE date = ? AND meetingtype = ? AND scope = ? 
-           AND (scopevalue = ? OR (scopevalue IS NULL AND ? IS NULL))`,
-          [date, meetingType, scope, normalizedScopeValue, normalizedScopeValue]
-        );
+        // PostgreSQL requires explicit type handling for NULL comparisons
+        let existing;
+        if (normalizedScopeValue === null || normalizedScopeValue === undefined) {
+          existing = await db.get(
+            `SELECT id FROM attendance 
+             WHERE date = ? AND meetingtype = ? AND scope = ? 
+             AND scopevalue IS NULL`,
+            [date, meetingType, scope]
+          );
+        } else {
+          existing = await db.get(
+            `SELECT id FROM attendance 
+             WHERE date = ? AND meetingtype = ? AND scope = ? 
+             AND scopevalue = ?`,
+            [date, meetingType, scope, normalizedScopeValue]
+          );
+        }
         
         if (existing) {
           // Get the id (PostgreSQL returns lowercase field names)
