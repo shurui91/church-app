@@ -103,15 +103,15 @@ export class Attendance {
         if (normalizedScopeValue === null || normalizedScopeValue === undefined) {
           existing = await db.get(
             `SELECT id FROM attendance 
-             WHERE date = ? AND "meetingType" = ? AND scope = ? 
-             AND "scopeValue" IS NULL`,
+             WHERE date = ? AND meetingtype = ? AND scope = ? 
+             AND scopevalue IS NULL`,
             [date, meetingType, scope]
           );
         } else {
           existing = await db.get(
             `SELECT id FROM attendance 
-             WHERE date = ? AND "meetingType" = ? AND scope = ? 
-             AND "scopeValue" = ?`,
+             WHERE date = ? AND meetingtype = ? AND scope = ? 
+             AND scopevalue = ?`,
             [date, meetingType, scope, normalizedScopeValue]
           );
         }
@@ -169,15 +169,15 @@ export class Attendance {
         if (normalizedScopeValue === null || normalizedScopeValue === undefined) {
           existing = await db.get(
             `SELECT id FROM attendance 
-             WHERE date = ? AND "meetingType" = ? AND scope = ? 
-             AND "scopeValue" IS NULL`,
+             WHERE date = ? AND meetingtype = ? AND scope = ? 
+             AND scopevalue IS NULL`,
             [date, meetingType, scope]
           );
         } else {
           existing = await db.get(
             `SELECT id FROM attendance 
-             WHERE date = ? AND "meetingType" = ? AND scope = ? 
-             AND "scopeValue" = ?`,
+             WHERE date = ? AND meetingtype = ? AND scope = ? 
+             AND scopevalue = ?`,
             [date, meetingType, scope, normalizedScopeValue]
           );
         }
@@ -231,8 +231,8 @@ export class Attendance {
   static async findByUser(createdBy, limit = null, offset = 0) {
     const db = await getDatabase();
     try {
-      // Use quoted field names to match table schema
-      let sql = 'SELECT * FROM attendance WHERE "createdBy" = ? ORDER BY date DESC, "createdAt" DESC';
+      // Use lowercase field names (PostgreSQL converts unquoted identifiers to lowercase)
+      let sql = 'SELECT * FROM attendance WHERE createdby = ? ORDER BY date DESC, createdat DESC';
       const params = [createdBy];
 
       if (limit !== null) {
@@ -240,8 +240,24 @@ export class Attendance {
         params.push(limit, offset);
       }
 
+      console.log('[Attendance.findByUser] SQL:', sql);
+      console.log('[Attendance.findByUser] Params:', params);
       const records = await db.all(sql, params);
-      return (records || []).map(record => this.normalizeAttendanceFields(record));
+      console.log('[Attendance.findByUser] Raw records:', records);
+      console.log('[Attendance.findByUser] Records count:', records?.length || 0);
+      
+      if (!records || records.length === 0) {
+        return [];
+      }
+      
+      const normalized = records.map(record => this.normalizeAttendanceFields(record));
+      console.log('[Attendance.findByUser] Normalized records:', normalized);
+      return normalized;
+    } catch (error) {
+      console.error('[Attendance.findByUser] Error:', error);
+      console.error('[Attendance.findByUser] Error code:', error.code);
+      console.error('[Attendance.findByUser] Error message:', error.message);
+      throw error;
     } finally {
       await db.close();
     }
@@ -256,8 +272,8 @@ export class Attendance {
   static async findAll(limit = null, offset = 0) {
     const db = await getDatabase();
     try {
-      // Use quoted field names to match table schema
-      let sql = 'SELECT * FROM attendance ORDER BY date DESC, "createdAt" DESC';
+      // Use lowercase field names (PostgreSQL converts unquoted identifiers to lowercase)
+      let sql = 'SELECT * FROM attendance ORDER BY date DESC, createdat DESC';
       const params = [];
 
       if (limit !== null) {
@@ -265,8 +281,24 @@ export class Attendance {
         params.push(limit, offset);
       }
 
+      console.log('[Attendance.findAll] SQL:', sql);
+      console.log('[Attendance.findAll] Params:', params);
       const records = await db.all(sql, params);
-      return (records || []).map(record => this.normalizeAttendanceFields(record));
+      console.log('[Attendance.findAll] Raw records:', records);
+      console.log('[Attendance.findAll] Records count:', records?.length || 0);
+      
+      if (!records || records.length === 0) {
+        return [];
+      }
+      
+      const normalized = records.map(record => this.normalizeAttendanceFields(record));
+      console.log('[Attendance.findAll] Normalized records:', normalized);
+      return normalized;
+    } catch (error) {
+      console.error('[Attendance.findAll] Error:', error);
+      console.error('[Attendance.findAll] Error code:', error.code);
+      console.error('[Attendance.findAll] Error message:', error.message);
+      throw error;
     } finally {
       await db.close();
     }
@@ -314,7 +346,7 @@ export class Attendance {
     try {
       // PostgreSQL stores field names in lowercase
       const result = await db.get(
-        'SELECT COUNT(*) as count FROM attendance WHERE "createdBy" = ?',
+        'SELECT COUNT(*) as count FROM attendance WHERE createdby = ?',
         [createdBy]
       );
       return result?.count || 0;

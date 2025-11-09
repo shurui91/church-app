@@ -151,13 +151,26 @@ export default function AttendanceScreen() {
   const loadRecords = async () => {
     try {
       setLoadingRecords(true);
+      console.log('[Attendance] Loading records...');
       const response = await api.getAttendanceRecords(50, 0);
+      console.log('[Attendance] Response:', response);
       if (response.success) {
-        setRecords(response.data.records);
+        console.log('[Attendance] Records loaded:', response.data.records?.length || 0);
+        setRecords(response.data.records || []);
+      } else {
+        console.error('[Attendance] Response not successful:', response);
+        Alert.alert(t('attendance.loadRecordsFailed') || '加载记录失败', (response as any).message || '未知错误');
       }
     } catch (error: any) {
-      console.error('Failed to load records:', error);
-      Alert.alert(t('attendance.loadRecordsFailed') || '加载记录失败', error.message);
+      console.error('[Attendance] Failed to load records:', error);
+      console.error('[Attendance] Error details:', {
+        message: error.message,
+        status: error.status,
+        responseData: error.responseData,
+      });
+      // Show more detailed error message if available
+      const errorMessage = error.responseData?.error || error.message || '网络错误';
+      Alert.alert(t('attendance.loadRecordsFailed') || '加载记录失败', errorMessage);
     } finally {
       setLoadingRecords(false);
     }

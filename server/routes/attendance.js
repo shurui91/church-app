@@ -249,28 +249,36 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
 router.get('/', authenticate, authorizeAttendance, async (req, res) => {
   try {
     const user = req.user;
+    console.log('[attendance GET] User:', { id: user.id, role: user.role });
     const limit = req.query.limit ? parseInt(req.query.limit) : null;
     const offset = req.query.offset ? parseInt(req.query.offset) : 0;
+    console.log('[attendance GET] Query params:', { limit, offset });
 
     // Check if user can see all records (admin, super_admin, leader) or just their own
     const canSeeAllRecords = ['super_admin', 'admin', 'leader'].includes(
       user.role
     );
+    console.log('[attendance GET] Can see all records:', canSeeAllRecords);
 
     let records;
     if (canSeeAllRecords) {
       // Admins and leaders can see all records
+      console.log('[attendance GET] Calling Attendance.findAll');
       records = await Attendance.findAll(limit, offset);
     } else {
       // Regular users can only see their own records
+      console.log('[attendance GET] Calling Attendance.findByUser with userId:', user.id);
       records = await Attendance.findByUser(user.id, limit, offset);
     }
+
+    console.log('[attendance GET] Records retrieved:', records?.length || 0);
+    console.log('[attendance GET] Records:', records);
 
     res.json({
       success: true,
       data: {
-        records,
-        count: records.length,
+        records: records || [],
+        count: records?.length || 0,
       },
     });
   } catch (error) {
