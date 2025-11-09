@@ -88,7 +88,11 @@
     "tip": "提示",
     "clear": "清空",
     "cancel": "取消",
-    "ok": "確定"
+    "ok": "確定",
+    "success": "成功",
+    "confirm": "確認",
+    "delete": "刪除",
+    "save": "保存"
   },
   "hymns": {
     "title": "詩歌",
@@ -164,5 +168,28 @@
     "newRecord": "新增記錄",
     "editRecordTitle": "編輯記錄",
     "loadingDistrictsGroups": "載入大區和小組列表..."
+  },
+  "travel": {
+    "title": "行程表",
+    "mySchedules": "我的行程",
+    "allSchedules": "全部行程",
+    "addSchedule": "添加行程",
+    "editSchedule": "編輯行程",
+    "startDate": "開始日期",
+    "endDate": "結束日期",
+    "destination": "目的地",
+    "destinationPlaceholder": "請輸入目的地（可選）",
+    "notes": "備註",
+    "notesPlaceholder": "請輸入備註（可選）",
+    "noSchedules": "暫無行程記錄",
+    "loadFailed": "載入失敗",
+    "saveFailed": "保存失敗",
+    "createSuccess": "行程創建成功",
+    "updateSuccess": "行程更新成功",
+    "deleteSuccess": "行程刪除成功",
+    "deleteFailed": "刪除失敗",
+    "confirmDelete": "確定要刪除這條行程嗎？",
+    "invalidDate": "日期無效",
+    "endDateBeforeStart": "結束日期不能早於開始日期"
   }
 }

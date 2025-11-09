@@ -307,6 +307,41 @@ export async function initDatabase() {
       }
     }
 
+    // Create travel_schedules table
+    await db.run(`
+      CREATE TABLE IF NOT EXISTS travel_schedules (
+        id SERIAL PRIMARY KEY,
+        userid INTEGER NOT NULL,
+        startdate TEXT NOT NULL,
+        enddate TEXT NOT NULL,
+        destination TEXT,
+        notes TEXT,
+        createdat TEXT NOT NULL,
+        updatedat TEXT NOT NULL,
+        FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `, []);
+    console.log('Travel schedules table created or already exists');
+
+    // Create indexes for travel_schedules table
+    await createIndexIfColumnExists(db, 'idx_travel_schedules_userid', 'travel_schedules', 'userid');
+    await createIndexIfColumnExists(db, 'idx_travel_schedules_startdate', 'travel_schedules', 'startdate');
+    await createIndexIfColumnExists(db, 'idx_travel_schedules_enddate', 'travel_schedules', 'enddate');
+
+    // Create composite index for date range queries
+    try {
+      const startDateCol = await db.get(`SELECT column_name FROM information_schema.columns WHERE LOWER(table_name) = 'travel_schedules' AND LOWER(column_name) = 'startdate'`, []);
+      const endDateCol = await db.get(`SELECT column_name FROM information_schema.columns WHERE LOWER(table_name) = 'travel_schedules' AND LOWER(column_name) = 'enddate'`, []);
+      
+      if (startDateCol && endDateCol) {
+        await db.run(`CREATE INDEX IF NOT EXISTS idx_travel_schedules_date_range ON travel_schedules(startdate, enddate)`, []);
+      }
+    } catch (err) {
+      if (err.code !== '42703' && !err.message?.includes('already exists')) {
+        console.error('Error creating composite index idx_travel_schedules_date_range:', err.message);
+      }
+    }
+
     console.log('Database initialization completed');
 
     // Initialize default users after database tables are created

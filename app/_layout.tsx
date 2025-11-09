@@ -74,6 +74,13 @@ function ThemedLayout() {
             presentation: 'card',
           }}
         />
+        <Stack.Screen 
+          name='travel' 
+          options={{
+            headerShown: true,
+            presentation: 'card',
+          }}
+        />
 
         {/* ✅ 调用时传入 pathname */}
         <Stack.Screen

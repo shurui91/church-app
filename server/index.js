@@ -5,6 +5,7 @@ import { initDatabase } from './database/init.js';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import attendanceRoutes from './routes/attendance.js';
+import travelRoutes from './routes/travel.js';
 import debugRoutes from './routes/debug-env.js';
 
 // Load environment variables
@@ -42,6 +43,7 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/attendance', attendanceRoutes);
+app.use('/api/travel', travelRoutes);
 app.use('/api', debugRoutes); // Temporary debug route
 
 // Start server

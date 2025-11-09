@@ -253,6 +253,138 @@ export const api = {
   },
 
   /**
+   * Travel Schedule APIs
+   */
+
+  /**
+   * Get all travel schedules (with optional filters)
+   */
+  async getTravelSchedules(filters?: {
+    userId?: number;
+    startDate?: string;
+    endDate?: string;
+    date?: string;
+  }) {
+    const params = new URLSearchParams();
+    if (filters?.userId) params.append('userId', filters.userId.toString());
+    if (filters?.startDate) params.append('startDate', filters.startDate);
+    if (filters?.endDate) params.append('endDate', filters.endDate);
+    if (filters?.date) params.append('date', filters.date);
+
+    const url = `/api/travel${params.toString() ? `?${params.toString()}` : ''}`;
+    const response = await apiRequest(url);
+    return parseResponse<{
+      success: boolean;
+      data: {
+        schedules: any[];
+        count: number;
+      };
+    }>(response);
+  },
+
+  /**
+   * Get current user's travel schedules
+   */
+  async getMyTravelSchedules() {
+    const response = await apiRequest('/api/travel/my');
+    return parseResponse<{
+      success: boolean;
+      data: {
+        schedules: any[];
+        count: number;
+      };
+    }>(response);
+  },
+
+  /**
+   * Get travel schedules for a specific date
+   */
+  async getTravelSchedulesByDate(date: string) {
+    const response = await apiRequest(`/api/travel/date/${date}`);
+    return parseResponse<{
+      success: boolean;
+      data: {
+        schedules: any[];
+        count: number;
+        date: string;
+      };
+    }>(response);
+  },
+
+  /**
+   * Get a specific travel schedule by ID
+   */
+  async getTravelScheduleById(id: number) {
+    const response = await apiRequest(`/api/travel/${id}`);
+    return parseResponse<{
+      success: boolean;
+      data: {
+        schedule: any;
+      };
+    }>(response);
+  },
+
+  /**
+   * Create a new travel schedule
+   */
+  async createTravelSchedule(data: {
+    startDate: string;
+    endDate: string;
+    destination?: string;
+    notes?: string;
+  }) {
+    const response = await apiRequest('/api/travel', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return parseResponse<{
+      success: boolean;
+      message: string;
+      data: {
+        schedule: any;
+      };
+    }>(response);
+  },
+
+  /**
+   * Update a travel schedule
+   */
+  async updateTravelSchedule(
+    id: number,
+    data: {
+      startDate: string;
+      endDate: string;
+      destination?: string;
+      notes?: string;
+    }
+  ) {
+    const response = await apiRequest(`/api/travel/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return parseResponse<{
+      success: boolean;
+      message: string;
+      data: {
+        schedule: any;
+      };
+    }>(response);
+  },
+
+  /**
+   * Delete a travel schedule
+   */
+  async deleteTravelSchedule(id: number) {
+    const response = await apiRequest(`/api/travel/${id}`, {
+      method: 'DELETE',
+    });
+    return parseResponse<{
+      success: boolean;
+      message: string;
+    }>(response);
+  },
+
+  /**
    * Delete user (super_admin only)
    */
   async deleteUser(userId: number) {

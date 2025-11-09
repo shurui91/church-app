@@ -88,7 +88,11 @@
     "tip": "提示",
     "clear": "清空",
     "cancel": "取消",
-    "ok": "确定"
+    "ok": "确定",
+    "success": "成功",
+    "confirm": "确认",
+    "delete": "删除",
+    "save": "保存"
   },
   "hymns": {
     "title": "诗歌",
@@ -164,5 +168,28 @@
     "newRecord": "新增记录",
     "editRecordTitle": "编辑记录",
     "loadingDistrictsGroups": "加载大区和小组列表..."
+  },
+  "travel": {
+    "title": "行程表",
+    "mySchedules": "我的行程",
+    "allSchedules": "全部行程",
+    "addSchedule": "添加行程",
+    "editSchedule": "编辑行程",
+    "startDate": "开始日期",
+    "endDate": "结束日期",
+    "destination": "目的地",
+    "destinationPlaceholder": "请输入目的地（可选）",
+    "notes": "备注",
+    "notesPlaceholder": "请输入备注（可选）",
+    "noSchedules": "暂无行程记录",
+    "loadFailed": "加载失败",
+    "saveFailed": "保存失败",
+    "createSuccess": "行程创建成功",
+    "updateSuccess": "行程更新成功",
+    "deleteSuccess": "行程删除成功",
+    "deleteFailed": "删除失败",
+    "confirmDelete": "确定要删除这条行程吗？",
+    "invalidDate": "日期无效",
+    "endDateBeforeStart": "结束日期不能早于开始日期"
   }
 }
