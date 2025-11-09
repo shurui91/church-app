@@ -83,9 +83,9 @@ export class Attendance {
       // PostgreSQL stores field names in lowercase
       if (scope === 'full_congregation') {
         // For full_congregation, always insert new record (allow multiple records)
-        // Use quoted field names to match table schema (PostgreSQL is case-sensitive for quoted identifiers)
+        // Use lowercase field names (PostgreSQL converts unquoted identifiers to lowercase)
         const result = await db.run(
-          `INSERT INTO attendance (date, "meetingType", scope, "scopeValue", "adultCount", "youthChildCount", "createdBy", district, notes, "createdAt", "updatedAt")
+          `INSERT INTO attendance (date, meetingtype, scope, scopevalue, adultcount, youthchildcount, createdby, district, notes, createdat, updatedat)
            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
           [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
         );
@@ -122,19 +122,19 @@ export class Attendance {
           console.log('[Attendance.createOrUpdate] Found existing record with id:', existingId);
           
           // Update existing record (overwrite with new data)
-          // Use quoted field names to match table schema
+          // Use lowercase field names (PostgreSQL converts unquoted identifiers to lowercase)
           await db.run(
             `UPDATE attendance 
-             SET "adultCount" = ?, "youthChildCount" = ?, "createdBy" = ?, district = ?, notes = ?, "updatedAt" = ?
+             SET adultcount = ?, youthchildcount = ?, createdby = ?, district = ?, notes = ?, updatedat = ?
              WHERE id = ?`,
             [adultCount, youthChildCount, createdBy, district, notes, now, existingId]
           );
           return await this.findById(existingId);
         } else {
           // Insert new record
-          // Use quoted field names to match table schema (PostgreSQL is case-sensitive for quoted identifiers)
+          // Use lowercase field names (PostgreSQL converts unquoted identifiers to lowercase)
           const result = await db.run(
-            `INSERT INTO attendance (date, "meetingType", scope, "scopeValue", "adultCount", "youthChildCount", "createdBy", district, notes, "createdAt", "updatedAt")
+            `INSERT INTO attendance (date, meetingtype, scope, scopevalue, adultcount, youthchildcount, createdby, district, notes, createdat, updatedat)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
             [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
           );
@@ -187,10 +187,10 @@ export class Attendance {
           const existingId = existing.id || existing.ID || existing.Id;
           console.log('[Attendance.createOrUpdate] Found existing record (fallback) with id:', existingId);
           
-          // Use quoted field names to match table schema
+          // Use lowercase field names (PostgreSQL converts unquoted identifiers to lowercase)
           await db.run(
             `UPDATE attendance 
-             SET "adultCount" = ?, "youthChildCount" = ?, "createdBy" = ?, district = ?, notes = ?, "updatedAt" = ?
+             SET adultcount = ?, youthchildcount = ?, createdby = ?, district = ?, notes = ?, updatedat = ?
              WHERE id = ?`,
             [adultCount, youthChildCount, createdBy, district, notes, now, existingId]
           );
