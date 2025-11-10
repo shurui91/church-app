@@ -264,7 +264,11 @@ router.put('/:id', authenticate, async (req, res) => {
       });
     }
 
-    if (existingSchedule.userId !== userId) {
+    // Convert both to numbers for comparison (handle type mismatch)
+    const scheduleUserId = parseInt(existingSchedule.userId);
+    const currentUserId = parseInt(userId);
+
+    if (scheduleUserId !== currentUserId) {
       return res.status(403).json({
         success: false,
         message: '无权修改此行程记录',
@@ -366,7 +370,20 @@ router.delete('/:id', authenticate, async (req, res) => {
       });
     }
 
-    if (existingSchedule.userId !== userId) {
+    // Convert both to numbers for comparison (handle type mismatch)
+    const scheduleUserId = parseInt(existingSchedule.userId);
+    const currentUserId = parseInt(userId);
+
+    console.log('[Travel DELETE] Permission check:', {
+      scheduleUserId,
+      currentUserId,
+      scheduleUserIdType: typeof scheduleUserId,
+      currentUserIdType: typeof currentUserId,
+      match: scheduleUserId === currentUserId,
+      existingSchedule: JSON.stringify(existingSchedule),
+    });
+
+    if (scheduleUserId !== currentUserId) {
       return res.status(403).json({
         success: false,
         message: '无权删除此行程记录',

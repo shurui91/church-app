@@ -83,7 +83,10 @@ export default function TravelScreen() {
       }
 
       if (response.success) {
-        setSchedules(response.data.schedules || []);
+        const schedules = response.data.schedules || [];
+        console.log('[Travel] Loaded schedules:', schedules);
+        console.log('[Travel] Current user id:', user?.id);
+        setSchedules(schedules);
       } else {
         Alert.alert(
           t('travel.loadFailed') || '加载失败',
@@ -228,8 +231,18 @@ export default function TravelScreen() {
   };
 
   const renderScheduleItem = ({ item }: { item: TravelSchedule }) => {
-    const isMySchedule = item.userId === user?.id;
+    // In "my" view mode, all schedules belong to the current user
+    // In "all" view mode, check if the schedule belongs to current user
+    const isMySchedule = viewMode === 'my' || item.userId === user?.id;
     const displayName = getUserDisplayName(item);
+
+    // Debug log
+    console.log('[Travel] renderScheduleItem:', {
+      itemUserId: item.userId,
+      userid: user?.id,
+      isMySchedule,
+      viewMode,
+    });
 
     return (
       <View style={[styles.scheduleItem, { backgroundColor: colors.card, borderColor: colors.border }]}>

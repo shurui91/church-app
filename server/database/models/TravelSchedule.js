@@ -138,6 +138,11 @@ export class TravelSchedule {
 
       const normalized = this.normalizeTravelScheduleFields(schedule);
       
+      // Ensure userId is set (in case normalization didn't work)
+      if (!normalized.userId && schedule.userid) {
+        normalized.userId = parseInt(schedule.userid);
+      }
+      
       // Add user info
       normalized.user = {
         id: schedule.userid,
@@ -146,6 +151,9 @@ export class TravelSchedule {
         name: schedule.name,
         phoneNumber: schedule.phonenumber,
       };
+
+      console.log('[TravelSchedule.findById] Raw schedule:', schedule);
+      console.log('[TravelSchedule.findById] Normalized schedule:', normalized);
 
       return normalized;
     } finally {
