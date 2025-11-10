@@ -64,13 +64,43 @@ export default function TravelScreen() {
   const [editingSchedule, setEditingSchedule] = useState<TravelSchedule | null>(null);
   const [showForm, setShowForm] = useState(false);
 
-  // View mode: 'my' (my schedules) or 'all' (all schedules)
-  const [viewMode, setViewMode] = useState<'my' | 'all'>('my');
+  // View mode: 'my' (my schedules), 'all' (all schedules), or 'availability' (availability view)
+  const [viewMode, setViewMode] = useState<'my' | 'all' | 'availability'>('my');
+
+  // Availability view state
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [availabilityData, setAvailabilityData] = useState<{
+    date: string;
+    users: {
+      id: number;
+      name: string;
+      nameZh: string | null;
+      nameEn: string | null;
+      isAvailable: boolean;
+      schedule: TravelSchedule | null;
+    }[];
+  } | null>(null);
+  const [loadingAvailability, setLoadingAvailability] = useState(false);
+  const [allUsers, setAllUsers] = useState<any[]>([]);
 
   // Load schedules on mount
   useEffect(() => {
-    loadSchedules();
+    if (viewMode === 'availability') {
+      if (allUsers.length === 0) {
+        loadAllUsers();
+      }
+    } else {
+      loadSchedules();
+    }
   }, [viewMode]);
+
+  // Load availability when users are loaded or date changes
+  useEffect(() => {
+    if (viewMode === 'availability' && allUsers.length > 0) {
+      loadAvailabilityForDate(formatDate(selectedDate));
+    }
+  }, [viewMode, selectedDate, allUsers.length]);
 
   const loadSchedules = async () => {
     try {
@@ -121,6 +151,244 @@ export default function TravelScreen() {
       month: 'long',
       day: 'numeric',
     });
+  };
+
+  const formatShortDate = (dateString: string): string => {
+    const date = parseDate(dateString);
+    return date.toLocaleDateString('zh-CN', {
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  // Load all users for availability view
+  const loadAllUsers = async () => {
+    try {
+      const response = await api.getUsers();
+      if (response.success) {
+        const users = response.data.users || [];
+        setAllUsers(users);
+        // Load availability after users are loaded
+        if (users.length > 0) {
+          await loadAvailabilityForDate(formatDate(selectedDate));
+        }
+      }
+    } catch (error: any) {
+      console.error('[Travel] Failed to load users:', error);
+      Alert.alert(
+        t('travel.loadAvailabilityFailed') || '加载是否在家失败',
+        error.message || '无法加载用户列表'
+      );
+    }
+  };
+
+  // Load availability for a specific date
+  const loadAvailabilityForDate = async (date: string) => {
+    try {
+      setLoadingAvailability(true);
+      console.log('[Travel] Loading availability for date:', date);
+      console.log('[Travel] All users count:', allUsers.length);
+      
+      // Get all schedules for this date
+      const schedulesResponse = await api.getTravelSchedulesByDate(date);
+      console.log('[Travel] Schedules response:', schedulesResponse);
+      
+      if (schedulesResponse.success) {
+        const schedules = schedulesResponse.data.schedules || [];
+        console.log('[Travel] Schedules for date:', date);
+        console.log('[Travel] Raw schedules response:', JSON.stringify(schedules, null, 2));
+        console.log('[Travel] All users:', allUsers.map(u => ({ id: u.id, idType: typeof u.id, name: u.nameZh || u.nameEn || u.name })));
+        
+        // Create a map of userId -> schedule for quick lookup
+        // Use both string and number keys to handle type mismatches
+        const scheduleMap = new Map<number | string, TravelSchedule>();
+        schedules.forEach((schedule: any) => {
+          // Get userId from schedule - check multiple possible field names
+          let userId = schedule.userId || schedule.userid || (schedule.user && schedule.user.id) || null;
+          
+          if (!userId) {
+            console.warn('[Travel] Schedule missing userId. Schedule keys:', Object.keys(schedule));
+            console.warn('[Travel] Full schedule:', JSON.stringify(schedule, null, 2));
+            return;
+          }
+          
+          // Normalize userId to number
+          const userIdNum = typeof userId === 'string' ? parseInt(userId) : userId;
+          
+          // Get date fields - check multiple possible field names
+          const startDate = schedule.startDate || schedule.startdate;
+          const endDate = schedule.endDate || schedule.enddate;
+          
+          if (!startDate || !endDate) {
+            console.warn('[Travel] Schedule missing dates. Schedule:', schedule);
+            return;
+          }
+          
+          // Verify the date is actually within the schedule's date range
+          const scheduleStart = parseDate(startDate);
+          const scheduleEnd = parseDate(endDate);
+          const checkDate = parseDate(date);
+          
+          console.log('[Travel] Checking schedule:', {
+            userId: userId,
+            userIdNum: userIdNum,
+            startDate: startDate,
+            endDate: endDate,
+            checkDate: date,
+            scheduleStart: scheduleStart.toISOString(),
+            scheduleEnd: scheduleEnd.toISOString(),
+            checkDateObj: checkDate.toISOString(),
+            inRange: checkDate >= scheduleStart && checkDate <= scheduleEnd
+          });
+          
+          if (checkDate >= scheduleStart && checkDate <= scheduleEnd) {
+            // Store with both number and string keys to handle type mismatches
+            scheduleMap.set(userIdNum, schedule);
+            scheduleMap.set(userId, schedule);
+            console.log('[Travel] ✓ User', userId, '(num:', userIdNum, ') has schedule on', date, ':', startDate, 'to', endDate);
+          } else {
+            console.log('[Travel] ✗ User', userId, 'schedule does not match date:', startDate, 'to', endDate, 'checking', date);
+          }
+        });
+        
+        console.log('[Travel] Schedule map size:', scheduleMap.size);
+        console.log('[Travel] Schedule map keys:', Array.from(scheduleMap.keys()));
+        console.log('[Travel] Schedule map entries:', Array.from(scheduleMap.entries()).map(([id, s]: [any, any]) => ({ 
+          userId: id, 
+          userIdType: typeof id,
+          startDate: s.startDate || s.startdate, 
+          endDate: s.endDate || s.enddate 
+        })));
+
+        // Build availability data
+        const usersWithAvailability = allUsers.map((user) => {
+          // Ensure user.id is a number for comparison
+          const userId = typeof user.id === 'string' ? parseInt(user.id) : user.id;
+          
+          // Try to get schedule with both string and number keys
+          const schedule = scheduleMap.get(userId) || scheduleMap.get(user.id) || null;
+          const displayName = user.nameZh || user.nameEn || user.name || user.phoneNumber;
+          
+          console.log('[Travel] User', user.id, '(parsed:', userId, ')', displayName, 'isAvailable:', !schedule, 'schedule:', schedule);
+          console.log('[Travel] Schedule map keys:', Array.from(scheduleMap.keys()));
+          
+          return {
+            id: user.id,
+            name: displayName,
+            nameZh: user.nameZh,
+            nameEn: user.nameEn,
+            isAvailable: !schedule, // Available if no schedule
+            schedule: schedule,
+          };
+        });
+
+        console.log('[Travel] Users with availability:', usersWithAvailability);
+
+        setAvailabilityData({
+          date,
+          users: usersWithAvailability.sort((a, b) => {
+            // Sort: unavailable first, then by name
+            if (a.isAvailable !== b.isAvailable) {
+              return a.isAvailable ? 1 : -1;
+            }
+            return a.name.localeCompare(b.name, 'zh-CN');
+          }),
+        });
+      } else {
+        console.error('[Travel] Failed to get schedules:', schedulesResponse);
+      }
+    } catch (error: any) {
+      console.error('[Travel] Failed to load availability:', error);
+      Alert.alert(
+        t('travel.loadAvailabilityFailed') || '加载是否在家失败',
+        error.message || '网络错误'
+      );
+    } finally {
+      setLoadingAvailability(false);
+    }
+  };
+
+  // Calendar helper functions
+  const getDaysInMonth = (date: Date): number => {
+    return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+  };
+
+  const getFirstDayOfMonth = (date: Date): number => {
+    return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
+  };
+
+  const getCalendarDays = (): { date: Date; isCurrentMonth: boolean; dateString: string }[] => {
+    const year = currentMonth.getFullYear();
+    const month = currentMonth.getMonth();
+    const daysInMonth = getDaysInMonth(currentMonth);
+    const firstDay = getFirstDayOfMonth(currentMonth);
+
+    const days: { date: Date; isCurrentMonth: boolean; dateString: string }[] = [];
+
+    // Add days from previous month
+    const prevMonth = new Date(year, month - 1, 0);
+    const daysInPrevMonth = prevMonth.getDate();
+    for (let i = firstDay - 1; i >= 0; i--) {
+      const date = new Date(year, month - 1, daysInPrevMonth - i);
+      days.push({
+        date,
+        isCurrentMonth: false,
+        dateString: formatDate(date),
+      });
+    }
+
+    // Add days from current month
+    for (let i = 1; i <= daysInMonth; i++) {
+      const date = new Date(year, month, i);
+      days.push({
+        date,
+        isCurrentMonth: true,
+        dateString: formatDate(date),
+      });
+    }
+
+    // Add days from next month to fill the grid
+    const remainingDays = 42 - days.length; // 6 rows * 7 days
+    for (let i = 1; i <= remainingDays; i++) {
+      const date = new Date(year, month + 1, i);
+      days.push({
+        date,
+        isCurrentMonth: false,
+        dateString: formatDate(date),
+      });
+    }
+
+    return days;
+  };
+
+  // Check if a date has any schedules (for calendar marking)
+  const dateHasSchedules = async (dateString: string): Promise<boolean> => {
+    try {
+      const response = await api.getTravelSchedulesByDate(dateString);
+      return response.success && (response.data.schedules?.length || 0) > 0;
+    } catch {
+      return false;
+    }
+  };
+
+  const handleDateSelect = async (date: Date) => {
+    setSelectedDate(date);
+    // Ensure users are loaded before loading availability
+    if (allUsers.length === 0) {
+      await loadAllUsers();
+    } else {
+      await loadAvailabilityForDate(formatDate(date));
+    }
+  };
+
+  const changeMonth = (direction: 'prev' | 'next') => {
+    const newMonth = new Date(currentMonth);
+    if (direction === 'prev') {
+      newMonth.setMonth(newMonth.getMonth() - 1);
+    } else {
+      newMonth.setMonth(newMonth.getMonth() + 1);
+    }
+    setCurrentMonth(newMonth);
   };
 
   const resetForm = () => {
@@ -349,6 +617,22 @@ export default function TravelScreen() {
               {t('travel.allSchedules') || '全部行程'}
             </Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.viewModeButton,
+              viewMode === 'availability' && { backgroundColor: colors.primary },
+            ]}
+            onPress={() => setViewMode('availability')}
+          >
+            <Text
+              style={[
+                styles.viewModeText,
+                { color: viewMode === 'availability' ? '#fff' : colors.text },
+              ]}
+            >
+              {t('travel.availability') || '是否在家'}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* Add Button */}
@@ -364,27 +648,161 @@ export default function TravelScreen() {
           </TouchableOpacity>
         )}
 
-        {/* Schedules List */}
-        {loadingSchedules ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color={colors.primary} />
-          </View>
-        ) : schedules.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Ionicons name="calendar-outline" size={64} color={colors.textSecondary} />
-            <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
-              {t('travel.noSchedules') || '暂无行程记录'}
-            </Text>
-          </View>
-        ) : (
-          <FlatList
-            data={schedules}
-            renderItem={renderScheduleItem}
-            keyExtractor={(item) => item.id.toString()}
-            contentContainerStyle={styles.listContent}
-            refreshing={loadingSchedules}
-            onRefresh={loadSchedules}
-          />
+        {/* Availability View */}
+        {viewMode === 'availability' && (
+          <ScrollView 
+            style={styles.availabilityContainer}
+            contentContainerStyle={styles.availabilityContent}
+            showsVerticalScrollIndicator={true}
+          >
+            {/* Calendar */}
+            <View style={[styles.calendarContainer, { backgroundColor: colors.card, borderColor: colors.border }]}>
+              {/* Month Navigation */}
+              <View style={styles.calendarHeader}>
+                <TouchableOpacity onPress={() => changeMonth('prev')}>
+                  <Ionicons name="chevron-back" size={24} color={colors.text} />
+                </TouchableOpacity>
+                <Text style={[styles.calendarMonth, { color: colors.text }]}>
+                  {currentMonth.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' })}
+                </Text>
+                <TouchableOpacity onPress={() => changeMonth('next')}>
+                  <Ionicons name="chevron-forward" size={24} color={colors.text} />
+                </TouchableOpacity>
+              </View>
+
+              {/* Weekday Headers */}
+              <View style={styles.calendarWeekdays}>
+                {['日', '一', '二', '三', '四', '五', '六'].map((day, index) => (
+                  <Text key={index} style={[styles.calendarWeekday, { color: colors.textSecondary }]}>
+                    {day}
+                  </Text>
+                ))}
+              </View>
+
+              {/* Calendar Days */}
+              <View style={styles.calendarDays}>
+                {getCalendarDays().map((day, index) => {
+                  const isSelected = formatDate(day.date) === formatDate(selectedDate);
+                  const isToday = formatDate(day.date) === formatDate(new Date());
+                  
+                  return (
+                    <TouchableOpacity
+                      key={index}
+                      style={[
+                        styles.calendarDay,
+                        !day.isCurrentMonth && { opacity: 0.3 },
+                        isSelected && { backgroundColor: colors.primary },
+                        isToday && !isSelected && { borderWidth: 2, borderColor: colors.primary },
+                      ]}
+                      onPress={() => handleDateSelect(day.date)}
+                    >
+                      <Text
+                        style={[
+                          styles.calendarDayText,
+                          { color: day.isCurrentMonth ? colors.text : colors.textSecondary },
+                          isSelected && { color: '#fff' },
+                        ]}
+                      >
+                        {day.date.getDate()}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+            </View>
+
+            {/* Availability List */}
+            {loadingAvailability ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={colors.primary} />
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                  {t('travel.loading') || '加载中...'}
+                </Text>
+              </View>
+            ) : availabilityData ? (
+              <View style={styles.availabilityList}>
+                <Text style={[styles.availabilityDateTitle, { color: colors.text }]}>
+                  {formatDisplayDate(availabilityData.date)} {t('travel.availability') || '可用性'}
+                </Text>
+                <FlatList
+                  data={availabilityData.users}
+                  keyExtractor={(item) => item.id.toString()}
+                  scrollEnabled={false}
+                  renderItem={({ item }) => (
+                    <View style={[styles.availabilityItem, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                      <View style={styles.availabilityItemHeader}>
+                        <View style={styles.availabilityStatus}>
+                          {item.isAvailable ? (
+                            <Ionicons name="checkmark-circle" size={20} color="#4CD964" />
+                          ) : (
+                            <Ionicons name="close-circle" size={20} color="#FF3B30" />
+                          )}
+                          <Text style={[styles.availabilityName, { color: colors.text }]}>
+                            {item.name}
+                          </Text>
+                        </View>
+                        <Text
+                          style={[
+                            styles.availabilityStatusText,
+                            { color: item.isAvailable ? '#4CD964' : '#FF3B30' },
+                          ]}
+                        >
+                          {item.isAvailable
+                            ? t('travel.available') || '在家'
+                            : t('travel.unavailable') || '出城'}
+                        </Text>
+                      </View>
+                      {!item.isAvailable && item.schedule && (
+                        <View style={[styles.availabilityDetails, { borderTopColor: colors.border }]}>
+                          <Text style={[styles.availabilityDestination, { color: colors.textSecondary }]}>
+                            <Ionicons name="location" size={14} color={colors.textSecondary} />{' '}
+                            {item.schedule.destination || t('travel.noDestination') || '未指定目的地'}
+                          </Text>
+                          <Text style={[styles.availabilityDateRange, { color: colors.textSecondary }]}>
+                            {formatDisplayDate(item.schedule.startDate)} - {formatDisplayDate(item.schedule.endDate)}
+                          </Text>
+                        </View>
+                      )}
+                    </View>
+                  )}
+                />
+              </View>
+            ) : (
+              <View style={styles.emptyContainer}>
+                <Ionicons name="calendar-outline" size={60} color={colors.textSecondary} />
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                  {t('travel.selectDate') || '请选择日期查看是否在家'}
+                </Text>
+              </View>
+            )}
+          </ScrollView>
+        )}
+
+        {/* Schedules List - Only show when NOT in availability view */}
+        {viewMode !== 'availability' && (
+          <>
+            {loadingSchedules ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color={colors.primary} />
+              </View>
+            ) : schedules.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <Ionicons name="calendar-outline" size={64} color={colors.textSecondary} />
+                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                  {t('travel.noSchedules') || '暂无行程记录'}
+                </Text>
+              </View>
+            ) : (
+              <FlatList
+                data={schedules}
+                renderItem={renderScheduleItem}
+                keyExtractor={(item) => item.id.toString()}
+                contentContainerStyle={styles.listContent}
+                refreshing={loadingSchedules}
+                onRefresh={loadSchedules}
+              />
+            )}
+          </>
         )}
 
         {/* Form Modal */}
@@ -745,6 +1163,102 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  // Availability view styles
+  availabilityContainer: {
+    flex: 1,
+  },
+  availabilityContent: {
+    flexGrow: 1,
+    paddingBottom: 20,
+  },
+  calendarContainer: {
+    margin: 16,
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    minHeight: 350, // Ensure calendar has enough height
+  },
+  calendarHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  calendarMonth: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  calendarWeekdays: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  calendarWeekday: {
+    flex: 1,
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  calendarDays: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+  },
+  calendarDay: {
+    width: '14.28%',
+    minHeight: 40, // Minimum height for calendar days
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    marginVertical: 2,
+  },
+  calendarDayText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  availabilityList: {
+    padding: 16,
+  },
+  availabilityDateTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  availabilityItem: {
+    padding: 16,
+    marginBottom: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  availabilityItemHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  availabilityStatus: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  availabilityName: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  availabilityStatusText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  availabilityDetails: {
+    marginTop: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+  },
+  availabilityDestination: {
+    fontSize: 14,
+    marginBottom: 4,
+  },
+  availabilityDateRange: {
+    fontSize: 12,
   },
 });
 

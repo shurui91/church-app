@@ -191,6 +191,13 @@
     "confirmDelete": "確定要刪除這條行程嗎？",
     "invalidDate": "日期無效",
     "endDateBeforeStart": "結束日期不能早於開始日期",
-    "dateOverlap": "日期重疊"
+    "dateOverlap": "日期重疊",
+    "availability": "是否在家",
+    "available": "在家",
+    "unavailable": "出城",
+    "selectDate": "請選擇日期查看是否在家",
+    "loading": "載入中...",
+    "loadAvailabilityFailed": "載入是否在家失敗",
+    "noDestination": "未指定目的地"
   }
 }
