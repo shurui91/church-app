@@ -5,6 +5,9 @@ export function useThemeColors() {
   const { isDark } = useTheme();
 
   return {
+    // 主题标识
+    isDark,
+
     // 背景色
     background: isDark ? '#121212' : '#f8f9fa',
     backgroundSecondary: isDark ? '#1e1e1e' : '#ffffff',

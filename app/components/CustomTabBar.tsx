@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, usePathname } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useThemeColors } from '../src/hooks/useThemeColors';
+import { useTheme } from '../src/context/ThemeContext';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -43,6 +44,7 @@ export default function CustomTabBar() {
   const router = useRouter();
   const pathname = usePathname();
   const colors = useThemeColors();
+  const { isDark } = useTheme(); // Explicitly subscribe to theme changes
   const { t } = useTranslation();
 
   // 为每个 tab 建立独立的动画值

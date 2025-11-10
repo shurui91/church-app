@@ -303,7 +303,10 @@ export default function TravelScreen() {
         options={{
           title: t('travel.title') || '行程表',
           headerShown: true,
-          headerBackTitle: '返回',
+          headerStyle: { backgroundColor: colors.card },
+          headerTintColor: colors.text,
+          headerTitleStyle: { color: colors.text },
+          headerLeft: () => <BackButton />, // 使用统一的返回按钮组件
         }}
       />
 
