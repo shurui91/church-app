@@ -273,6 +273,11 @@ export default function ProfileScreen() {
             />
           )}
           <MenuItem
+            icon='calendar-outline'
+            title={t('travel.title') || '行程表'}
+            onPress={() => router.push('/travel')}
+          />
+          <MenuItem
             icon='settings-outline'
             title={t('profile.appSettings') || '应用设置'}
             onPress={() => router.push('/profile/settings')}
