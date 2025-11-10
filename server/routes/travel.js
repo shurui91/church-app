@@ -224,17 +224,22 @@ router.post('/', authenticate, async (req, res) => {
       const overlapStart = new Date(firstOverlap.startDate).toLocaleDateString('zh-CN');
       const overlapEnd = new Date(firstOverlap.endDate).toLocaleDateString('zh-CN');
       
+      // Only include detailed data in development mode
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      
       return res.status(400).json({
         success: false,
         message: `日期与现有行程重叠。您已有行程：${overlapStart} 至 ${overlapEnd}`,
-        data: {
-          overlappingSchedules: overlappingSchedules.map(s => ({
-            id: s.id,
-            startDate: s.startDate,
-            endDate: s.endDate,
-            destination: s.destination,
-          })),
-        },
+        ...(isDevelopment && {
+          data: {
+            overlappingSchedules: overlappingSchedules.map(s => ({
+              id: s.id,
+              startDate: s.startDate,
+              endDate: s.endDate,
+              destination: s.destination,
+            })),
+          },
+        }),
       });
     }
 
@@ -363,17 +368,22 @@ router.put('/:id', authenticate, async (req, res) => {
       const overlapStart = new Date(firstOverlap.startDate).toLocaleDateString('zh-CN');
       const overlapEnd = new Date(firstOverlap.endDate).toLocaleDateString('zh-CN');
       
+      // Only include detailed data in development mode
+      const isDevelopment = process.env.NODE_ENV === 'development';
+      
       return res.status(400).json({
         success: false,
         message: `日期与现有行程重叠。您已有行程：${overlapStart} 至 ${overlapEnd}`,
-        data: {
-          overlappingSchedules: overlappingSchedules.map(s => ({
-            id: s.id,
-            startDate: s.startDate,
-            endDate: s.endDate,
-            destination: s.destination,
-          })),
-        },
+        ...(isDevelopment && {
+          data: {
+            overlappingSchedules: overlappingSchedules.map(s => ({
+              id: s.id,
+              startDate: s.startDate,
+              endDate: s.endDate,
+              destination: s.destination,
+            })),
+          },
+        }),
       });
     }
 
