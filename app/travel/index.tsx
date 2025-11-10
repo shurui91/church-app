@@ -483,6 +483,21 @@ export default function TravelScreen() {
 
               {/* Form Actions */}
               <View style={[styles.formActions, { borderTopColor: colors.border }]}>
+                {editingSchedule && (
+                  <TouchableOpacity
+                    style={[styles.deleteButton, { borderColor: '#ff4444' }]}
+                    onPress={() => {
+                      setShowForm(false);
+                      handleDelete(editingSchedule);
+                    }}
+                    disabled={submitting}
+                  >
+                    <Ionicons name="trash" size={18} color="#ff4444" />
+                    <Text style={[styles.deleteButtonText, { color: '#ff4444' }]}>
+                      {t('common.delete') || '删除'}
+                    </Text>
+                  </TouchableOpacity>
+                )}
                 <TouchableOpacity
                   style={[styles.cancelButton, { borderColor: colors.border }]}
                   onPress={() => setShowForm(false)}
@@ -669,6 +684,20 @@ const styles = StyleSheet.create({
     padding: 16,
     borderTopWidth: 1,
     gap: 12,
+  },
+  deleteButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    gap: 6,
+  },
+  deleteButtonText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
   cancelButton: {
     flex: 1,
