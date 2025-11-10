@@ -829,11 +829,11 @@ export default function TravelScreen() {
           transparent={true}
           onRequestClose={() => setShowForm(false)}
         >
-          <SafeAreaView style={styles.modalOverlay} edges={['top']}>
+          <SafeAreaView style={styles.modalOverlay} edges={['top', 'bottom']}>
             <KeyboardAvoidingView
               style={styles.modalKeyboardView}
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-              keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
             >
               <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
                 <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
@@ -850,9 +850,10 @@ export default function TravelScreen() {
                 <ScrollView
                   style={styles.formContent}
                   contentContainerStyle={styles.formContentContainer}
-                  showsVerticalScrollIndicator={false}
+                  showsVerticalScrollIndicator={true}
                   keyboardShouldPersistTaps="handled"
                   keyboardDismissMode="on-drag"
+                  nestedScrollEnabled={true}
                 >
                 {/* Start Date */}
                 <View style={styles.formGroup}>
@@ -1108,14 +1109,15 @@ const styles = StyleSheet.create({
   },
   modalKeyboardView: {
     flex: 1,
+    justifyContent: 'flex-start',
   },
   modalContent: {
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-    maxHeight: '90%',
     flex: 1,
+    maxHeight: '100%',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -1132,6 +1134,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   formContentContainer: {
+    flexGrow: 1,
     padding: 16,
     paddingBottom: 32,
   },
