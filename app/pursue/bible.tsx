@@ -401,7 +401,8 @@ export default function BibleScreen() {
 
   return (
     <SafeAreaView
-      style={[styles.container, { backgroundColor: colors.background }]}>
+      style={[styles.container, { backgroundColor: colors.background }]}
+      edges={[]}>
       {/* ✅ 顶部导航栏，带返回按钮 */}
       <Stack.Screen
         options={{
@@ -569,7 +570,7 @@ export default function BibleScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollView: { flex: 1 },
-  content: { paddingHorizontal: 5, paddingTop: 10, paddingBottom: 60 },
+  content: { paddingHorizontal: 5, paddingTop: 8, paddingBottom: 60 },
   title: { fontWeight: 'bold', textAlign: 'center', marginBottom: 12 },
   card: { padding: 16, borderRadius: 12, borderWidth: 1, marginBottom: 16 },
   planContainer: {

@@ -46,8 +46,25 @@ export default function TravelScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const { getFontSizeValue } = useFontSize();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
+
+  // Force re-render when language changes
+  // Use a state variable to trigger re-render when language changes
+  const [lang, setLang] = useState(i18n.resolvedLanguage || i18n.language);
+  
+  useEffect(() => {
+    const updateLang = () => {
+      setLang(i18n.resolvedLanguage || i18n.language);
+    };
+    i18n.on('languageChanged', updateLang);
+    return () => {
+      i18n.off('languageChanged', updateLang);
+    };
+  }, [i18n]);
+  
+  // Use lang variable to ensure component re-renders (suppress unused warning)
+  void lang;
 
   // Form state
   const [startDate, setStartDate] = useState<Date>(new Date());
@@ -118,14 +135,14 @@ export default function TravelScreen() {
         console.log('[Travel] Current user id:', user?.id);
         setSchedules(schedules);
       } else {
-        Alert.alert(
-          t('travel.loadFailed') || '加载失败',
-          (response as any).message || '未知错误'
-        );
+          Alert.alert(
+            t('travel.loadFailed') || '加载失败',
+            (response as any).message || t('travel.unknownError') || '未知错误'
+          );
       }
     } catch (error: any) {
       console.error('[Travel] Failed to load schedules:', error);
-      const errorMessage = error.responseData?.error || error.message || '网络错误';
+      const errorMessage = error.responseData?.error || error.message || t('travel.networkError') || '网络错误';
       Alert.alert(t('travel.loadFailed') || '加载失败', errorMessage);
     } finally {
       setLoadingSchedules(false);
@@ -177,7 +194,7 @@ export default function TravelScreen() {
       console.error('[Travel] Failed to load users:', error);
       Alert.alert(
         t('travel.loadAvailabilityFailed') || '加载是否在家失败',
-        error.message || '无法加载用户列表'
+        error.message || t('travel.loadUsersFailed') || '无法加载用户列表'
       );
     }
   };
@@ -301,7 +318,7 @@ export default function TravelScreen() {
       console.error('[Travel] Failed to load availability:', error);
       Alert.alert(
         t('travel.loadAvailabilityFailed') || '加载是否在家失败',
-        error.message || '网络错误'
+        error.message || t('travel.networkError') || '网络错误'
       );
     } finally {
       setLoadingAvailability(false);
@@ -464,7 +481,7 @@ export default function TravelScreen() {
           error.responseData.message
         );
       } else {
-        const errorMessage = error.responseData?.error || error.responseData?.message || error.message || '保存失败';
+        const errorMessage = error.responseData?.error || error.responseData?.message || error.message || t('travel.saveFailed') || '保存失败';
         Alert.alert(t('travel.saveFailed') || '保存失败', errorMessage);
       }
     } finally {
@@ -491,7 +508,7 @@ export default function TravelScreen() {
               );
             } catch (error: any) {
               console.error('[Travel] Failed to delete:', error);
-              const errorMessage = error.responseData?.error || error.message || '删除失败';
+              const errorMessage = error.responseData?.error || error.message || t('travel.deleteFailed') || '删除失败';
               Alert.alert(t('travel.deleteFailed') || '删除失败', errorMessage);
             }
           },
@@ -566,7 +583,7 @@ export default function TravelScreen() {
   };
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={['top']}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={[]}>
       <Stack.Screen
         options={{
           title: t('travel.title') || '行程表',
@@ -598,7 +615,7 @@ export default function TravelScreen() {
                 { color: viewMode === 'my' ? '#fff' : colors.text },
               ]}
             >
-              {t('travel.mySchedules') || '我的行程'}
+              {t('travel.mySchedules', { defaultValue: '我的行程' })}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -614,7 +631,7 @@ export default function TravelScreen() {
                 { color: viewMode === 'all' ? '#fff' : colors.text },
               ]}
             >
-              {t('travel.allSchedules') || '全部行程'}
+              {t('travel.allSchedules', { defaultValue: '全部行程' })}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -630,7 +647,7 @@ export default function TravelScreen() {
                 { color: viewMode === 'availability' ? '#fff' : colors.text },
               ]}
             >
-              {t('travel.availability') || '是否在家'}
+              {t('travel.availability', { defaultValue: '是否在家' })}
             </Text>
           </TouchableOpacity>
         </View>
@@ -672,7 +689,7 @@ export default function TravelScreen() {
 
               {/* Weekday Headers */}
               <View style={styles.calendarWeekdays}>
-                {['日', '一', '二', '三', '四', '五', '六'].map((day, index) => (
+                {(t('travel.weekdays', { returnObjects: true }) as string[] || ['日', '一', '二', '三', '四', '五', '六']).map((day, index) => (
                   <Text key={index} style={[styles.calendarWeekday, { color: colors.textSecondary }]}>
                     {day}
                   </Text>
@@ -812,20 +829,31 @@ export default function TravelScreen() {
           transparent={true}
           onRequestClose={() => setShowForm(false)}
         >
-          <View style={styles.modalOverlay}>
-            <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
-              <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
-                <Text style={[styles.modalTitle, { color: colors.text }]}>
-                  {editingSchedule
-                    ? t('travel.editSchedule') || '编辑行程'
-                    : t('travel.addSchedule') || '添加行程'}
-                </Text>
-                <TouchableOpacity onPress={() => setShowForm(false)}>
-                  <Ionicons name="close" size={24} color={colors.text} />
-                </TouchableOpacity>
-              </View>
+          <SafeAreaView style={styles.modalOverlay} edges={['top']}>
+            <KeyboardAvoidingView
+              style={styles.modalKeyboardView}
+              behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+              keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+            >
+              <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
+                <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+                  <Text style={[styles.modalTitle, { color: colors.text }]}>
+                    {editingSchedule
+                      ? t('travel.editSchedule') || '编辑行程'
+                      : t('travel.addSchedule') || '添加行程'}
+                  </Text>
+                  <TouchableOpacity onPress={() => setShowForm(false)}>
+                    <Ionicons name="close" size={24} color={colors.text} />
+                  </TouchableOpacity>
+                </View>
 
-              <ScrollView style={styles.formContent} showsVerticalScrollIndicator={false}>
+                <ScrollView
+                  style={styles.formContent}
+                  contentContainerStyle={styles.formContentContainer}
+                  showsVerticalScrollIndicator={false}
+                  keyboardShouldPersistTaps="handled"
+                  keyboardDismissMode="on-drag"
+                >
                 {/* Start Date */}
                 <View style={styles.formGroup}>
                   <Text style={[styles.label, { color: colors.text }]}>
@@ -922,49 +950,50 @@ export default function TravelScreen() {
                     textAlignVertical="top"
                   />
                 </View>
-              </ScrollView>
+                </ScrollView>
 
-              {/* Form Actions */}
-              <View style={[styles.formActions, { borderTopColor: colors.border }]}>
-                {editingSchedule && (
+                {/* Form Actions */}
+                <View style={[styles.formActions, { borderTopColor: colors.border }]}>
+                  {editingSchedule && (
+                    <TouchableOpacity
+                      style={[styles.deleteButton, { borderColor: '#ff4444' }]}
+                      onPress={() => {
+                        setShowForm(false);
+                        handleDelete(editingSchedule);
+                      }}
+                      disabled={submitting}
+                    >
+                      <Ionicons name="trash" size={18} color="#ff4444" />
+                      <Text style={[styles.deleteButtonText, { color: '#ff4444' }]}>
+                        {t('common.delete') || '删除'}
+                      </Text>
+                    </TouchableOpacity>
+                  )}
                   <TouchableOpacity
-                    style={[styles.deleteButton, { borderColor: '#ff4444' }]}
-                    onPress={() => {
-                      setShowForm(false);
-                      handleDelete(editingSchedule);
-                    }}
-                    disabled={submitting}
+                    style={[styles.cancelButton, { borderColor: colors.border }]}
+                    onPress={() => setShowForm(false)}
                   >
-                    <Ionicons name="trash" size={18} color="#ff4444" />
-                    <Text style={[styles.deleteButtonText, { color: '#ff4444' }]}>
-                      {t('common.delete') || '删除'}
+                    <Text style={[styles.cancelButtonText, { color: colors.text }]}>
+                      {t('common.cancel') || '取消'}
                     </Text>
                   </TouchableOpacity>
-                )}
-                <TouchableOpacity
-                  style={[styles.cancelButton, { borderColor: colors.border }]}
-                  onPress={() => setShowForm(false)}
-                >
-                  <Text style={[styles.cancelButtonText, { color: colors.text }]}>
-                    {t('common.cancel') || '取消'}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.submitButton, { backgroundColor: colors.primary }]}
-                  onPress={handleSubmit}
-                  disabled={submitting}
-                >
-                  {submitting ? (
-                    <ActivityIndicator color="#fff" />
-                  ) : (
-                    <Text style={styles.submitButtonText}>
-                      {t('common.save') || '保存'}
-                    </Text>
-                  )}
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.submitButton, { backgroundColor: colors.primary }]}
+                    onPress={handleSubmit}
+                    disabled={submitting}
+                  >
+                    {submitting ? (
+                      <ActivityIndicator color="#fff" />
+                    ) : (
+                      <Text style={styles.submitButtonText}>
+                        {t('common.save') || '保存'}
+                      </Text>
+                    )}
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
-          </View>
+            </KeyboardAvoidingView>
+          </SafeAreaView>
         </Modal>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -980,7 +1009,9 @@ const styles = StyleSheet.create({
   },
   viewModeContainer: {
     flexDirection: 'row',
-    margin: 16,
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 16,
     padding: 4,
     borderRadius: 8,
   },
@@ -1073,12 +1104,18 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-start',
+  },
+  modalKeyboardView: {
+    flex: 1,
   },
   modalContent: {
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
     maxHeight: '90%',
+    flex: 1,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -1092,7 +1129,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   formContent: {
+    flex: 1,
+  },
+  formContentContainer: {
     padding: 16,
+    paddingBottom: 32,
   },
   formGroup: {
     marginBottom: 20,

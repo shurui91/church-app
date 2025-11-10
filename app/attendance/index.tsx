@@ -384,7 +384,7 @@ export default function AttendanceScreen() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={[]}>
       <Stack.Screen
         options={{
           title: t('attendance.title') || '人数统计',
@@ -886,7 +886,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    padding: 16,
+    paddingHorizontal: 16,
+    paddingTop: 8,
     paddingBottom: 32,
   },
   noPermissionContainer: {

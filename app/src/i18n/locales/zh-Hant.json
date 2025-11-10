@@ -198,6 +198,14 @@
     "selectDate": "請選擇日期查看是否在家",
     "loading": "載入中...",
     "loadAvailabilityFailed": "載入是否在家失敗",
-    "noDestination": "未指定目的地"
+    "noDestination": "未指定目的地",
+    "weekdays": ["日", "一", "二", "三", "四", "五", "六"],
+    "unknownError": "未知錯誤",
+    "networkError": "網絡錯誤",
+    "loadUsersFailed": "無法載入用戶列表",
+    "provideDates": "請提供開始日期和結束日期",
+    "invalidDateFormat": "日期格式無效，請使用 YYYY-MM-DD 格式",
+    "invalidDateValue": "日期無效",
+    "overlapMessage": "日期與現有行程重疊。您已有行程：{{start}} 至 {{end}}"
   }
 }
