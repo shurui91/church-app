@@ -188,8 +188,17 @@ export default function TravelScreen() {
       }
     } catch (error: any) {
       console.error('[Travel] Failed to submit:', error);
-      const errorMessage = error.responseData?.error || error.message || '保存失败';
-      Alert.alert(t('travel.saveFailed') || '保存失败', errorMessage);
+      
+      // Check if it's a date overlap error
+      if (error.responseData?.message && error.responseData.message.includes('重叠')) {
+        Alert.alert(
+          t('travel.dateOverlap') || '日期重叠',
+          error.responseData.message
+        );
+      } else {
+        const errorMessage = error.responseData?.error || error.responseData?.message || error.message || '保存失败';
+        Alert.alert(t('travel.saveFailed') || '保存失败', errorMessage);
+      }
     } finally {
       setSubmitting(false);
     }

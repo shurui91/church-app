@@ -336,5 +336,53 @@ export class TravelSchedule {
       await db.close();
     }
   }
+
+  /**
+   * Check if a date range overlaps with existing schedules for a user
+   * Two date ranges overlap if: newStart <= existingEnd AND newEnd >= existingStart
+   * @param {number} userId - User ID
+   * @param {string} startDate - Start date in ISO format (YYYY-MM-DD)
+   * @param {string} endDate - End date in ISO format (YYYY-MM-DD)
+   * @param {number} [excludeId] - Optional schedule ID to exclude from check (for updates)
+   * @returns {Promise<Array>} Array of overlapping travel schedule objects
+   */
+  static async findOverlappingSchedules(userId, startDate, endDate, excludeId = null) {
+    const db = await getDatabase();
+
+    try {
+      let sql = `
+        SELECT ts.*, u.namezh, u.nameen, u.name, u.phonenumber
+        FROM travel_schedules ts
+        JOIN users u ON ts.userid = u.id
+        WHERE ts.userid = ?
+          AND ts.startdate <= ?
+          AND ts.enddate >= ?
+      `;
+      const params = [userId, endDate, startDate];
+
+      if (excludeId) {
+        sql += ` AND ts.id != ?`;
+        params.push(excludeId);
+      }
+
+      sql += ` ORDER BY ts.startdate ASC, ts.enddate ASC`;
+
+      const schedules = await db.all(sql, params);
+
+      return schedules.map(schedule => {
+        const normalized = this.normalizeTravelScheduleFields(schedule);
+        normalized.user = {
+          id: schedule.userid,
+          nameZh: schedule.namezh,
+          nameEn: schedule.nameen,
+          name: schedule.name,
+          phoneNumber: schedule.phonenumber,
+        };
+        return normalized;
+      });
+    } finally {
+      await db.close();
+    }
+  }
 }
 

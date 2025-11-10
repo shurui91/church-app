@@ -212,6 +212,32 @@ router.post('/', authenticate, async (req, res) => {
       });
     }
 
+    // Check for overlapping schedules
+    const overlappingSchedules = await TravelSchedule.findOverlappingSchedules(
+      userId,
+      startDate,
+      endDate
+    );
+
+    if (overlappingSchedules.length > 0) {
+      const firstOverlap = overlappingSchedules[0];
+      const overlapStart = new Date(firstOverlap.startDate).toLocaleDateString('zh-CN');
+      const overlapEnd = new Date(firstOverlap.endDate).toLocaleDateString('zh-CN');
+      
+      return res.status(400).json({
+        success: false,
+        message: `日期与现有行程重叠。您已有行程：${overlapStart} 至 ${overlapEnd}`,
+        data: {
+          overlappingSchedules: overlappingSchedules.map(s => ({
+            id: s.id,
+            startDate: s.startDate,
+            endDate: s.endDate,
+            destination: s.destination,
+          })),
+        },
+      });
+    }
+
     // Create travel schedule
     const schedule = await TravelSchedule.create(
       userId,
@@ -321,6 +347,33 @@ router.put('/:id', authenticate, async (req, res) => {
       return res.status(400).json({
         success: false,
         message: '结束日期不能早于开始日期',
+      });
+    }
+
+    // Check for overlapping schedules (exclude current schedule)
+    const overlappingSchedules = await TravelSchedule.findOverlappingSchedules(
+      userId,
+      startDate,
+      endDate,
+      parseInt(id)
+    );
+
+    if (overlappingSchedules.length > 0) {
+      const firstOverlap = overlappingSchedules[0];
+      const overlapStart = new Date(firstOverlap.startDate).toLocaleDateString('zh-CN');
+      const overlapEnd = new Date(firstOverlap.endDate).toLocaleDateString('zh-CN');
+      
+      return res.status(400).json({
+        success: false,
+        message: `日期与现有行程重叠。您已有行程：${overlapStart} 至 ${overlapEnd}`,
+        data: {
+          overlappingSchedules: overlappingSchedules.map(s => ({
+            id: s.id,
+            startDate: s.startDate,
+            endDate: s.endDate,
+            destination: s.destination,
+          })),
+        },
       });
     }
 
