@@ -3,7 +3,6 @@ import { Stack, usePathname } from 'expo-router';
 import CustomTabBar from './components/CustomTabBar';
 import BackButton from './components/BackButton';
 import AuthGuard from './components/AuthGuard';
-import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { FontSizeProvider, useFontSize } from './src/context/FontSizeContext';
 import { AuthProvider } from './src/context/AuthContext';
@@ -12,7 +11,6 @@ import { useEffect } from 'react';
 import { Alert } from 'react-native';
 import * as Updates from 'expo-updates';
 import { useTranslation } from 'react-i18next';
-import { initializeCrashReporter } from './src/utils/crashReporter';
 
 // 定义需要显示底部导航栏的路由白名单
 const TAB_BAR_ROUTES = [
@@ -105,9 +103,6 @@ function ThemedLayout() {
 
 export default function RootLayout() {
   useEffect(() => {
-    // Initialize crash reporter
-    initializeCrashReporter();
-
     async function checkUpdate() {
       try {
         const update = await Updates.checkForUpdateAsync();
@@ -124,16 +119,14 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <ErrorBoundary>
-      <ThemeProvider>
-        <FontSizeProvider>
-          <AuthProvider>
-            <AuthGuard>
-              <ThemedLayout />
-            </AuthGuard>
-          </AuthProvider>
-        </FontSizeProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
+    <ThemeProvider>
+      <FontSizeProvider>
+        <AuthProvider>
+          <AuthGuard>
+            <ThemedLayout />
+          </AuthGuard>
+        </AuthProvider>
+      </FontSizeProvider>
+    </ThemeProvider>
   );
 }

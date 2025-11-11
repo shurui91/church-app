@@ -13,9 +13,8 @@ import {
   Modal,
   FlatList,
   Keyboard,
-  StatusBar,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
 import { useAuth } from '../src/context/AuthContext';
 import BackButton from '../components/BackButton';
@@ -50,6 +49,7 @@ export default function TravelScreen() {
   const { getFontSizeValue } = useFontSize();
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
+  const insets = useSafeAreaInsets();
 
   // Force re-render when language changes
   // Use a state variable to trigger re-render when language changes
@@ -855,7 +855,6 @@ export default function TravelScreen() {
           onRequestClose={() => setShowForm(false)}
           statusBarTranslucent={false}
         >
-          <StatusBar barStyle={colors.isDark ? 'light-content' : 'dark-content'} />
           <SafeAreaView style={styles.modalOverlay} edges={['top', 'bottom']}>
             <KeyboardAvoidingView
               style={styles.modalKeyboardView}
@@ -872,7 +871,12 @@ export default function TravelScreen() {
                   },
                 ]}
               >
-                <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+                <View
+                  style={[
+                    styles.modalHeader,
+                    { borderBottomColor: colors.border, paddingTop: Math.max(insets.top, 0) },
+                  ]}
+                >
                   <TouchableOpacity
                     onPress={() => setShowForm(false)}
                     style={styles.modalHeaderButton}
@@ -1156,12 +1160,15 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     overflow: 'hidden',
+    marginTop: 0,
+    paddingTop: 0,
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 16,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
     borderBottomWidth: 1,
   },
   modalHeaderButton: {
