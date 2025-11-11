@@ -18,7 +18,7 @@ import { useFontSize } from './src/context/FontSizeContext';
 export default function AnnouncementScreen() {
   const { t, i18n } = useTranslation();
   const colors = useThemeColors();
-  const { getFontSizeValue } = useFontSize();
+  const { getFontSizeValue, fontSize } = useFontSize();
 
   const [activeTab, setActiveTab] = useState(0);
   const [announcement, setAnnouncement] = useState<string | null>(null);
@@ -108,8 +108,8 @@ export default function AnnouncementScreen() {
         <Text
           style={{
             color: colors.text,
-            fontSize: getFontSizeValue(16),
-            lineHeight: getFontSizeValue(24),
+            fontSize: fontSize,
+            lineHeight: fontSize * 1.5,
           }}>
           {content}
         </Text>
@@ -156,7 +156,7 @@ export default function AnnouncementScreen() {
                 styles.tabText,
                 {
                   color: activeTab === index ? colors.primary : colors.text,
-                  fontSize: getFontSizeValue(14),
+                  fontSize: getFontSizeValue(16),
                 },
               ]}>
               {section.title}

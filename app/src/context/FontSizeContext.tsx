@@ -15,10 +15,10 @@ const FontSizeContext = createContext<FontSizeContextType | undefined>(
 );
 
 export function FontSizeProvider({ children }: { children: React.ReactNode }) {
-  const [fontSize, setFontSizeState] = useState<number>(20); // 默认值 20
+  const [fontSize, setFontSizeState] = useState<number>(30); // 默认值 30
 
-  const min = 12;
-  const max = 40;
+  const min = 18;
+  const max = 46;
   const step = 4;
 
   // 确保始终存整数
@@ -37,7 +37,7 @@ export function FontSizeProvider({ children }: { children: React.ReactNode }) {
           if (Number.isFinite(parsed)) {
             setFontSize(parsed);
           } else {
-            setFontSize(20);
+            setFontSize(30);
           }
         }
       } catch (error) {
@@ -63,9 +63,9 @@ export function FontSizeProvider({ children }: { children: React.ReactNode }) {
 
   // 提供一个安全的字号计算函数
   const getFontSizeValue = (base: number) => {
-    return Math.round((base / 20) * fontSize);
-    // 解释：默认 20 → base 正常大小；
-    // 如果用户改成 24，则 base*24/20 → 放大 20%
+    return Math.round((base / 30) * fontSize);
+    // 解释：默认 30 → base 正常大小；
+    // 如果用户改成 34，则 base*34/30 → 放大约 13%
   };
 
   return (

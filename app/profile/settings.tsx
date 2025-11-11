@@ -83,8 +83,8 @@ export default function SettingsScreen() {
             <View style={{ marginTop: 8, marginBottom: 4 }}>
               <Slider
                 style={{ width: '100%', height: 40 }}
-                minimumValue={12}
-                maximumValue={40}
+                minimumValue={18}
+                maximumValue={46}
                 step={4}
                 value={fontSize}
                 onValueChange={setFontSize}
@@ -101,8 +101,8 @@ export default function SettingsScreen() {
                   marginTop: 2,
                 }}>
                 {Array.from(
-                  { length: (40 - 12) / 4 + 1 },
-                  (_, i) => 12 + i * 4
+                  { length: (46 - 18) / 4 + 1 },
+                  (_, i) => 18 + i * 4
                 ).map((size) => (
                   <Text
                     key={size}
@@ -124,10 +124,10 @@ export default function SettingsScreen() {
                   marginTop: -4,
                 }}>
                 <Text style={{ fontSize: 12, color: colors.textSecondary }}>
-                  12
+                  18
                 </Text>
                 <Text style={{ fontSize: 12, color: colors.textSecondary }}>
-                  40
+                  46
                 </Text>
               </View>
             </View>

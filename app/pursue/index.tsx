@@ -37,7 +37,7 @@ export default function PursueHome() {
             styles.title,
             {
               color: colors.text,
-              fontSize: getFontSizeValue(20), // ✅ 全局控制
+              fontSize: getFontSizeValue(24), // ✅ 全局控制
             },
           ]}>
           {t('pursue.title')}
@@ -52,7 +52,7 @@ export default function PursueHome() {
               styles.cardText,
               {
                 color: colors.text,
-                fontSize: getFontSizeValue(16), // ✅ 全局控制
+                fontSize: getFontSizeValue(20), // ✅ 全局控制
               },
             ]}>
             📖 {t('pursue.bible_one_year')}
@@ -67,7 +67,7 @@ export default function PursueHome() {
           <Text
             style={[
               styles.cardText,
-              { color: colors.text, fontSize: getFontSizeValue(16) },
+              { color: colors.text, fontSize: getFontSizeValue(20) },
             ]}>
             📚 {t('pursue.life_study')}
           </Text>
@@ -100,7 +100,7 @@ export default function PursueHome() {
               styles.cardText,
               {
                 color: colors.text,
-                fontSize: getFontSizeValue(16), // ✅ 全局控制
+                fontSize: getFontSizeValue(20), // ✅ 全局控制
               },
             ]}>
             🕊️ {t('pursue.witness_lee')}
@@ -116,7 +116,7 @@ export default function PursueHome() {
               styles.cardText,
               {
                 color: colors.text,
-                fontSize: getFontSizeValue(16), // ✅ 全局控制
+                fontSize: getFontSizeValue(20), // ✅ 全局控制
               },
             ]}>
             🎵 {t('pursue.hymns')}
