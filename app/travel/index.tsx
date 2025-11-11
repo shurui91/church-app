@@ -440,9 +440,12 @@ export default function TravelScreen() {
     setNotes('');
     setEditingSchedule(null);
     setShowForm(false);
+    setKeyboardHeight(0);
   };
 
   const openForm = (schedule?: TravelSchedule) => {
+    // Reset keyboard height when opening modal
+    setKeyboardHeight(0);
     if (schedule) {
       setEditingSchedule(schedule);
       setStartDate(parseDate(schedule.startDate));
@@ -450,7 +453,11 @@ export default function TravelScreen() {
       setDestination(schedule.destination || '');
       setNotes(schedule.notes || '');
     } else {
-      resetForm();
+      setEditingSchedule(null);
+      setStartDate(new Date());
+      setEndDate(new Date());
+      setDestination('');
+      setNotes('');
     }
     setShowForm(true);
   };
@@ -849,10 +856,14 @@ export default function TravelScreen() {
 
         {/* Form Modal */}
         <Modal
+          key={showForm ? 'modal-open' : 'modal-closed'}
           visible={showForm}
           animationType="slide"
           transparent={true}
-          onRequestClose={() => setShowForm(false)}
+          onRequestClose={() => {
+            setShowForm(false);
+            setKeyboardHeight(0);
+          }}
           statusBarTranslucent={false}
         >
           <SafeAreaView style={styles.modalOverlay} edges={['top', 'bottom']}>
@@ -878,7 +889,10 @@ export default function TravelScreen() {
                   ]}
                 >
                   <TouchableOpacity
-                    onPress={() => setShowForm(false)}
+                    onPress={() => {
+                      setShowForm(false);
+                      setKeyboardHeight(0);
+                    }}
                     style={styles.modalHeaderButton}
                   >
                     <Text style={[styles.modalHeaderButtonText, { color: colors.text }]}>
@@ -1020,6 +1034,7 @@ export default function TravelScreen() {
                       style={[styles.deleteButton, { borderColor: '#ff4444' }]}
                       onPress={() => {
                         setShowForm(false);
+                        setKeyboardHeight(0);
                         handleDelete(editingSchedule);
                       }}
                       disabled={submitting}
@@ -1191,7 +1206,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   formContentContainer: {
-    flexGrow: 1,
     padding: 16,
     paddingBottom: 16,
   },
