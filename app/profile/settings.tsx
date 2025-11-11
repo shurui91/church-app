@@ -23,7 +23,8 @@ export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
   const { isDark, toggleTheme } = useTheme();
   const colors = useThemeColors();
-  const { fontSize = 16, setFontSize } = useFontSize();
+  const { fontSize: rawFontSize = 16, setFontSize } = useFontSize();
+  const fontSize = Math.round(rawFontSize); // 确保是整数
   const router = useRouter();
 
   const [languageModalVisible, setLanguageModalVisible] = useState(false);

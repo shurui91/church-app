@@ -65,7 +65,7 @@ function splitToSentences(text: string): string[] {
 export default function BibleScreen() {
   const colors = useThemeColors();
   const { fontSize: rawFontSize } = useFontSize();
-  const fontSize = rawFontSize || 16;
+  const fontSize = Math.round(rawFontSize || 16); // 确保是整数
   const { t, i18n } = useTranslation();
   const lang = useMemo(() => normalizeLang(i18n.language), [i18n.language]);
 
@@ -383,7 +383,7 @@ export default function BibleScreen() {
                   ref={(ref) => ref && sentenceRefs.current.set(key, ref)}
                   style={{
                     fontSize,
-                    lineHeight: fontSize * 1.5,
+                    lineHeight: Math.round(fontSize * 1.5),
                     color: isActive ? colors.primary : colors.text,
                     backgroundColor: isActive
                       ? 'rgba(0,122,255,0.1)'
@@ -456,21 +456,21 @@ export default function BibleScreen() {
             <Text
               style={[
                 styles.title,
-                { fontSize: fontSize * 1.2, color: colors.text },
+                { fontSize: Math.round(fontSize * 1.2), color: colors.text },
               ]}>
               {t('bible.daily_reading')}
             </Text>
             <Text
               style={{
                 color: colors.textSecondary,
-                fontSize: fontSize * 0.9,
-                marginBottom: fontSize * 1.2,
+                fontSize: Math.round(fontSize * 0.9),
+                marginBottom: Math.round(fontSize * 1.2),
                 textAlign: 'center',
               }}>
               {formattedDate}
             </Text>
             <View style={styles.planContainer}>
-              <Text style={{ color: colors.primary, fontSize: fontSize * 0.8 }}>
+              <Text style={{ color: colors.primary, fontSize: Math.round(fontSize * 0.8) }}>
                 {readingPlan}
               </Text>
             </View>

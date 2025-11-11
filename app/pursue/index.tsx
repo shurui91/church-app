@@ -56,7 +56,7 @@ export default function PursueHome() {
               },
             ]}>
             📖 {t('pursue.bible_one_year')}
-          </Text>
+		</Text>
         </TouchableOpacity>
 
         {/* 📚 生命读经 */}

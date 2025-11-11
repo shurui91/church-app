@@ -17,8 +17,8 @@ const FontSizeContext = createContext<FontSizeContextType | undefined>(
 export function FontSizeProvider({ children }: { children: React.ReactNode }) {
   const [fontSize, setFontSizeState] = useState<number>(30); // 默认值 30
 
-  const min = 18;
-  const max = 46;
+  const min = 14;
+  const max = 42;
   const step = 4;
 
   // 确保始终存整数
