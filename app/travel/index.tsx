@@ -13,6 +13,7 @@ import {
   Modal,
   FlatList,
   Keyboard,
+  StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
@@ -852,14 +853,25 @@ export default function TravelScreen() {
           animationType="slide"
           transparent={true}
           onRequestClose={() => setShowForm(false)}
+          statusBarTranslucent={false}
         >
+          <StatusBar barStyle={colors.isDark ? 'light-content' : 'dark-content'} />
           <SafeAreaView style={styles.modalOverlay} edges={['top', 'bottom']}>
             <KeyboardAvoidingView
               style={styles.modalKeyboardView}
               behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
               keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
             >
-              <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
+              <View
+                style={[
+                  styles.modalContent,
+                  {
+                    backgroundColor: colors.background,
+                    paddingTop: 0,
+                    marginTop: 0,
+                  },
+                ]}
+              >
                 <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
                   <TouchableOpacity
                     onPress={() => setShowForm(false)}
