@@ -453,4 +453,47 @@ export const api = {
     });
     return parseResponse(response);
   },
+
+  /**
+   * Report a crash log to the server
+   */
+  async reportCrash(crashData: {
+    errorMessage: string;
+    errorStack?: string;
+    errorName?: string;
+    deviceInfo?: any;
+    appVersion?: string;
+    osVersion?: string;
+    platform?: string;
+    screenName?: string;
+    userActions?: any;
+    additionalData?: any;
+  }): Promise<{ success: boolean; message?: string }> {
+    try {
+      const token = await getStoredToken();
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/crash-logs`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(crashData),
+      });
+
+      const data = await response.json();
+      return data;
+    } catch (error: any) {
+      console.error('[API] Failed to report crash:', error);
+      // Don't throw error here - we don't want crash reporting to cause another crash
+      return {
+        success: false,
+        message: error.message || 'Failed to report crash',
+      };
+    }
+  },
 };

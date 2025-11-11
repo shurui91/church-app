@@ -342,6 +342,31 @@ export async function initDatabase() {
       }
     }
 
+    // Create crash_logs table
+    await db.run(`
+      CREATE TABLE IF NOT EXISTS crash_logs (
+        id SERIAL PRIMARY KEY,
+        userid INTEGER,
+        error_message TEXT NOT NULL,
+        error_stack TEXT,
+        error_name TEXT,
+        device_info TEXT,
+        app_version TEXT,
+        os_version TEXT,
+        platform TEXT,
+        screen_name TEXT,
+        user_actions TEXT,
+        additional_data TEXT,
+        createdat TEXT NOT NULL,
+        FOREIGN KEY (userid) REFERENCES users(id) ON DELETE SET NULL
+      )
+    `, []);
+    console.log('Crash logs table created or already exists');
+
+    // Create indexes for crash_logs table
+    await createIndexIfColumnExists(db, 'idx_crash_logs_userid', 'crash_logs', 'userid');
+    await createIndexIfColumnExists(db, 'idx_crash_logs_createdat', 'crash_logs', 'createdat');
+
     console.log('Database initialization completed');
 
     // Initialize default users after database tables are created

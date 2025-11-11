@@ -6,6 +6,7 @@ import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import attendanceRoutes from './routes/attendance.js';
 import travelRoutes from './routes/travel.js';
+import crashLogRoutes from './routes/crash-logs.js';
 import debugRoutes from './routes/debug-env.js';
 
 // Load environment variables
@@ -44,6 +45,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/attendance', attendanceRoutes);
 app.use('/api/travel', travelRoutes);
+app.use('/api/crash-logs', crashLogRoutes);
 app.use('/api', debugRoutes); // Temporary debug route
 
 // Start server
