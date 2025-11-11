@@ -12,6 +12,7 @@ import {
   Alert,
   Modal,
   FlatList,
+  Keyboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Stack, useRouter } from 'expo-router';
@@ -65,6 +66,29 @@ export default function TravelScreen() {
   
   // Use lang variable to ensure component re-renders (suppress unused warning)
   void lang;
+
+  // Keyboard height state for dynamic padding
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
+  
+  useEffect(() => {
+    const keyboardWillShowListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
+      }
+    );
+    const keyboardWillHideListener = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => {
+        setKeyboardHeight(0);
+      }
+    );
+
+    return () => {
+      keyboardWillShowListener.remove();
+      keyboardWillHideListener.remove();
+    };
+  }, []);
 
   // Form state
   const [startDate, setStartDate] = useState<Date>(new Date());
@@ -837,19 +861,40 @@ export default function TravelScreen() {
             >
               <View style={[styles.modalContent, { backgroundColor: colors.background }]}>
                 <View style={[styles.modalHeader, { borderBottomColor: colors.border }]}>
+                  <TouchableOpacity
+                    onPress={() => setShowForm(false)}
+                    style={styles.modalHeaderButton}
+                  >
+                    <Text style={[styles.modalHeaderButtonText, { color: colors.text }]}>
+                      {t('common.cancel') || '取消'}
+                    </Text>
+                  </TouchableOpacity>
                   <Text style={[styles.modalTitle, { color: colors.text }]}>
                     {editingSchedule
                       ? t('travel.editSchedule') || '编辑行程'
                       : t('travel.addSchedule') || '添加行程'}
                   </Text>
-                  <TouchableOpacity onPress={() => setShowForm(false)}>
-                    <Ionicons name="close" size={24} color={colors.text} />
+                  <TouchableOpacity
+                    onPress={handleSubmit}
+                    disabled={submitting}
+                    style={styles.modalHeaderButton}
+                  >
+                    {submitting ? (
+                      <ActivityIndicator size="small" color={colors.primary} />
+                    ) : (
+                      <Text style={[styles.modalHeaderButtonText, { color: colors.primary }]}>
+                        {t('common.save') || '保存'}
+                      </Text>
+                    )}
                   </TouchableOpacity>
                 </View>
 
                 <ScrollView
                   style={styles.formContent}
-                  contentContainerStyle={styles.formContentContainer}
+                  contentContainerStyle={[
+                    styles.formContentContainer,
+                    { paddingBottom: keyboardHeight > 0 ? keyboardHeight + 20 : 16 },
+                  ]}
                   showsVerticalScrollIndicator={true}
                   keyboardShouldPersistTaps="handled"
                   keyboardDismissMode="on-drag"
@@ -951,11 +996,10 @@ export default function TravelScreen() {
                     textAlignVertical="top"
                   />
                 </View>
-                </ScrollView>
 
-                {/* Form Actions */}
-                <View style={[styles.formActions, { borderTopColor: colors.border }]}>
-                  {editingSchedule && (
+                {/* Delete Button - Only show when editing */}
+                {editingSchedule && (
+                  <View style={[styles.deleteButtonContainer, { borderTopColor: colors.border }]}>
                     <TouchableOpacity
                       style={[styles.deleteButton, { borderColor: '#ff4444' }]}
                       onPress={() => {
@@ -969,29 +1013,9 @@ export default function TravelScreen() {
                         {t('common.delete') || '删除'}
                       </Text>
                     </TouchableOpacity>
-                  )}
-                  <TouchableOpacity
-                    style={[styles.cancelButton, { borderColor: colors.border }]}
-                    onPress={() => setShowForm(false)}
-                  >
-                    <Text style={[styles.cancelButtonText, { color: colors.text }]}>
-                      {t('common.cancel') || '取消'}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.submitButton, { backgroundColor: colors.primary }]}
-                    onPress={handleSubmit}
-                    disabled={submitting}
-                  >
-                    {submitting ? (
-                      <ActivityIndicator color="#fff" />
-                    ) : (
-                      <Text style={styles.submitButtonText}>
-                        {t('common.save') || '保存'}
-                      </Text>
-                    )}
-                  </TouchableOpacity>
-                </View>
+                  </View>
+                )}
+                </ScrollView>
               </View>
             </KeyboardAvoidingView>
           </SafeAreaView>
@@ -1110,6 +1134,7 @@ const styles = StyleSheet.create({
   modalKeyboardView: {
     flex: 1,
     justifyContent: 'flex-start',
+    width: '100%',
   },
   modalContent: {
     borderTopLeftRadius: 0,
@@ -1117,7 +1142,8 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     flex: 1,
-    maxHeight: '100%',
+    width: '100%',
+    overflow: 'hidden',
   },
   modalHeader: {
     flexDirection: 'row',
@@ -1126,9 +1152,21 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
   },
+  modalHeaderButton: {
+    minWidth: 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 4,
+  },
+  modalHeaderButtonText: {
+    fontSize: 16,
+    fontWeight: '500',
+  },
   modalTitle: {
     fontSize: 18,
     fontWeight: '600',
+    flex: 1,
+    textAlign: 'center',
   },
   formContent: {
     flex: 1,
@@ -1136,7 +1174,7 @@ const styles = StyleSheet.create({
   formContentContainer: {
     flexGrow: 1,
     padding: 16,
-    paddingBottom: 32,
+    paddingBottom: 16,
   },
   formGroup: {
     marginBottom: 20,
@@ -1166,11 +1204,12 @@ const styles = StyleSheet.create({
   textArea: {
     minHeight: 100,
   },
-  formActions: {
-    flexDirection: 'row',
+  deleteButtonContainer: {
     padding: 16,
+    paddingTop: 16,
+    paddingBottom: 16,
     borderTopWidth: 1,
-    gap: 12,
+    marginTop: 8,
   },
   deleteButton: {
     flexDirection: 'row',
@@ -1181,6 +1220,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     borderWidth: 1,
     gap: 6,
+    width: '100%',
   },
   deleteButtonText: {
     fontSize: 16,
