@@ -92,7 +92,7 @@ export default function MeetingScreen() {
           headerTintColor: colors.text,
           headerTitleStyle: {
             color: colors.text,
-            fontSize: getFontSizeValue(18),
+            fontSize: getFontSizeValue(22),
           },
         }}
       />
@@ -108,8 +108,8 @@ export default function MeetingScreen() {
               styles.title,
               {
                 color: colors.text,
-                fontSize: getFontSizeValue(20),
-                lineHeight: getFontSizeValue(28),
+                fontSize: getFontSizeValue(24),
+                lineHeight: getFontSizeValue(32),
               },
             ]}>
             {t('meeting.onlineTitle')}
@@ -121,9 +121,9 @@ export default function MeetingScreen() {
               styles.paragraph,
               {
                 color: colors.textSecondary,
-                fontSize: getFontSizeValue(20),
-                lineHeight: getFontSizeValue(30),
-                marginBottom: getFontSizeValue(30),
+                fontSize: getFontSizeValue(24),
+                lineHeight: getFontSizeValue(34),
+                marginBottom: getFontSizeValue(34),
               },
             ]}>
             {t('meeting.welcome')}
@@ -141,7 +141,7 @@ export default function MeetingScreen() {
                   marginBottom:
                     index === zoomMeetings.length - 1
                       ? 0
-                      : getFontSizeValue(18),
+                      : getFontSizeValue(22),
                 },
               ]}>
               <Text
@@ -149,7 +149,7 @@ export default function MeetingScreen() {
                   styles.meetingTitle,
                   {
                     color: colors.text,
-                    fontSize: getFontSizeValue(20),
+                    fontSize: getFontSizeValue(24),
                   },
                 ]}>
                 {meeting.title}
@@ -159,7 +159,7 @@ export default function MeetingScreen() {
               <View style={styles.infoRow}>
                 <Ionicons
                   name='time-outline'
-                  size={getFontSizeValue(20)}
+                  size={getFontSizeValue(24)}
                   color={colors.textSecondary}
                 />
                 <Text
@@ -167,7 +167,7 @@ export default function MeetingScreen() {
                     styles.infoText,
                     {
                       color: colors.textSecondary,
-                      fontSize: getFontSizeValue(18),
+                      fontSize: getFontSizeValue(22),
                     },
                   ]}>
                   {meeting.time}
@@ -178,7 +178,7 @@ export default function MeetingScreen() {
               <View style={styles.infoRow}>
                 <Ionicons
                   name='key-outline'
-                  size={getFontSizeValue(20)}
+                  size={getFontSizeValue(24)}
                   color={colors.textSecondary}
                 />
                 <Text
@@ -186,7 +186,7 @@ export default function MeetingScreen() {
                     styles.infoText,
                     {
                       color: colors.textSecondary,
-                      fontSize: getFontSizeValue(18),
+                      fontSize: getFontSizeValue(22),
                     },
                   ]}>
                   {t('meeting.idLabel')}: {meeting.meetingId}
@@ -197,7 +197,7 @@ export default function MeetingScreen() {
               <View style={styles.infoRow}>
                 <Ionicons
                   name='lock-closed-outline'
-                  size={getFontSizeValue(20)}
+                  size={getFontSizeValue(24)}
                   color={colors.textSecondary}
                 />
                 <Text
@@ -205,7 +205,7 @@ export default function MeetingScreen() {
                     styles.infoText,
                     {
                       color: colors.textSecondary,
-                      fontSize: getFontSizeValue(18),
+                      fontSize: getFontSizeValue(22),
                     },
                   ]}>
                   {t('meeting.passwordLabel') || '密码'}: {meeting.password}
@@ -221,14 +221,14 @@ export default function MeetingScreen() {
                   ]}>
                   <Ionicons
                     name='star'
-                    size={getFontSizeValue(18)}
+                    size={getFontSizeValue(22)}
                     color={colors.primary}
                     style={{ marginRight: 6 }}
                   />
                   <Text
                     style={[
                       styles.specialText,
-                      { color: colors.primary, fontSize: getFontSizeValue(16) },
+                      { color: colors.primary, fontSize: getFontSizeValue(20) },
                     ]}>
                     {meeting.special}
                   </Text>
@@ -245,13 +245,13 @@ export default function MeetingScreen() {
                   ]}>
                   <Ionicons
                     name='copy-outline'
-                    size={getFontSizeValue(20)}
+                    size={getFontSizeValue(24)}
                     color={colors.primary}
                   />
                   <Text
                     style={[
                       styles.actionButtonText,
-                      { color: colors.primary, fontSize: getFontSizeValue(18) },
+                      { color: colors.primary, fontSize: getFontSizeValue(22) },
                     ]}>
                     {t('meeting.copyInfo')}
                   </Text>
@@ -265,13 +265,13 @@ export default function MeetingScreen() {
                   ]}>
                   <Ionicons
                     name='videocam-outline'
-                    size={getFontSizeValue(20)}
+                    size={getFontSizeValue(24)}
                     color='#FFFFFF'
                   />
                   <Text
                     style={[
                       styles.actionButtonText,
-                      { color: '#FFFFFF', fontSize: getFontSizeValue(14) },
+                      { color: '#FFFFFF', fontSize: getFontSizeValue(18) },
                     ]}>
                     {t('meeting.joinMeeting')}
                   </Text>
@@ -292,27 +292,27 @@ export default function MeetingScreen() {
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
             <Ionicons
               name='checkmark-circle'
-              size={getFontSizeValue(48)}
+              size={getFontSizeValue(52)}
               color={colors.primary}
             />
             <Text
               style={[
                 styles.modalTitle,
-                { color: colors.text, fontSize: getFontSizeValue(18) },
+                { color: colors.text, fontSize: getFontSizeValue(22) },
               ]}>
               {t('meeting.copiedSuccess')}
             </Text>
             <Text
               style={[
                 styles.modalText,
-                { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
+                { color: colors.textSecondary, fontSize: getFontSizeValue(18) },
               ]}>
               {t('meeting.copiedInfo', { title: copiedMeeting?.title })}
             </Text>
             <Text
               style={[
                 styles.modalSubText,
-                { color: colors.textTertiary, fontSize: getFontSizeValue(12) },
+                { color: colors.textTertiary, fontSize: getFontSizeValue(16) },
               ]}>
               {t('meeting.copiedDetail')}
             </Text>
