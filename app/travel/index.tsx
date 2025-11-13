@@ -574,11 +574,11 @@ export default function TravelScreen() {
       <View style={[styles.scheduleItem, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <View style={styles.scheduleHeader}>
           <View style={styles.scheduleInfo}>
-            <Text style={[styles.scheduleDate, { color: colors.text }]}>
+            <Text style={[styles.scheduleDate, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
               {formatDisplayDate(item.startDate)} - {formatDisplayDate(item.endDate)}
             </Text>
             {viewMode === 'all' && displayName && (
-              <Text style={[styles.scheduleUser, { color: colors.textSecondary }]}>
+              <Text style={[styles.scheduleUser, { color: colors.textSecondary, fontSize: getFontSizeValue(14) }]}>
                 {displayName}
               </Text>
             )}
@@ -601,12 +601,12 @@ export default function TravelScreen() {
           )}
         </View>
         {item.destination && (
-          <Text style={[styles.scheduleDestination, { color: colors.text }]}>
+          <Text style={[styles.scheduleDestination, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
             <Ionicons name="location" size={14} color={colors.primary} /> {item.destination}
           </Text>
         )}
         {item.notes && (
-          <Text style={[styles.scheduleNotes, { color: colors.textSecondary }]}>
+          <Text style={[styles.scheduleNotes, { color: colors.textSecondary, fontSize: getFontSizeValue(14) }]}>
             {item.notes}
           </Text>
         )}
@@ -644,7 +644,7 @@ export default function TravelScreen() {
             <Text
               style={[
                 styles.viewModeText,
-                { color: viewMode === 'my' ? '#fff' : colors.text },
+                { color: viewMode === 'my' ? '#fff' : colors.text, fontSize: getFontSizeValue(14) },
               ]}
             >
               {t('travel.mySchedules', { defaultValue: '我的行程' })}
@@ -660,7 +660,7 @@ export default function TravelScreen() {
             <Text
               style={[
                 styles.viewModeText,
-                { color: viewMode === 'all' ? '#fff' : colors.text },
+                { color: viewMode === 'all' ? '#fff' : colors.text, fontSize: getFontSizeValue(14) },
               ]}
             >
               {t('travel.allSchedules', { defaultValue: '全部行程' })}
@@ -676,7 +676,7 @@ export default function TravelScreen() {
             <Text
               style={[
                 styles.viewModeText,
-                { color: viewMode === 'availability' ? '#fff' : colors.text },
+                { color: viewMode === 'availability' ? '#fff' : colors.text, fontSize: getFontSizeValue(14) },
               ]}
             >
               {t('travel.availability', { defaultValue: '是否在家' })}
@@ -691,7 +691,7 @@ export default function TravelScreen() {
             onPress={() => openForm()}
           >
             <Ionicons name="add" size={24} color="#fff" />
-            <Text style={styles.addButtonText}>
+            <Text style={[styles.addButtonText, { fontSize: getFontSizeValue(16) }]}>
               {t('travel.addSchedule') || '添加行程'}
             </Text>
           </TouchableOpacity>
@@ -711,7 +711,7 @@ export default function TravelScreen() {
                 <TouchableOpacity onPress={() => changeMonth('prev')}>
                   <Ionicons name="chevron-back" size={24} color={colors.text} />
                 </TouchableOpacity>
-                <Text style={[styles.calendarMonth, { color: colors.text }]}>
+                <Text style={[styles.calendarMonth, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
                   {currentMonth.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long' })}
                 </Text>
                 <TouchableOpacity onPress={() => changeMonth('next')}>
@@ -722,7 +722,7 @@ export default function TravelScreen() {
               {/* Weekday Headers */}
               <View style={styles.calendarWeekdays}>
                 {(t('travel.weekdays', { returnObjects: true }) as string[] || ['日', '一', '二', '三', '四', '五', '六']).map((day, index) => (
-                  <Text key={index} style={[styles.calendarWeekday, { color: colors.textSecondary }]}>
+                  <Text key={index} style={[styles.calendarWeekday, { color: colors.textSecondary, fontSize: getFontSizeValue(14) }]}>
                     {day}
                   </Text>
                 ))}
@@ -748,7 +748,7 @@ export default function TravelScreen() {
                       <Text
                         style={[
                           styles.calendarDayText,
-                          { color: day.isCurrentMonth ? colors.text : colors.textSecondary },
+                          { color: day.isCurrentMonth ? colors.text : colors.textSecondary, fontSize: getFontSizeValue(16) },
                           isSelected && { color: '#fff' },
                         ]}
                       >
@@ -764,13 +764,13 @@ export default function TravelScreen() {
             {loadingAvailability ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={colors.primary} />
-                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                <Text style={[styles.emptyText, { color: colors.textSecondary, fontSize: getFontSizeValue(16) }]}>
                   {t('travel.loading') || '加载中...'}
                 </Text>
               </View>
             ) : availabilityData ? (
               <View style={styles.availabilityList}>
-                <Text style={[styles.availabilityDateTitle, { color: colors.text }]}>
+                <Text style={[styles.availabilityDateTitle, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
                   {formatDisplayDate(availabilityData.date)} {t('travel.availability') || '可用性'}
                 </Text>
                 <FlatList
@@ -786,14 +786,14 @@ export default function TravelScreen() {
                           ) : (
                             <Ionicons name="close-circle" size={20} color="#FF3B30" />
                           )}
-                          <Text style={[styles.availabilityName, { color: colors.text }]}>
+                          <Text style={[styles.availabilityName, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
                             {item.name}
                           </Text>
                         </View>
                         <Text
                           style={[
                             styles.availabilityStatusText,
-                            { color: item.isAvailable ? '#4CD964' : '#FF3B30' },
+                            { color: item.isAvailable ? '#4CD964' : '#FF3B30', fontSize: getFontSizeValue(14) },
                           ]}
                         >
                           {item.isAvailable
@@ -803,11 +803,11 @@ export default function TravelScreen() {
                       </View>
                       {!item.isAvailable && item.schedule && (
                         <View style={[styles.availabilityDetails, { borderTopColor: colors.border }]}>
-                          <Text style={[styles.availabilityDestination, { color: colors.textSecondary }]}>
+                          <Text style={[styles.availabilityDestination, { color: colors.textSecondary, fontSize: getFontSizeValue(14) }]}>
                             <Ionicons name="location" size={14} color={colors.textSecondary} />{' '}
                             {item.schedule.destination || t('travel.noDestination') || '未指定目的地'}
                           </Text>
-                          <Text style={[styles.availabilityDateRange, { color: colors.textSecondary }]}>
+                          <Text style={[styles.availabilityDateRange, { color: colors.textSecondary, fontSize: getFontSizeValue(12) }]}>
                             {formatDisplayDate(item.schedule.startDate)} - {formatDisplayDate(item.schedule.endDate)}
                           </Text>
                         </View>
@@ -819,7 +819,7 @@ export default function TravelScreen() {
             ) : (
               <View style={styles.emptyContainer}>
                 <Ionicons name="calendar-outline" size={60} color={colors.textSecondary} />
-                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                <Text style={[styles.emptyText, { color: colors.textSecondary, fontSize: getFontSizeValue(16) }]}>
                   {t('travel.selectDate') || '请选择日期查看是否在家'}
                 </Text>
               </View>
@@ -837,7 +837,7 @@ export default function TravelScreen() {
             ) : schedules.length === 0 ? (
               <View style={styles.emptyContainer}>
                 <Ionicons name="calendar-outline" size={64} color={colors.textSecondary} />
-                <Text style={[styles.emptyText, { color: colors.textSecondary }]}>
+                <Text style={[styles.emptyText, { color: colors.textSecondary, fontSize: getFontSizeValue(16) }]}>
                   {t('travel.noSchedules') || '暂无行程记录'}
                 </Text>
               </View>
@@ -895,11 +895,11 @@ export default function TravelScreen() {
                     }}
                     style={styles.modalHeaderButton}
                   >
-                    <Text style={[styles.modalHeaderButtonText, { color: colors.text }]}>
+                    <Text style={[styles.modalHeaderButtonText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
                       {t('common.cancel') || '取消'}
                     </Text>
                   </TouchableOpacity>
-                  <Text style={[styles.modalTitle, { color: colors.text }]}>
+                  <Text style={[styles.modalTitle, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
                     {editingSchedule
                       ? t('travel.editSchedule') || '编辑行程'
                       : t('travel.addSchedule') || '添加行程'}
@@ -912,7 +912,7 @@ export default function TravelScreen() {
                     {submitting ? (
                       <ActivityIndicator size="small" color={colors.primary} />
                     ) : (
-                      <Text style={[styles.modalHeaderButtonText, { color: colors.primary }]}>
+                      <Text style={[styles.modalHeaderButtonText, { color: colors.primary, fontSize: getFontSizeValue(16) }]}>
                         {t('common.save') || '保存'}
                       </Text>
                     )}
@@ -932,14 +932,14 @@ export default function TravelScreen() {
                 >
                 {/* Start Date */}
                 <View style={styles.formGroup}>
-                  <Text style={[styles.label, { color: colors.text }]}>
+                  <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
                     {t('travel.startDate') || '开始日期'} *
                   </Text>
                   <TouchableOpacity
                     style={[styles.dateButton, { backgroundColor: colors.card, borderColor: colors.border }]}
                     onPress={() => setShowStartDatePicker(true)}
                   >
-                    <Text style={[styles.dateButtonText, { color: colors.text }]}>
+                    <Text style={[styles.dateButtonText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
                       {formatDisplayDate(formatDate(startDate))}
                     </Text>
                     <Ionicons name="calendar" size={20} color={colors.primary} />
@@ -964,14 +964,14 @@ export default function TravelScreen() {
 
                 {/* End Date */}
                 <View style={styles.formGroup}>
-                  <Text style={[styles.label, { color: colors.text }]}>
+                  <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
                     {t('travel.endDate') || '结束日期'} *
                   </Text>
                   <TouchableOpacity
                     style={[styles.dateButton, { backgroundColor: colors.card, borderColor: colors.border }]}
                     onPress={() => setShowEndDatePicker(true)}
                   >
-                    <Text style={[styles.dateButtonText, { color: colors.text }]}>
+                    <Text style={[styles.dateButtonText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
                       {formatDisplayDate(formatDate(endDate))}
                     </Text>
                     <Ionicons name="calendar" size={20} color={colors.primary} />
@@ -994,11 +994,11 @@ export default function TravelScreen() {
 
                 {/* Destination */}
                 <View style={styles.formGroup}>
-                  <Text style={[styles.label, { color: colors.text }]}>
+                  <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
                     {t('travel.destination') || '目的地'}
                   </Text>
                   <TextInput
-                    style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border }]}
+                    style={[styles.input, { backgroundColor: colors.card, color: colors.text, borderColor: colors.border, fontSize: getFontSizeValue(16) }]}
                     value={destination}
                     onChangeText={setDestination}
                     placeholder={t('travel.destinationPlaceholder') || '请输入目的地（可选）'}
@@ -1008,14 +1008,14 @@ export default function TravelScreen() {
 
                 {/* Notes */}
                 <View style={styles.formGroup}>
-                  <Text style={[styles.label, { color: colors.text }]}>
+                  <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
                     {t('travel.notes') || '备注'}
                   </Text>
                   <TextInput
                     style={[
                       styles.input,
                       styles.textArea,
-                      { backgroundColor: colors.card, color: colors.text, borderColor: colors.border },
+                      { backgroundColor: colors.card, color: colors.text, borderColor: colors.border, fontSize: getFontSizeValue(16) },
                     ]}
                     value={notes}
                     onChangeText={setNotes}
@@ -1040,7 +1040,7 @@ export default function TravelScreen() {
                       disabled={submitting}
                     >
                       <Ionicons name="trash" size={18} color="#ff4444" />
-                      <Text style={[styles.deleteButtonText, { color: '#ff4444' }]}>
+                      <Text style={[styles.deleteButtonText, { color: '#ff4444', fontSize: getFontSizeValue(16) }]}>
                         {t('common.delete') || '删除'}
                       </Text>
                     </TouchableOpacity>
@@ -1079,7 +1079,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   viewModeText: {
-    fontSize: 14,
     fontWeight: '500',
   },
   addButton: {
@@ -1093,7 +1092,6 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: '#fff',
-    fontSize: 16,
     fontWeight: '600',
     marginLeft: 8,
   },
@@ -1110,7 +1108,6 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     marginTop: 16,
-    fontSize: 16,
   },
   listContent: {
     padding: 16,
@@ -1131,12 +1128,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scheduleDate: {
-    fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
   },
   scheduleUser: {
-    fontSize: 14,
   },
   scheduleActions: {
     flexDirection: 'row',
@@ -1150,11 +1145,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   scheduleDestination: {
-    fontSize: 14,
     marginTop: 8,
   },
   scheduleNotes: {
-    fontSize: 14,
     marginTop: 8,
   },
   modalOverlay: {
@@ -1193,11 +1186,9 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   modalHeaderButtonText: {
-    fontSize: 16,
     fontWeight: '500',
   },
   modalTitle: {
-    fontSize: 18,
     fontWeight: '600',
     flex: 1,
     textAlign: 'center',
@@ -1213,7 +1204,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   label: {
-    fontSize: 14,
     fontWeight: '500',
     marginBottom: 8,
   },
@@ -1226,13 +1216,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   dateButtonText: {
-    fontSize: 16,
   },
   input: {
     padding: 12,
     borderRadius: 8,
     borderWidth: 1,
-    fontSize: 16,
   },
   textArea: {
     minHeight: 100,
@@ -1256,7 +1244,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   deleteButtonText: {
-    fontSize: 16,
     fontWeight: '500',
   },
   cancelButton: {
@@ -1267,7 +1254,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelButtonText: {
-    fontSize: 16,
     fontWeight: '500',
   },
   submitButton: {
@@ -1278,7 +1264,6 @@ const styles = StyleSheet.create({
   },
   submitButtonText: {
     color: '#fff',
-    fontSize: 16,
     fontWeight: '600',
   },
   // Availability view styles
@@ -1303,7 +1288,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   calendarMonth: {
-    fontSize: 18,
     fontWeight: '600',
   },
   calendarWeekdays: {
@@ -1313,7 +1297,6 @@ const styles = StyleSheet.create({
   calendarWeekday: {
     flex: 1,
     textAlign: 'center',
-    fontSize: 14,
     fontWeight: '500',
   },
   calendarDays: {
@@ -1329,14 +1312,12 @@ const styles = StyleSheet.create({
     marginVertical: 2,
   },
   calendarDayText: {
-    fontSize: 16,
     fontWeight: '500',
   },
   availabilityList: {
     padding: 16,
   },
   availabilityDateTitle: {
-    fontSize: 18,
     fontWeight: '600',
     marginBottom: 16,
   },
@@ -1358,11 +1339,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   availabilityName: {
-    fontSize: 16,
     fontWeight: '500',
   },
   availabilityStatusText: {
-    fontSize: 14,
     fontWeight: '500',
   },
   availabilityDetails: {
@@ -1371,11 +1350,9 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
   },
   availabilityDestination: {
-    fontSize: 14,
     marginBottom: 4,
   },
   availabilityDateRange: {
-    fontSize: 12,
   },
 });
 

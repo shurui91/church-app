@@ -406,7 +406,7 @@ export default function AttendanceScreen() {
           {/* Form Section */}
           <View style={[styles.formSection, { backgroundColor: colors.card }]}>
             <View style={styles.sectionHeader}>
-              <Text style={[styles.sectionTitle, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
+              <Text style={[styles.sectionTitle, { color: colors.text, fontSize: getFontSizeValue(24) }]}>
                 {editingRecord ? (t('attendance.editRecordTitle') || '编辑记录') : (t('attendance.newRecord') || '新增记录')}
               </Text>
               {(editingRecord || meetingType || selectedDistrict || selectedGroup || adultCount || youthChildCount) && (
@@ -431,7 +431,7 @@ export default function AttendanceScreen() {
 
             {/* Date Picker */}
             <View style={styles.inputContainer}>
-              <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
+              <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
                 {t('attendance.date') || '日期'} *
               </Text>
               <TouchableOpacity
@@ -446,7 +446,7 @@ export default function AttendanceScreen() {
                     setShowDatePicker(true);
                   }
                 }}>
-                <Text style={[styles.inputText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+                <Text style={[styles.inputText, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
                   {formatDate(date)}
                 </Text>
                 <Ionicons name="calendar-outline" size={20} color={colors.textSecondary} />
@@ -455,7 +455,7 @@ export default function AttendanceScreen() {
 
             {/* Meeting Type Picker */}
             <View style={styles.inputContainer}>
-              <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
+              <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
                 {t('attendance.meetingType') || '聚会类型'} *
               </Text>
               <TouchableOpacity
@@ -464,7 +464,7 @@ export default function AttendanceScreen() {
                   { backgroundColor: colors.background, borderColor: colors.border },
                 ]}
                 onPress={() => setShowMeetingTypePicker(true)}>
-                <Text style={[styles.inputText, { color: meetingType ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
+                <Text style={[styles.inputText, { color: meetingType ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(20) }]}>
                   {meetingType ? getMeetingTypeLabel(meetingType) : t('attendance.selectMeetingType') || '选择聚会类型'}
                 </Text>
                 <Ionicons name="chevron-down-outline" size={20} color={colors.textSecondary} />
@@ -476,7 +476,7 @@ export default function AttendanceScreen() {
               <>
                 {/* District Picker */}
                 <View style={styles.inputContainer}>
-                  <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
+                  <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
                     {t('attendance.selectDistrict') || '选择大区'} *
                   </Text>
                   <TouchableOpacity
@@ -485,7 +485,7 @@ export default function AttendanceScreen() {
                       { backgroundColor: colors.background, borderColor: colors.border },
                     ]}
                     onPress={() => setShowDistrictPicker(true)}>
-                    <Text style={[styles.inputText, { color: selectedDistrict ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
+                    <Text style={[styles.inputText, { color: selectedDistrict ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(20) }]}>
                       {selectedDistrict || t('attendance.selectDistrict') || '选择大区'}
                     </Text>
                     <Ionicons name="chevron-down-outline" size={20} color={colors.textSecondary} />
@@ -494,7 +494,7 @@ export default function AttendanceScreen() {
 
                 {/* Group Picker */}
                 <View style={styles.inputContainer}>
-                  <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
+                  <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
                     {t('attendance.selectGroup') || '选择小排'} *
                   </Text>
                   <TouchableOpacity
@@ -503,7 +503,7 @@ export default function AttendanceScreen() {
                       { backgroundColor: colors.background, borderColor: colors.border },
                     ]}
                     onPress={() => setShowGroupPicker(true)}>
-                    <Text style={[styles.inputText, { color: selectedGroup ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
+                    <Text style={[styles.inputText, { color: selectedGroup ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(20) }]}>
                       {selectedGroup || t('attendance.selectGroup') || '选择小排'}
                     </Text>
                     <Ionicons name="chevron-down-outline" size={20} color={colors.textSecondary} />
@@ -514,12 +514,12 @@ export default function AttendanceScreen() {
 
             {/* Adult Count */}
             <View style={styles.inputContainer}>
-              <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
+              <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
                 {t('attendance.adultCount') || '出席的成年人'} *
               </Text>
               <View style={[styles.inputWrapper, { backgroundColor: colors.background, borderColor: colors.border }]}>
                 <TextInput
-                  style={[styles.input, { color: colors.text, fontSize: getFontSizeValue(16) }]}
+                  style={[styles.input, { color: colors.text, fontSize: getFontSizeValue(20) }]}
                   placeholder="0"
                   placeholderTextColor={colors.textTertiary}
                   value={adultCount}
@@ -534,12 +534,12 @@ export default function AttendanceScreen() {
 
             {/* Youth/Child Count */}
             <View style={styles.inputContainer}>
-              <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
+              <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
                 {t('attendance.youthChildCount') || '出席的青少年或儿童'} *
               </Text>
               <View style={[styles.inputWrapper, { backgroundColor: colors.background, borderColor: colors.border }]}>
                 <TextInput
-                  style={[styles.input, { color: colors.text, fontSize: getFontSizeValue(16) }]}
+                  style={[styles.input, { color: colors.text, fontSize: getFontSizeValue(20) }]}
                   placeholder="0"
                   placeholderTextColor={colors.textTertiary}
                   value={youthChildCount}
@@ -564,7 +564,7 @@ export default function AttendanceScreen() {
               {submitting ? (
                 <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={[styles.submitButtonText, { fontSize: getFontSizeValue(16) }]}>
+                <Text style={[styles.submitButtonText, { fontSize: getFontSizeValue(20) }]}>
                   {t('attendance.submit') || '提交'}
                 </Text>
               )}
@@ -573,20 +573,20 @@ export default function AttendanceScreen() {
 
           {/* History Section */}
           <View style={[styles.historySection, { backgroundColor: colors.card }]}>
-            <Text style={[styles.sectionTitle, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
+            <Text style={[styles.sectionTitle, { color: colors.text, fontSize: getFontSizeValue(24) }]}>
               {t('attendance.history') || '历史记录'}
             </Text>
 
             {loadingRecords ? (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={colors.primary} />
-                <Text style={[styles.loadingText, { color: colors.textSecondary, fontSize: getFontSizeValue(14) }]}>
+                <Text style={[styles.loadingText, { color: colors.textSecondary, fontSize: getFontSizeValue(18) }]}>
                   {t('attendance.loadingRecords') || '加载记录中...'}
                 </Text>
               </View>
             ) : getFilteredRecords().length === 0 ? (
               <View style={styles.emptyContainer}>
-                <Text style={[styles.emptyText, { color: colors.textSecondary, fontSize: getFontSizeValue(14) }]}>
+                <Text style={[styles.emptyText, { color: colors.textSecondary, fontSize: getFontSizeValue(18) }]}>
                   {t('attendance.noRecords') || '暂无记录'}
                 </Text>
               </View>
@@ -597,7 +597,7 @@ export default function AttendanceScreen() {
                 renderItem={({ item }) => (
                   <View style={[styles.recordItem, { backgroundColor: colors.background, borderColor: colors.border }]}>
                     <View style={styles.recordHeader}>
-                      <Text style={[styles.recordDate, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+                      <Text style={[styles.recordDate, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
                         {item.date}
                       </Text>
                       <View style={styles.recordActions}>
@@ -613,16 +613,16 @@ export default function AttendanceScreen() {
                         </TouchableOpacity>
                       </View>
                     </View>
-                    <Text style={[styles.recordType, { color: colors.textSecondary, fontSize: getFontSizeValue(14) }]}>
+                    <Text style={[styles.recordType, { color: colors.textSecondary, fontSize: getFontSizeValue(18) }]}>
                       {getMeetingTypeLabel(item.meetingType)}
                       {item.scope === 'full_congregation' && ' - 全会众'}
                       {item.scope === 'small_group' && item.scopeValue && ` - ${item.scopeValue}`}
                     </Text>
                     <View style={styles.recordCounts}>
-                      <Text style={[styles.recordCount, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
+                      <Text style={[styles.recordCount, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
                         成年人: {item.adultCount}
                       </Text>
-                      <Text style={[styles.recordCount, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
+                      <Text style={[styles.recordCount, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
                         青少年/儿童: {item.youthChildCount}
                       </Text>
                     </View>
@@ -646,18 +646,18 @@ export default function AttendanceScreen() {
             <View style={[styles.datePickerModalContent, { backgroundColor: colors.card }]}>
               <View style={styles.datePickerModalHeader}>
                 <TouchableOpacity onPress={() => setShowDatePicker(false)}>
-                  <Text style={[styles.datePickerModalCancel, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+                  <Text style={[styles.datePickerModalCancel, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
                     {t('common.cancel') || '取消'}
                   </Text>
                 </TouchableOpacity>
-                <Text style={[styles.datePickerModalTitle, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
+                <Text style={[styles.datePickerModalTitle, { color: colors.text, fontSize: getFontSizeValue(22) }]}>
                   {t('attendance.selectDate') || '选择日期'}
                 </Text>
                 <TouchableOpacity
                   onPress={() => {
                     setShowDatePicker(false);
                   }}>
-                  <Text style={[styles.datePickerModalDone, { color: colors.primary, fontSize: getFontSizeValue(16) }]}>
+                  <Text style={[styles.datePickerModalDone, { color: colors.primary, fontSize: getFontSizeValue(20) }]}>
                     {t('common.ok') || '确定'}
                   </Text>
                 </TouchableOpacity>
@@ -708,7 +708,7 @@ export default function AttendanceScreen() {
           />
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
+              <Text style={[styles.modalTitle, { color: colors.text, fontSize: getFontSizeValue(22) }]}>
                 {t('attendance.selectMeetingType') || '选择聚会类型'}
               </Text>
               <TouchableOpacity
@@ -729,7 +729,7 @@ export default function AttendanceScreen() {
                   setMeetingType(type);
                   setShowMeetingTypePicker(false);
                 }}>
-                <Text style={[styles.modalOptionText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+                <Text style={[styles.modalOptionText, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
                   {getMeetingTypeLabel(type)}
                 </Text>
                 {meetingType === type && (
@@ -740,7 +740,7 @@ export default function AttendanceScreen() {
             <TouchableOpacity
               style={[styles.modalCancelButton, { borderTopColor: colors.border }]}
               onPress={() => setShowMeetingTypePicker(false)}>
-              <Text style={[styles.modalCancelText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+              <Text style={[styles.modalCancelText, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
                 {t('common.cancel') || '取消'}
               </Text>
             </TouchableOpacity>
@@ -762,7 +762,7 @@ export default function AttendanceScreen() {
           />
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
+              <Text style={[styles.modalTitle, { color: colors.text, fontSize: getFontSizeValue(22) }]}>
                 {t('attendance.selectDistrict') || '选择大区'}
               </Text>
               <TouchableOpacity
@@ -773,7 +773,7 @@ export default function AttendanceScreen() {
             </View>
             {districts.length === 0 ? (
               <View style={styles.modalOption}>
-                <Text style={[styles.modalOptionText, { color: colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
+                <Text style={[styles.modalOptionText, { color: colors.textTertiary, fontSize: getFontSizeValue(20) }]}>
                   {t('attendance.noRecords') || '暂无选项'}
                 </Text>
               </View>
@@ -790,7 +790,7 @@ export default function AttendanceScreen() {
                     setSelectedDistrict(district);
                     setShowDistrictPicker(false);
                   }}>
-                  <Text style={[styles.modalOptionText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+                  <Text style={[styles.modalOptionText, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
                     {district}
                   </Text>
                   {selectedDistrict === district && (
@@ -802,7 +802,7 @@ export default function AttendanceScreen() {
             <TouchableOpacity
               style={[styles.modalCancelButton, { borderTopColor: colors.border }]}
               onPress={() => setShowDistrictPicker(false)}>
-              <Text style={[styles.modalCancelText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+              <Text style={[styles.modalCancelText, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
                 {t('common.cancel') || '取消'}
               </Text>
             </TouchableOpacity>
@@ -824,7 +824,7 @@ export default function AttendanceScreen() {
           />
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
             <View style={styles.modalHeader}>
-              <Text style={[styles.modalTitle, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
+              <Text style={[styles.modalTitle, { color: colors.text, fontSize: getFontSizeValue(22) }]}>
                 {t('attendance.selectGroup') || '选择小排'}
               </Text>
               <TouchableOpacity
@@ -835,7 +835,7 @@ export default function AttendanceScreen() {
             </View>
             {getGroupsForDistrict(selectedDistrict).length === 0 ? (
               <View style={styles.modalOption}>
-                <Text style={[styles.modalOptionText, { color: colors.textTertiary, fontSize: getFontSizeValue(16) }]}>
+                <Text style={[styles.modalOptionText, { color: colors.textTertiary, fontSize: getFontSizeValue(20) }]}>
                   {selectedDistrict ? (t('attendance.selectDistrictFirst') || '请先选择大区') : (t('attendance.noRecords') || '暂无选项')}
                 </Text>
               </View>
@@ -852,7 +852,7 @@ export default function AttendanceScreen() {
                     setSelectedGroup(group);
                     setShowGroupPicker(false);
                   }}>
-                  <Text style={[styles.modalOptionText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+                  <Text style={[styles.modalOptionText, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
                     {group}
                   </Text>
                   {selectedGroup === group && (
@@ -864,7 +864,7 @@ export default function AttendanceScreen() {
             <TouchableOpacity
               style={[styles.modalCancelButton, { borderTopColor: colors.border }]}
               onPress={() => setShowGroupPicker(false)}>
-              <Text style={[styles.modalCancelText, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+              <Text style={[styles.modalCancelText, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
                 {t('common.cancel') || '取消'}
               </Text>
             </TouchableOpacity>

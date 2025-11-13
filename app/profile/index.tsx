@@ -115,7 +115,7 @@ export default function ProfileScreen() {
           <Text
             style={[
               styles.title,
-              { color: colors.text, fontSize: getFontSizeValue(24) },
+              { color: colors.text, fontSize: getFontSizeValue(28) },
             ]}>
             {t('profile.pageTitle') || '我的'}
           </Text>
@@ -140,7 +140,7 @@ export default function ProfileScreen() {
                     styles.userInfoLabel,
                     {
                       color: colors.textSecondary,
-                      fontSize: getFontSizeValue(12),
+                      fontSize: getFontSizeValue(16),
                     },
                   ]}>
                   {t('profile.phonenumber') || '手机号'}
@@ -148,7 +148,7 @@ export default function ProfileScreen() {
                 <Text
                   style={[
                     styles.userInfoValue,
-                    { color: colors.text, fontSize: getFontSizeValue(16) },
+                    { color: colors.text, fontSize: getFontSizeValue(20) },
                   ]}>
                   {(() => {
                     const phone = user.phoneNumber.replace('+1', '').replace(/\D/g, '');
@@ -173,7 +173,7 @@ export default function ProfileScreen() {
                       styles.userInfoLabel,
                       {
                         color: colors.textSecondary,
-                        fontSize: getFontSizeValue(12),
+                        fontSize: getFontSizeValue(16),
                       },
                     ]}>
                     {t('profile.name') || '姓名'}
@@ -181,7 +181,7 @@ export default function ProfileScreen() {
                   <Text
                     style={[
                       styles.userInfoValue,
-                      { color: colors.text, fontSize: getFontSizeValue(16) },
+                      { color: colors.text, fontSize: getFontSizeValue(20) },
                     ]}>
                     {user.nameZh || user.nameEn || user.name || 'N/A'}
                   </Text>
@@ -201,7 +201,7 @@ export default function ProfileScreen() {
                       styles.userInfoLabel,
                       {
                         color: colors.textSecondary,
-                        fontSize: getFontSizeValue(12),
+                        fontSize: getFontSizeValue(16),
                       },
                     ]}>
                     {t('profile.district') || '大区/小组'}
@@ -209,7 +209,7 @@ export default function ProfileScreen() {
                   <Text
                     style={[
                       styles.userInfoValue,
-                      { color: colors.text, fontSize: getFontSizeValue(16) },
+                      { color: colors.text, fontSize: getFontSizeValue(20) },
                     ]}>
                     {user.district && user.groupNum
                       ? `${user.district} - ${user.groupNum}`
@@ -251,7 +251,7 @@ export default function ProfileScreen() {
                     <Text
                       style={[
                         styles.userInfoValue,
-                        { color: colors.text, fontSize: getFontSizeValue(16) },
+                        { color: colors.text, fontSize: getFontSizeValue(20) },
                       ]}>
                       {roleDisplay}
                     </Text>
@@ -301,7 +301,7 @@ export default function ProfileScreen() {
               <Text
                 style={[
                   styles.logoutButtonText,
-                  { fontSize: getFontSizeValue(16) },
+                  { fontSize: getFontSizeValue(20) },
                 ]}>
                 {t('profile.loggingOut') || '登出中...'}
               </Text>
@@ -311,7 +311,7 @@ export default function ProfileScreen() {
                 <Text
                   style={[
                     styles.logoutButtonText,
-                    { fontSize: getFontSizeValue(16) },
+                    { fontSize: getFontSizeValue(20) },
                   ]}>
                   {t('profile.logout') || '登出'}
                 </Text>
@@ -327,7 +327,7 @@ export default function ProfileScreen() {
               styles.versionText,
               {
                 color: colors.textSecondary,
-                fontSize: getFontSizeValue(12),
+                fontSize: getFontSizeValue(16),
               },
             ]}>
             {t('profile.version') || '版本号'}: 1.0.0

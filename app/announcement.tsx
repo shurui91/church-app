@@ -108,8 +108,8 @@ export default function AnnouncementScreen() {
         <Text
           style={{
             color: colors.text,
-            fontSize: getFontSizeValue(20),
-            lineHeight: getFontSizeValue(20) * 1.5,
+            fontSize: getFontSizeValue(22),
+            lineHeight: getFontSizeValue(22) * 1.5,
           }}>
           {content}
         </Text>
@@ -156,7 +156,7 @@ export default function AnnouncementScreen() {
                 styles.tabText,
                 {
                   color: activeTab === index ? colors.primary : colors.text,
-                  fontSize: getFontSizeValue(18),
+                  fontSize: getFontSizeValue(20),
                 },
               ]}>
               {section.title}

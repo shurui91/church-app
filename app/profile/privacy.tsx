@@ -46,18 +46,18 @@ export default function PrivacyScreen() {
           style={{
             body: {
               color: colors.textSecondary,
-              fontSize: getFontSizeValue(16),
-              lineHeight: getFontSizeValue(24),
+              fontSize: getFontSizeValue(20),
+              lineHeight: getFontSizeValue(28),
             },
             heading1: {
               color: colors.text,
-              fontSize: getFontSizeValue(24),
+              fontSize: getFontSizeValue(28),
               fontWeight: 'bold',
               marginBottom: 12,
             },
             heading2: {
               color: colors.text,
-              fontSize: getFontSizeValue(18),
+              fontSize: getFontSizeValue(22),
               fontWeight: '600',
               marginTop: 16,
               marginBottom: 8,
