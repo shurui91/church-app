@@ -11,7 +11,7 @@ import BackButton from '@/app/components/BackButton';
 export default function HymnDetail() {
   const { id, book } = useLocalSearchParams();
   const colors = useThemeColors();
-  const { getFontSizeValue } = useFontSize();
+  const { fontSize } = useFontSize();
   const { i18n } = useTranslation(); // ✅ 获取语言状态
 
   // ✅ 当前语言判断（zh = 简中, zh-Hant = 繁中）
@@ -37,7 +37,7 @@ export default function HymnDetail() {
   if (!hymn) {
     return (
       <View style={[styles.center, { backgroundColor: colors.background }]}>
-        <Text style={{ color: colors.text, fontSize: getFontSizeValue(18) }}>
+        <Text style={{ color: colors.text, fontSize }}>
           {isTraditional
             ? `找不到詩歌（${book === 'ts' ? '補充本' : '大本'} ${id}）。`
             : `找不到该诗歌（${book === 'ts' ? '补充本' : '大本'} ${id}）。`}
@@ -76,7 +76,7 @@ export default function HymnDetail() {
           style={{
             color: colors.text,
             opacity: 0.7,
-            fontSize: getFontSizeValue(18),
+            fontSize,
             marginBottom: 20,
             textAlign: 'center',
           }}>
@@ -89,8 +89,8 @@ export default function HymnDetail() {
             styles.title,
             {
               color: colors.text,
-              fontSize: getFontSizeValue(26),
-              lineHeight: getFontSizeValue(26) * 1.3,
+              fontSize,
+              lineHeight: fontSize * 1.3,
             },
           ]}>
           {isTraditional ? hymn.title_trad : hymn.title_simp}
@@ -109,7 +109,7 @@ export default function HymnDetail() {
                 <Text
                   style={[
                     styles.sectionTitle,
-                    { color: colors.text, fontSize: getFontSizeValue(18) },
+                    { color: colors.text, fontSize },
                   ]}>
                   {section.type === 'chorus'
                     ? '副'
@@ -121,8 +121,8 @@ export default function HymnDetail() {
                     key={i}
                     style={{
                       color: colors.text,
-                      fontSize: getFontSizeValue(20),
-                      lineHeight: getFontSizeValue(20) * 1.6,
+                      fontSize,
+                      lineHeight: fontSize * 1.6,
                       textAlign: 'center',
                     }}
                     selectable>
@@ -133,7 +133,7 @@ export default function HymnDetail() {
             );
           })
         ) : (
-          <Text style={{ color: colors.text, fontSize: getFontSizeValue(18) }}>
+          <Text style={{ color: colors.text, fontSize }}>
             {isTraditional ? '暫無歌詞內容。' : '暂无歌词内容。'}
           </Text>
         )}
