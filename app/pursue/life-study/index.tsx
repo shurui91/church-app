@@ -342,7 +342,7 @@ export default function LifeStudyIndex() {
             <Text
               style={[
                 styles.text,
-                { color: colors.text, fontSize: getFontSizeValue(20) },
+                { color: colors.text, fontSize: getFontSizeValue(24) },
               ]}>
               {book}
             </Text>
@@ -352,7 +352,7 @@ export default function LifeStudyIndex() {
                   styles.countText,
                   {
                     color: colors.textSecondary,
-                    fontSize: getFontSizeValue(12),
+                    fontSize: getFontSizeValue(16),
                   },
                 ]}>
                 ({articleCount})

@@ -370,7 +370,7 @@ export default function BookArticlesScreen() {
             <Text
               style={[
                 styles.emptyText,
-                { color: colors.textSecondary, fontSize: getFontSizeValue(16) },
+                { color: colors.textSecondary, fontSize: getFontSizeValue(20) },
               ]}>
               暂无文章
             </Text>
@@ -397,7 +397,7 @@ export default function BookArticlesScreen() {
                   styles.articleTitle,
                   {
                     color: colors.text,
-                    fontSize: getFontSizeValue(17),
+                    fontSize: getFontSizeValue(21),
                   },
                 ]}>
                 {article.article_title || article.msg_title}
@@ -408,7 +408,7 @@ export default function BookArticlesScreen() {
                     styles.articleSubtitle,
                     {
                       color: colors.textSecondary,
-                      fontSize: getFontSizeValue(11),
+                      fontSize: getFontSizeValue(15),
                     },
                   ]}
                   numberOfLines={2}>

@@ -444,7 +444,7 @@ export default function ArticleDetailScreen() {
   }
 
   const cleanContent = stripHTML(article.ls_text || '');
-  const fontContent = getFontSizeValue(16);
+  const fontContent = getFontSizeValue(24);
   const lineContent = getLineHeight(fontContent);
 
   return (
@@ -494,8 +494,8 @@ export default function ArticleDetailScreen() {
             styles.title,
             {
               color: colors.text,
-              fontSize: getFontSizeValue(22),
-              lineHeight: getLineHeight(getFontSizeValue(22)),
+              fontSize: getFontSizeValue(30),
+              lineHeight: getLineHeight(getFontSizeValue(30)),
             },
           ]}>
           {article.article_title || article.msg_title}
@@ -508,8 +508,8 @@ export default function ArticleDetailScreen() {
               styles.subtitle,
               {
                 color: colors.textSecondary,
-                fontSize: getFontSizeValue(16),
-                lineHeight: getLineHeight(getFontSizeValue(16)),
+                fontSize: getFontSizeValue(24),
+                lineHeight: getLineHeight(getFontSizeValue(24)),
               },
             ]}>
             {article.ls_title}
