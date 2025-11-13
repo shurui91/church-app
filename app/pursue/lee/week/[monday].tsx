@@ -52,7 +52,7 @@ export default function WeekPage() {
   if (!monday)
     return (
       <View>
-        <Text style={{ fontSize: getFontSizeValue(16) }}>加载中...</Text>
+        <Text style={{ fontSize: getFontSizeValue(18) }}>加载中...</Text>
       </View>
     );
 
@@ -65,7 +65,7 @@ export default function WeekPage() {
   );
 
   // ✅ 动态盒子尺寸
-  const baseFont = getFontSizeValue(16);
+  const baseFont = getFontSizeValue(18);
   const boxSize = baseFont * 5.5; // 原本大约90px，字体变大时也扩大
 
   return (
@@ -88,7 +88,7 @@ export default function WeekPage() {
         <Text
           style={[
             styles.title,
-            { color: colors.text, fontSize: getFontSizeValue(22) },
+            { color: colors.text, fontSize: getFontSizeValue(24) },
           ]}>
           📅 本周进度
         </Text>
@@ -135,7 +135,7 @@ export default function WeekPage() {
                   <Text
                     style={[
                       styles.weekLabel,
-                      { color: textColor, fontSize: getFontSizeValue(18) },
+                      { color: textColor, fontSize: getFontSizeValue(20) },
                     ]}>
                     {weekdayNames[index]}
                   </Text>
@@ -145,7 +145,7 @@ export default function WeekPage() {
                       {
                         color: textColor,
                         fontWeight: isToday ? 'bold' : 'normal',
-                        fontSize: getFontSizeValue(16),
+                        fontSize: getFontSizeValue(18),
                       },
                     ]}>
                     {display}
@@ -154,7 +154,7 @@ export default function WeekPage() {
                     <Text
                       style={[
                         styles.todayTag,
-                        { fontSize: getFontSizeValue(12) },
+                        { fontSize: getFontSizeValue(14) },
                       ]}>
                       今天
                     </Text>
@@ -163,7 +163,7 @@ export default function WeekPage() {
                     <Text
                       style={[
                         styles.noProgressTag,
-                        { fontSize: getFontSizeValue(12) },
+                        { fontSize: getFontSizeValue(14) },
                       ]}>
                       无进度
                     </Text>
@@ -172,7 +172,7 @@ export default function WeekPage() {
                     <Text
                       style={[
                         styles.noProgressTag,
-                        { fontSize: getFontSizeValue(12) },
+                        { fontSize: getFontSizeValue(14) },
                       ]}>
                       无内容
                     </Text>

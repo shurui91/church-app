@@ -50,7 +50,7 @@ function getLineHeight(fontSize: number) {
 export default function LeeDayPage() {
   const { date } = useLocalSearchParams();
   const colors = useThemeColors();
-  const { getFontSizeValue } = useFontSize(); // ✅ 全局字体钩子
+  const { fontSize, getFontSizeValue } = useFontSize(); // 直接使用全局字号设定
 
   const [scrollPercent, setScrollPercent] = useState(0);
   const scrollProgress = useRef(new Animated.Value(0)).current;
@@ -69,7 +69,7 @@ export default function LeeDayPage() {
         <Text
           style={{
             color: colors.text,
-            fontSize: getFontSizeValue(16), // ✅ 全局控制
+            fontSize,
           }}>
           ❌ 没有找到 {date} 的内容
         </Text>
@@ -106,8 +106,9 @@ export default function LeeDayPage() {
   const cleanContent = stripHTML(article.content || '');
 
   // ✅ 动态字号与行距
-  const fontContent = getFontSizeValue(16);
-  const lineContent = getLineHeight(fontContent);
+  const titleFontSize = getFontSizeValue(26); // 标题使用较小的基础字号
+  const contentFontSize = getFontSizeValue(24); // 正文使用较小的基础字号
+  const lineContent = getLineHeight(contentFontSize);
 
   // ✅ 滚动事件：计算进度 + 保存位置
   const handleScroll = async (
@@ -189,7 +190,7 @@ export default function LeeDayPage() {
             styles.progressText,
             {
               color: colors.textSecondary,
-              fontSize: getFontSizeValue(12), // ✅ 全局控制
+              fontSize: 12,
             },
           ]}>
           {scrollPercent}%
@@ -209,8 +210,8 @@ export default function LeeDayPage() {
             styles.collectionTitle,
             {
               color: colors.text,
-              fontSize: getFontSizeValue(22),
-              lineHeight: getLineHeight(getFontSizeValue(22)),
+              fontSize: titleFontSize,
+              lineHeight: getLineHeight(titleFontSize),
             },
           ]}>
           {collectionTitle}
@@ -222,8 +223,8 @@ export default function LeeDayPage() {
             styles.topic,
             {
               color: colors.text,
-              fontSize: getFontSizeValue(18),
-              lineHeight: getLineHeight(getFontSizeValue(18)),
+              fontSize: titleFontSize,
+              lineHeight: getLineHeight(titleFontSize),
             },
           ]}>
           {topicLine}
@@ -235,8 +236,8 @@ export default function LeeDayPage() {
             styles.chapterTitle,
             {
               color: colors.text,
-              fontSize: getFontSizeValue(17),
-              lineHeight: getLineHeight(getFontSizeValue(17)),
+              fontSize: titleFontSize,
+              lineHeight: getLineHeight(titleFontSize),
             },
           ]}>
           {chapterLine}
@@ -248,7 +249,7 @@ export default function LeeDayPage() {
             styles.content,
             {
               color: colors.text,
-              fontSize: fontContent,
+              fontSize: contentFontSize,
               lineHeight: lineContent,
             },
           ]}>
@@ -302,7 +303,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   content: {
-    whiteSpace: 'pre-wrap',
     paddingHorizontal: 20,
   },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
