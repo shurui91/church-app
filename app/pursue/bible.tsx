@@ -64,8 +64,8 @@ function splitToSentences(text: string): string[] {
 
 export default function BibleScreen() {
   const colors = useThemeColors();
-  const { fontSize: rawFontSize } = useFontSize();
-  const fontSize = Math.round(rawFontSize || 16); // 确保是整数
+  const { getFontSizeValue } = useFontSize();
+  const fontSize = getFontSizeValue(24); // 基础字号16，按系统字号比例调整
   const { t, i18n } = useTranslation();
   const lang = useMemo(() => normalizeLang(i18n.language), [i18n.language]);
 
