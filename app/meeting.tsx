@@ -25,7 +25,13 @@ import meetingsZhHant from './src/data/zh-Hant/meetings.json';
 export default function MeetingScreen() {
   const { t, i18n } = useTranslation();
   const colors = useThemeColors();
-  const { getFontSizeValue } = useFontSize();
+  const { fontSize: globalFontSize } = useFontSize();
+  // 使用相对字号，比全局字号小 20%（即全局字号的 80%）
+  const baseFontSize = Math.round(globalFontSize * 0.8);
+  // 辅助函数：根据基础值计算字号（保持相对比例）
+  const getFontSizeValue = (base: number) => {
+    return Math.round((base / 30) * baseFontSize);
+  };
   const [modalVisible, setModalVisible] = useState(false);
   const [copiedMeeting, setCopiedMeeting] = useState<any>(null);
 

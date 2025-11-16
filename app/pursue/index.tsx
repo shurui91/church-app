@@ -10,7 +10,9 @@ export default function PursueHome() {
   const router = useRouter();
   const colors = useThemeColors();
   const { t } = useTranslation();
-  const { getFontSizeValue } = useFontSize(); // ✅ 获取动态字号函数
+  const { fontSize: globalFontSize } = useFontSize();
+  // 使用相对字号，比全局字号小 20%（即全局字号的 80%）
+  const baseFontSize = Math.round(globalFontSize * 0.8);
 
   const handleComingSoon = () => {
     Alert.alert('提示', '功能开发中，敬请期待！');
@@ -37,7 +39,7 @@ export default function PursueHome() {
             styles.title,
             {
               color: colors.text,
-              fontSize: getFontSizeValue(28), // ✅ 全局控制
+              fontSize: Math.round(baseFontSize * (28 / 30)), // 全局字号的80%
             },
           ]}>
           {t('pursue.title')}
@@ -52,7 +54,7 @@ export default function PursueHome() {
               styles.cardText,
               {
                 color: colors.text,
-                fontSize: getFontSizeValue(24), // ✅ 全局控制
+                fontSize: Math.round(baseFontSize * (24 / 30)), // 全局字号的80%
               },
             ]}>
             📖 {t('pursue.bible_one_year')}
@@ -67,7 +69,7 @@ export default function PursueHome() {
           <Text
             style={[
               styles.cardText,
-              { color: colors.text, fontSize: getFontSizeValue(24) },
+              { color: colors.text, fontSize: Math.round(baseFontSize * (24 / 30)) }, // 全局字号的70%
             ]}>
             📚 {t('pursue.life_study')}
           </Text>
@@ -100,7 +102,7 @@ export default function PursueHome() {
               styles.cardText,
               {
                 color: colors.text,
-                fontSize: getFontSizeValue(24), // ✅ 全局控制
+                fontSize: Math.round(baseFontSize * (24 / 30)), // 全局字号的80%
               },
             ]}>
             🕊️ {t('pursue.witness_lee')}
@@ -116,7 +118,7 @@ export default function PursueHome() {
               styles.cardText,
               {
                 color: colors.text,
-                fontSize: getFontSizeValue(24), // ✅ 全局控制
+                fontSize: Math.round(baseFontSize * (24 / 30)), // 全局字号的80%
               },
             ]}>
             🎵 {t('pursue.hymns')}

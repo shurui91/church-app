@@ -11,7 +11,9 @@ import BackButton from '@/app/components/BackButton';
 export default function HymnDetail() {
   const { id, book } = useLocalSearchParams();
   const colors = useThemeColors();
-  const { fontSize } = useFontSize();
+  const { fontSize: globalFontSize } = useFontSize();
+  // 使用相对字号，比全局字号小 20%（即全局字号的 90%）
+  const fontSize = Math.round(globalFontSize * 0.9);
   const { i18n } = useTranslation(); // ✅ 获取语言状态
 
   // ✅ 当前语言判断（zh = 简中, zh-Hant = 繁中）
