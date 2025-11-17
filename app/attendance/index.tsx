@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -95,6 +95,9 @@ export default function AttendanceScreen() {
   const [records, setRecords] = useState<AttendanceRecord[]>([]);
   const [loadingRecords, setLoadingRecords] = useState(false);
   const [editingRecord, setEditingRecord] = useState<AttendanceRecord | null>(null);
+  
+  // ScrollView ref for scrolling to top when editing
+  const scrollViewRef = useRef<ScrollView>(null);
 
   // Load records on mount
   useEffect(() => {
@@ -105,7 +108,13 @@ export default function AttendanceScreen() {
   }, [canAccess]);
 
   // Auto-set scope when meeting type changes
+  // Don't reset district/group when editing an existing record
   useEffect(() => {
+    // Skip auto-reset if we're editing a record (to preserve existing values)
+    if (editingRecord) {
+      return;
+    }
+    
     if (meetingType === 'table') {
       // 主日聚会 → 默认"全会众"
       setScope('full_congregation');
@@ -124,7 +133,7 @@ export default function AttendanceScreen() {
       setSelectedDistrict(null);
       setSelectedGroup(null);
     }
-  }, [meetingType]);
+  }, [meetingType, editingRecord]);
 
   // Update scopeValue when district or group changes
   useEffect(() => {
@@ -189,8 +198,10 @@ export default function AttendanceScreen() {
     today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
     
     return records.filter((record) => {
-      // Parse record date (format: YYYY-MM-DD)
-      const recordDate = new Date(record.date + 'T00:00:00');
+      // Parse record date manually to avoid timezone issues
+      // record.date is in format "YYYY-MM-DD", parse it as local date
+      const [year, month, day] = record.date.split('-').map(Number);
+      const recordDate = new Date(year, month - 1, day); // month is 0-indexed
       recordDate.setHours(0, 0, 0, 0);
       
       // Calculate days difference
@@ -315,9 +326,16 @@ export default function AttendanceScreen() {
   };
 
   const handleEdit = (record: AttendanceRecord) => {
+    // Set editingRecord first to prevent useEffect from resetting district/group
     setEditingRecord(record);
-    const recordDate = new Date(record.date);
+    
+    // Parse date string manually to avoid timezone issues
+    // record.date is in format "YYYY-MM-DD", parse it as local date
+    const [year, month, day] = record.date.split('-').map(Number);
+    const recordDate = new Date(year, month - 1, day); // month is 0-indexed
     setDate(recordDate);
+    
+    // Set meetingType, scope, and scopeValue first
     setMeetingType(record.meetingType);
     setScope(record.scope);
     setScopeValue(record.scopeValue);
@@ -335,6 +353,11 @@ export default function AttendanceScreen() {
     
     setAdultCount(record.adultCount.toString());
     setYouthChildCount(record.youthChildCount.toString());
+    
+    // Scroll to top of form
+    setTimeout(() => {
+      scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    }, 100);
   };
 
   const handleDelete = (record: AttendanceRecord) => {
@@ -400,6 +423,7 @@ export default function AttendanceScreen() {
         style={styles.keyboardAvoidingView}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}>
         <ScrollView
+          ref={scrollViewRef}
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}>
@@ -597,6 +621,7 @@ export default function AttendanceScreen() {
                 renderItem={({ item }) => (
                   <View style={[styles.recordItem, { backgroundColor: colors.background, borderColor: colors.border }]}>
                     <View style={styles.recordHeader}>
+                      {/* Display the selected date (item.date), NOT the creation date (item.createdAt) */}
                       <Text style={[styles.recordDate, { color: colors.text, fontSize: getFontSizeValue(20) }]}>
                         {item.date}
                       </Text>
