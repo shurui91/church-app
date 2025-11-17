@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -13,6 +13,21 @@ export default function PursueHome() {
   const { fontSize: globalFontSize } = useFontSize();
   // 使用相对字号，比全局字号小 20%（即全局字号的 80%）
   const baseFontSize = Math.round(globalFontSize * 0.8);
+  // 防止重复点击的 ref
+  const isNavigatingRef = useRef(false);
+
+  // 防重复点击的导航处理函数
+  const handleNavigation = (navigationFn: () => void) => {
+    if (isNavigatingRef.current) {
+      return; // 如果正在导航，忽略此次点击
+    }
+    isNavigatingRef.current = true;
+    navigationFn();
+    // 500ms 后重置状态，允许再次导航
+    setTimeout(() => {
+      isNavigatingRef.current = false;
+    }, 500);
+  };
 
   const handleComingSoon = () => {
     Alert.alert('提示', '功能开发中，敬请期待！');
@@ -48,7 +63,7 @@ export default function PursueHome() {
         {/* 📖 一年读经 */}
         <TouchableOpacity
           style={[styles.card, { backgroundColor: colors.card }]}
-          onPress={() => router.push('/pursue/bible')}>
+          onPress={() => handleNavigation(() => router.push('/pursue/bible'))}>
           <Text
             style={[
               styles.cardText,
@@ -64,7 +79,7 @@ export default function PursueHome() {
         {/* 📚 生命读经 */}
         <TouchableOpacity
           style={[styles.card, { backgroundColor: colors.card }]}
-          onPress={() => router.push('/pursue/life-study')}
+          onPress={() => handleNavigation(() => router.push('/pursue/life-study'))}
           activeOpacity={0.8}>
           <Text
             style={[
@@ -92,10 +107,10 @@ export default function PursueHome() {
         {/* 🕊️ 李常受文集 */}
         <TouchableOpacity
           style={[styles.card, { backgroundColor: colors.card }]}
-          onPress={() => {
+          onPress={() => handleNavigation(() => {
             const mondayStr = getMondayYmd();
             router.push(`/pursue/lee/week/${mondayStr}`);
-          }}
+          })}
           activeOpacity={0.8}>
           <Text
             style={[
@@ -112,7 +127,7 @@ export default function PursueHome() {
         {/* 🎵 诗歌 */}
         <TouchableOpacity
           style={[styles.card, { backgroundColor: colors.card }]}
-          onPress={() => router.push('/pursue/hymns')}>
+          onPress={() => handleNavigation(() => router.push('/pursue/hymns'))}>
           <Text
             style={[
               styles.cardText,

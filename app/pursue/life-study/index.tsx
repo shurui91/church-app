@@ -294,6 +294,9 @@ export default function LifeStudyIndex() {
   const router = useRouter();
   const scrollViewRef = useRef<ScrollView>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  // 防止重复点击的 ref
+  const isNavigatingRef = useRef(false);
+  const isScrollingRef = useRef(false);
 
   // ✅ 判断当前语言是否繁体
   const isTraditional = i18n.language === 'zh-Hant';
@@ -318,6 +321,32 @@ export default function LifeStudyIndex() {
     [isTraditional]
   );
 
+  // 防重复点击的导航处理函数
+  const handleNavigation = (navigationFn: () => void) => {
+    if (isNavigatingRef.current) {
+      return; // 如果正在导航，忽略此次点击
+    }
+    isNavigatingRef.current = true;
+    navigationFn();
+    // 500ms 后重置状态，允许再次导航
+    setTimeout(() => {
+      isNavigatingRef.current = false;
+    }, 500);
+  };
+
+  // 防重复点击的滚动处理函数
+  const handleScrollToTop = () => {
+    if (isScrollingRef.current) {
+      return; // 如果正在滚动，忽略此次点击
+    }
+    isScrollingRef.current = true;
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    // 300ms 后重置状态，允许再次滚动
+    setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 300);
+  };
+
   const renderGrid = (data: string[]) => (
     <View style={styles.grid}>
       {data.map((book, index) => {
@@ -328,7 +357,7 @@ export default function LifeStudyIndex() {
           <TouchableOpacity
             key={index}
             activeOpacity={0.8}
-            onPress={() => router.push(`/pursue/life-study/${book}`)}
+            onPress={() => handleNavigation(() => router.push(`/pursue/life-study/${book}`))}
             style={[
               styles.item,
               {
@@ -408,9 +437,7 @@ export default function LifeStudyIndex() {
               shadowColor: colors.text,
             },
           ]}
-          onPress={() => {
-            scrollViewRef.current?.scrollTo({ y: 0, animated: true });
-          }}
+          onPress={handleScrollToTop}
           activeOpacity={0.8}>
           <Ionicons name="arrow-up" size={24} color="#fff" />
         </TouchableOpacity>

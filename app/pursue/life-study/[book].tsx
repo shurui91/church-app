@@ -271,6 +271,9 @@ export default function BookArticlesScreen() {
   const { i18n, t } = useTranslation();
   const scrollViewRef = useRef<ScrollView>(null);
   const [showScrollTop, setShowScrollTop] = useState(false);
+  // 防止重复点击的 ref
+  const isNavigatingRef = useRef(false);
+  const isScrollingRef = useRef(false);
 
   const [bookData, setBookData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -280,6 +283,32 @@ export default function BookArticlesScreen() {
     () => i18n.language === 'zh-Hant',
     [i18n.language]
   );
+
+  // 防重复点击的导航处理函数
+  const handleNavigation = (navigationFn: () => void) => {
+    if (isNavigatingRef.current) {
+      return; // 如果正在导航，忽略此次点击
+    }
+    isNavigatingRef.current = true;
+    navigationFn();
+    // 500ms 后重置状态，允许再次导航
+    setTimeout(() => {
+      isNavigatingRef.current = false;
+    }, 500);
+  };
+
+  // 防重复点击的滚动处理函数
+  const handleScrollToTop = () => {
+    if (isScrollingRef.current) {
+      return; // 如果正在滚动，忽略此次点击
+    }
+    isScrollingRef.current = true;
+    scrollViewRef.current?.scrollTo({ y: 0, animated: true });
+    // 300ms 后重置状态，允许再次滚动
+    setTimeout(() => {
+      isScrollingRef.current = false;
+    }, 300);
+  };
 
   useEffect(() => {
     if (!book) return;
@@ -387,8 +416,10 @@ export default function BookArticlesScreen() {
                 },
               ]}
               onPress={() =>
-                router.push(
-                  `/pursue/life-study/${book}/${article.article_index}`
+                handleNavigation(() =>
+                  router.push(
+                    `/pursue/life-study/${book}/${article.article_index}`
+                  )
                 )
               }
               activeOpacity={0.7}>
@@ -430,9 +461,7 @@ export default function BookArticlesScreen() {
               shadowColor: colors.text,
             },
           ]}
-          onPress={() => {
-            scrollViewRef.current?.scrollTo({ y: 0, animated: true });
-          }}
+          onPress={handleScrollToTop}
           activeOpacity={0.8}>
           <Ionicons name="arrow-up" size={24} color="#fff" />
         </TouchableOpacity>

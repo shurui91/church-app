@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, Stack, useFocusEffect } from 'expo-router';
@@ -15,6 +15,8 @@ export default function HymnsScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const { t, i18n } = useTranslation(); // ✅ 获取翻译函数与当前语言
+  // 防止重复点击的 ref
+  const isNavigatingRef = useRef(false);
 
   // ✅ 当页面重新获得焦点时，清空输入框
   useFocusEffect(
@@ -30,6 +32,11 @@ export default function HymnsScreen() {
   const handleClear = () => setInput('');
 
   const handleConfirm = () => {
+    // 防止重复点击
+    if (isNavigatingRef.current) {
+      return; // 如果正在导航，忽略此次点击
+    }
+
     if (!input) return;
 
     const currentSongs = selectedBook === 'ch' ? chSongs : tsSongs;
@@ -39,7 +46,7 @@ export default function HymnsScreen() {
 
     if (!hymn) {
       Alert.alert(
-        t('common.tip'), // ✅ “提示”
+        t('common.tip'), // ✅ "提示"
         `${t(selectedBook === 'ch' ? 'hymns.main' : 'hymns.supplement')} ${t(
           'hymns.notFound'
         )} ${input}`
@@ -47,10 +54,16 @@ export default function HymnsScreen() {
       return;
     }
 
+    // 设置导航标志
+    isNavigatingRef.current = true;
     router.push({
       pathname: '/pursue/hymn/[id]',
       params: { id: input, book: selectedBook },
     });
+    // 500ms 后重置状态，允许再次导航
+    setTimeout(() => {
+      isNavigatingRef.current = false;
+    }, 500);
   };
 
   return (

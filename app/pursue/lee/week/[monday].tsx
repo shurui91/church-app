@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   View,
   Text,
@@ -48,6 +48,8 @@ export default function WeekPage() {
   const colors = useThemeColors();
   const { getFontSizeValue } = useFontSize();
   const { t } = useTranslation();
+  // 防止重复点击的 ref
+  const isNavigatingRef = useRef(false);
 
   if (!monday)
     return (
@@ -67,6 +69,19 @@ export default function WeekPage() {
   // ✅ 动态盒子尺寸
   const baseFont = getFontSizeValue(18);
   const boxSize = baseFont * 5.5; // 原本大约90px，字体变大时也扩大
+
+  // 防重复点击的导航处理函数
+  const handleNavigation = (navigationFn: () => void) => {
+    if (isNavigatingRef.current) {
+      return; // 如果正在导航，忽略此次点击
+    }
+    isNavigatingRef.current = true;
+    navigationFn();
+    // 500ms 后重置状态，允许再次导航
+    setTimeout(() => {
+      isNavigatingRef.current = false;
+    }, 500);
+  };
 
   return (
     <>
@@ -120,7 +135,7 @@ export default function WeekPage() {
               <TouchableOpacity
                 key={ymd}
                 disabled={!hasArticle || isSunday}
-                onPress={() => router.push(`/pursue/lee/day/${ymd}`)}
+                onPress={() => handleNavigation(() => router.push(`/pursue/lee/day/${ymd}`))}
                 activeOpacity={0.8}>
                 <View
                   style={[
