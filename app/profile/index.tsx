@@ -330,7 +330,7 @@ export default function ProfileScreen() {
                 fontSize: getFontSizeValue(16),
               },
             ]}>
-            {t('profile.version') || '版本号'}: 1.0.0
+            {t('profile.version') || '版本号'}: 1.0.1
           </Text>
         </View>
       </ScrollView>

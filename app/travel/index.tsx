@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -126,25 +126,38 @@ export default function TravelScreen() {
   const [loadingAvailability, setLoadingAvailability] = useState(false);
   const [allUsers, setAllUsers] = useState<any[]>([]);
 
-  // Load schedules on mount
-  useEffect(() => {
-    if (viewMode === 'availability') {
-      if (allUsers.length === 0) {
-        loadAllUsers();
+  // Load all users for availability view
+  const loadAllUsers = useCallback(async (): Promise<any[]> => {
+    try {
+      console.log('[Travel] Loading all users...');
+      const response = await api.getUsers();
+      if (response.success) {
+        const users = response.data.users || [];
+        console.log('[Travel] Loaded users:', users.length);
+        setAllUsers(users);
+        // Don't load availability here - let useEffect handle it
+        // This avoids race conditions and ensures proper state updates
+        return users;
+      } else {
+        console.error('[Travel] Failed to load users:', response);
+        const errorMessage = (response as any).message || t('travel.loadUsersFailed') || '无法加载用户列表';
+        Alert.alert(
+          t('travel.loadAvailabilityFailed') || '加载出城信息失败',
+          errorMessage
+        );
+        return [];
       }
-    } else {
-      loadSchedules();
+    } catch (error: any) {
+      console.error('[Travel] Failed to load users:', error);
+      Alert.alert(
+        t('travel.loadAvailabilityFailed') || '加载出城信息失败',
+        error.message || t('travel.loadUsersFailed') || '无法加载用户列表'
+      );
+      return [];
     }
-  }, [viewMode]);
+  }, [t]);
 
-  // Load availability when users are loaded or date changes
-  useEffect(() => {
-    if (viewMode === 'availability' && allUsers.length > 0) {
-      loadAvailabilityForDate(formatDate(selectedDate));
-    }
-  }, [viewMode, selectedDate, allUsers.length]);
-
-  const loadSchedules = async () => {
+  const loadSchedules = useCallback(async () => {
     try {
       setLoadingSchedules(true);
       let response;
@@ -172,7 +185,8 @@ export default function TravelScreen() {
     } finally {
       setLoadingSchedules(false);
     }
-  };
+  }, [viewMode, user?.id, t]);
+
 
   const formatDate = (date: Date): string => {
     const year = date.getFullYear();
@@ -203,33 +217,22 @@ export default function TravelScreen() {
     });
   };
 
-  // Load all users for availability view
-  const loadAllUsers = async () => {
+  // Load availability for a specific date
+  const loadAvailabilityForDate = useCallback(async (date: string) => {
     try {
-      const response = await api.getUsers();
-      if (response.success) {
-        const users = response.data.users || [];
-        setAllUsers(users);
-        // Load availability after users are loaded
-        if (users.length > 0) {
-          await loadAvailabilityForDate(formatDate(selectedDate));
+      // Ensure users are loaded before loading availability
+      let usersToUse = allUsers;
+      if (usersToUse.length === 0) {
+        console.log('[Travel] Users not loaded yet, loading users first...');
+        usersToUse = await loadAllUsers();
+        if (usersToUse.length === 0) {
+          throw new Error('无法加载用户列表');
         }
       }
-    } catch (error: any) {
-      console.error('[Travel] Failed to load users:', error);
-      Alert.alert(
-        t('travel.loadAvailabilityFailed') || '加载是否在家失败',
-        error.message || t('travel.loadUsersFailed') || '无法加载用户列表'
-      );
-    }
-  };
-
-  // Load availability for a specific date
-  const loadAvailabilityForDate = async (date: string) => {
-    try {
+      
       setLoadingAvailability(true);
       console.log('[Travel] Loading availability for date:', date);
-      console.log('[Travel] All users count:', allUsers.length);
+      console.log('[Travel] All users count:', usersToUse.length);
       
       // Get all schedules for this date
       const schedulesResponse = await api.getTravelSchedulesByDate(date);
@@ -302,8 +305,8 @@ export default function TravelScreen() {
           endDate: s.endDate || s.enddate 
         })));
 
-        // Build availability data
-        const usersWithAvailability = allUsers.map((user) => {
+        // Build availability data - use the users we have (either from state or just loaded)
+        const usersWithAvailability = usersToUse.map((user) => {
           // Ensure user.id is a number for comparison
           const userId = typeof user.id === 'string' ? parseInt(user.id) : user.id;
           
@@ -326,13 +329,13 @@ export default function TravelScreen() {
 
         console.log('[Travel] Users with availability:', usersWithAvailability);
 
+        // Filter to only show users who are unavailable (out of town)
+        const unavailableUsers = usersWithAvailability.filter(user => !user.isAvailable);
+
         setAvailabilityData({
           date,
-          users: usersWithAvailability.sort((a, b) => {
-            // Sort: unavailable first, then by name
-            if (a.isAvailable !== b.isAvailable) {
-              return a.isAvailable ? 1 : -1;
-            }
+          users: unavailableUsers.sort((a, b) => {
+            // Sort by name
             return a.name.localeCompare(b.name, 'zh-CN');
           }),
         });
@@ -342,13 +345,34 @@ export default function TravelScreen() {
     } catch (error: any) {
       console.error('[Travel] Failed to load availability:', error);
       Alert.alert(
-        t('travel.loadAvailabilityFailed') || '加载是否在家失败',
+        t('travel.loadAvailabilityFailed') || '加载出城信息失败',
         error.message || t('travel.networkError') || '网络错误'
       );
     } finally {
       setLoadingAvailability(false);
     }
-  };
+  }, [allUsers, t, loadAllUsers]);
+
+  // Load schedules on mount
+  useEffect(() => {
+    if (viewMode === 'availability') {
+      // Always load users first when switching to availability view
+      loadAllUsers();
+    } else {
+      loadSchedules();
+    }
+  }, [viewMode, loadAllUsers, loadSchedules]);
+
+  // Load availability when users are loaded or date changes
+  useEffect(() => {
+    if (viewMode === 'availability' && allUsers.length > 0) {
+      // Add a small delay to ensure state is fully updated
+      const timer = setTimeout(() => {
+        loadAvailabilityForDate(formatDate(selectedDate));
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [viewMode, selectedDate, allUsers.length, loadAvailabilityForDate]);
 
   // Calendar helper functions
   const getDaysInMonth = (date: Date): number => {
@@ -417,10 +441,10 @@ export default function TravelScreen() {
     setSelectedDate(date);
     // Ensure users are loaded before loading availability
     if (allUsers.length === 0) {
+      // Load users first, then availability will be loaded by useEffect
       await loadAllUsers();
-    } else {
-      await loadAvailabilityForDate(formatDate(date));
     }
+    // Availability will be loaded automatically by useEffect when selectedDate changes
   };
 
   const changeMonth = (direction: 'prev' | 'next') => {
@@ -447,6 +471,21 @@ export default function TravelScreen() {
     // Reset keyboard height when opening modal
     setKeyboardHeight(0);
     if (schedule) {
+      // Check if the schedule has completely passed (end date is before today)
+      const endDate = parseDate(schedule.endDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const isPast = endDate < today;
+      
+      // Prevent editing past schedules in "my" view mode
+      if (isPast && viewMode === 'my') {
+        Alert.alert(
+          t('common.tip') || '提示',
+          '已过去的行程不能修改'
+        );
+        return;
+      }
+      
       setEditingSchedule(schedule);
       setStartDate(parseDate(schedule.startDate));
       setEndDate(parseDate(schedule.endDate));
@@ -470,6 +509,22 @@ export default function TravelScreen() {
         t('travel.endDateBeforeStart') || '结束日期不能早于开始日期'
       );
       return;
+    }
+
+    // Prevent editing past schedules in "my" view mode
+    if (editingSchedule && viewMode === 'my') {
+      const originalEndDate = parseDate(editingSchedule.endDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const isPast = originalEndDate < today;
+      
+      if (isPast) {
+        Alert.alert(
+          t('common.tip') || '提示',
+          '已过去的行程不能修改'
+        );
+        return;
+      }
     }
 
     try {
@@ -522,6 +577,22 @@ export default function TravelScreen() {
   };
 
   const handleDelete = (schedule: TravelSchedule) => {
+    // Prevent deleting past schedules in "my" view mode
+    if (viewMode === 'my') {
+      const endDate = parseDate(schedule.endDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const isPast = endDate < today;
+      
+      if (isPast) {
+        Alert.alert(
+          t('common.tip') || '提示',
+          '已过去的行程不能删除'
+        );
+        return;
+      }
+    }
+    
     Alert.alert(
       t('common.confirm') || '确认',
       t('travel.confirmDelete') || '确定要删除这条行程吗？',
@@ -556,11 +627,31 @@ export default function TravelScreen() {
     return '';
   };
 
+  // Filter schedules based on view mode
+  // In "all" view mode, filter out past schedules
+  const filteredSchedules = useMemo(() => {
+    if (viewMode === 'all') {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time to compare dates only
+      return schedules.filter(schedule => {
+        const endDate = parseDate(schedule.endDate);
+        return endDate >= today; // Only show schedules that haven't completely passed
+      });
+    }
+    return schedules; // In "my" view mode, show all schedules (including past ones)
+  }, [schedules, viewMode]);
+
   const renderScheduleItem = ({ item }: { item: TravelSchedule }) => {
     // In "my" view mode, all schedules belong to the current user
     // In "all" view mode, check if the schedule belongs to current user
     const isMySchedule = viewMode === 'my' || item.userId === user?.id;
     const displayName = getUserDisplayName(item);
+
+    // Check if the schedule has completely passed (end date is before today)
+    const endDate = parseDate(item.endDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to compare dates only
+    const isPast = endDate < today;
 
     // Debug log
     console.log('[Travel] renderScheduleItem:', {
@@ -568,13 +659,24 @@ export default function TravelScreen() {
       userid: user?.id,
       isMySchedule,
       viewMode,
+      isPast,
     });
 
     return (
-      <View style={[styles.scheduleItem, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={[
+        styles.scheduleItem, 
+        { backgroundColor: colors.card, borderColor: colors.border },
+        isPast && viewMode === 'my' && { opacity: 0.5 }
+      ]}>
         <View style={styles.scheduleHeader}>
           <View style={styles.scheduleInfo}>
-            <Text style={[styles.scheduleDate, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
+            <Text style={[
+              styles.scheduleDate, 
+              { 
+                color: isPast && viewMode === 'my' ? colors.textSecondary : colors.text, 
+                fontSize: getFontSizeValue(16) 
+              }
+            ]}>
               {formatDisplayDate(item.startDate)} - {formatDisplayDate(item.endDate)}
             </Text>
             {viewMode === 'all' && displayName && (
@@ -583,7 +685,7 @@ export default function TravelScreen() {
               </Text>
             )}
           </View>
-          {isMySchedule && (
+          {isMySchedule && !(isPast && viewMode === 'my') && (
             <View style={styles.scheduleActions}>
               <TouchableOpacity
                 onPress={() => openForm(item)}
@@ -601,8 +703,14 @@ export default function TravelScreen() {
           )}
         </View>
         {item.destination && (
-          <Text style={[styles.scheduleDestination, { color: colors.text, fontSize: getFontSizeValue(14) }]}>
-            <Ionicons name="location" size={14} color={colors.primary} /> {item.destination}
+          <Text style={[
+            styles.scheduleDestination, 
+            { 
+              color: isPast && viewMode === 'my' ? colors.textSecondary : colors.text, 
+              fontSize: getFontSizeValue(14) 
+            }
+          ]}>
+            <Ionicons name="location" size={14} color={isPast && viewMode === 'my' ? colors.textSecondary : colors.primary} /> {item.destination}
           </Text>
         )}
         {item.notes && (
@@ -679,7 +787,7 @@ export default function TravelScreen() {
                 { color: viewMode === 'availability' ? '#fff' : colors.text, fontSize: getFontSizeValue(14) },
               ]}
             >
-              {t('travel.availability', { defaultValue: '是否在家' })}
+              {t('travel.availability', { defaultValue: '出城的人' })}
             </Text>
           </TouchableOpacity>
         </View>
@@ -771,7 +879,7 @@ export default function TravelScreen() {
             ) : availabilityData ? (
               <View style={styles.availabilityList}>
                 <Text style={[styles.availabilityDateTitle, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
-                  {formatDisplayDate(availabilityData.date)} {t('travel.availability') || '可用性'}
+                  {formatDisplayDate(availabilityData.date)} {t('travel.availability') || '出城的人'}
                 </Text>
                 <FlatList
                   data={availabilityData.users}
@@ -781,11 +889,7 @@ export default function TravelScreen() {
                     <View style={[styles.availabilityItem, { backgroundColor: colors.card, borderColor: colors.border }]}>
                       <View style={styles.availabilityItemHeader}>
                         <View style={styles.availabilityStatus}>
-                          {item.isAvailable ? (
-                            <Ionicons name="checkmark-circle" size={20} color="#4CD964" />
-                          ) : (
-                            <Ionicons name="close-circle" size={20} color="#FF3B30" />
-                          )}
+                          <Ionicons name="airplane-outline" size={20} color={colors.primary} />
                           <Text style={[styles.availabilityName, { color: colors.text, fontSize: getFontSizeValue(16) }]}>
                             {item.name}
                           </Text>
@@ -793,15 +897,13 @@ export default function TravelScreen() {
                         <Text
                           style={[
                             styles.availabilityStatusText,
-                            { color: item.isAvailable ? '#4CD964' : '#FF3B30', fontSize: getFontSizeValue(14) },
+                            { color: colors.primary, fontSize: getFontSizeValue(14) },
                           ]}
                         >
-                          {item.isAvailable
-                            ? t('travel.available') || '在家'
-                            : t('travel.unavailable') || '出城'}
+                          {t('travel.unavailable') || '出城'}
                         </Text>
                       </View>
-                      {!item.isAvailable && item.schedule && (
+                      {item.schedule && (
                         <View style={[styles.availabilityDetails, { borderTopColor: colors.border }]}>
                           <Text style={[styles.availabilityDestination, { color: colors.textSecondary, fontSize: getFontSizeValue(14) }]}>
                             <Ionicons name="location" size={14} color={colors.textSecondary} />{' '}
@@ -820,7 +922,7 @@ export default function TravelScreen() {
               <View style={styles.emptyContainer}>
                 <Ionicons name="calendar-outline" size={60} color={colors.textSecondary} />
                 <Text style={[styles.emptyText, { color: colors.textSecondary, fontSize: getFontSizeValue(16) }]}>
-                  {t('travel.selectDate') || '请选择日期查看是否在家'}
+                  {t('travel.selectDate') || '请选择日期查看出城情况'}
                 </Text>
               </View>
             )}
@@ -834,7 +936,7 @@ export default function TravelScreen() {
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color={colors.primary} />
               </View>
-            ) : schedules.length === 0 ? (
+            ) : filteredSchedules.length === 0 ? (
               <View style={styles.emptyContainer}>
                 <Ionicons name="calendar-outline" size={64} color={colors.textSecondary} />
                 <Text style={[styles.emptyText, { color: colors.textSecondary, fontSize: getFontSizeValue(16) }]}>
@@ -843,7 +945,7 @@ export default function TravelScreen() {
               </View>
             ) : (
               <FlatList
-                data={schedules}
+                data={filteredSchedules}
                 renderItem={renderScheduleItem}
                 keyExtractor={(item) => item.id.toString()}
                 contentContainerStyle={styles.listContent}
@@ -1355,4 +1457,5 @@ const styles = StyleSheet.create({
   availabilityDateRange: {
   },
 });
+
 
