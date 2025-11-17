@@ -1,13 +1,13 @@
-import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import express from 'express';
 import { initDatabase } from './database/init.js';
-import authRoutes from './routes/auth.js';
-import userRoutes from './routes/users.js';
 import attendanceRoutes from './routes/attendance.js';
-import travelRoutes from './routes/travel.js';
+import authRoutes from './routes/auth.js';
 import crashLogRoutes from './routes/crash-logs.js';
 import debugRoutes from './routes/debug-env.js';
+import travelRoutes from './routes/travel.js';
+import userRoutes from './routes/users.js';
 
 // Load environment variables
 dotenv.config();

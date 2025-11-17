@@ -65,11 +65,26 @@ export function AuthProvider({ children }: AuthProviderProps) {
         await api.logout();
         setUser(null);
       }
-    } catch (error) {
-      console.error('Auth check failed:', error);
-      // Token might be invalid, remove it
-      await api.logout();
-      setUser(null);
+    } catch (error: any) {
+      // Only logout if token is actually invalid (401 Unauthorized)
+      // Don't logout for network errors, timeouts, or other connection issues
+      const isTokenError = 
+        error?.status === 401 || 
+        error?.message?.includes('无效或过期的令牌') ||
+        error?.message?.includes('未提供认证令牌') ||
+        error?.message?.includes('Unauthorized');
+      
+      if (isTokenError) {
+        console.log('Auth check failed: Token is invalid, logging out');
+        await api.logout();
+        setUser(null);
+      } else {
+        // Network error or other connection issue - keep user logged in
+        // Token might still be valid, just couldn't verify it right now
+        console.log('Auth check failed (network/connection issue, keeping user logged in):', error?.message || error);
+        // Don't logout - user might still have a valid token
+        // Just don't update user info for now
+      }
     } finally {
       setLoading(false);
     }
