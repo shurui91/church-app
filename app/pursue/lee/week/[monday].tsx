@@ -1,17 +1,47 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  ActivityIndicator,
 } from 'react-native';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemeColors } from '../../../src/hooks/useThemeColors';
 import { useFontSize } from '../../../src/context/FontSizeContext';
 import { useTranslation } from 'react-i18next';
-import leeArchive from '../../../../assets/lee_archive.json';
 import BackButton from '@/app/components/BackButton';
+
+// 远程数据源 URL（与 day/[date].tsx 保持一致）
+const LEE_ARCHIVE_URL = 'https://lcs-ops-production.up.railway.app/files/lee_archive.json';
+
+// 缓存键（与 day/[date].tsx 保持一致）
+const CACHE_KEY = 'lee_archive_cache';
+const CACHE_TIMESTAMP_KEY = 'lee_archive_cache_timestamp';
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24小时缓存
+
+interface Article {
+  id: string;
+  title: string;
+  reading_date: string;
+  last_available_day: string;
+  year: string;
+  volume: number;
+  topic: string;
+  chapter: number;
+  content: string;
+}
+
+interface LeeArchive {
+  meta: {
+    version: string;
+    last_updated: string;
+    total_articles: number;
+  };
+  articles: Article[];
+}
 
 function parseYMD(ymd: string) {
   const [y, m, d] = ymd.split('-').map(Number);
@@ -51,20 +81,91 @@ export default function WeekPage() {
   // 防止重复点击的 ref
   const isNavigatingRef = useRef(false);
 
+  // ✅ 数据加载状态
+  const [loading, setLoading] = useState(true);
+  const [validDates, setValidDates] = useState<Set<string>>(new Set());
+
+  // ✅ 从缓存或远程获取数据
+  useEffect(() => {
+    const fetchArchive = async () => {
+      try {
+        setLoading(true);
+
+        // 先检查缓存
+        const cachedData = await AsyncStorage.getItem(CACHE_KEY);
+        const cacheTimestamp = await AsyncStorage.getItem(CACHE_TIMESTAMP_KEY);
+        
+        if (cachedData && cacheTimestamp) {
+          const timestamp = parseInt(cacheTimestamp, 10);
+          const now = Date.now();
+          
+          // 如果缓存未过期，使用缓存
+          if (now - timestamp < CACHE_DURATION) {
+            const archive: LeeArchive = JSON.parse(cachedData);
+            const dates = new Set(archive.articles.map((a) => a.reading_date));
+            setValidDates(dates);
+            setLoading(false);
+            return;
+          }
+        }
+
+        // 从远程获取数据
+        const response = await fetch(`${LEE_ARCHIVE_URL}?t=${Date.now()}`);
+        if (!response.ok) {
+          throw new Error(`获取数据失败: ${response.status}`);
+        }
+        
+        const archive: LeeArchive = await response.json();
+        
+        // 保存到缓存
+        await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(archive));
+        await AsyncStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+        
+        // 提取有效日期
+        const dates = new Set(archive.articles.map((a) => a.reading_date));
+        setValidDates(dates);
+      } catch (err: any) {
+        console.error('加载李常受文集失败:', err);
+        
+        // 如果网络失败，尝试使用缓存（即使过期）
+        try {
+          const cachedData = await AsyncStorage.getItem(CACHE_KEY);
+          if (cachedData) {
+            const archive: LeeArchive = JSON.parse(cachedData);
+            const dates = new Set(archive.articles.map((a) => a.reading_date));
+            setValidDates(dates);
+          }
+        } catch (cacheErr) {
+          console.error('读取缓存失败:', cacheErr);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArchive();
+  }, []);
+
   if (!monday)
     return (
-      <View>
-        <Text style={{ fontSize: getFontSizeValue(18) }}>加载中...</Text>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={{ fontSize: getFontSizeValue(18), marginTop: 16, color: colors.text }}>加载中...</Text>
       </View>
     );
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: colors.background }}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text style={{ fontSize: getFontSizeValue(18), marginTop: 16, color: colors.text }}>加载中...</Text>
+      </View>
+    );
+  }
 
   const weekDays = getWeekYMDs(monday as string);
   const weekdayNames = ['一', '二', '三', '四', '五', '六', '日'];
   const todayStr = getTodayYMD_LA();
-
-  const validDates = new Set(
-    (leeArchive.articles || []).map((a) => a.reading_date)
-  );
 
   // ✅ 动态盒子尺寸
   const baseFont = getFontSizeValue(18);

@@ -8,13 +8,21 @@ import {
   NativeScrollEvent,
   Platform,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { Stack, useLocalSearchParams } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemeColors } from '../../../src/hooks/useThemeColors';
 import { useFontSize } from '../../../src/context/FontSizeContext';
-import leeArchive from '../../../../assets/lee_archive.json';
 import BackButton from '@/app/components/BackButton';
+
+// 远程数据源 URL
+const LEE_ARCHIVE_URL = 'https://lcs-ops-production.up.railway.app/files/lee_archive.json';
+
+// 缓存键
+const CACHE_KEY = 'lee_archive_cache';
+const CACHE_TIMESTAMP_KEY = 'lee_archive_cache_timestamp';
+const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24小时缓存
 
 // ✅ 去除 HTML 标签与常见实体
 function stripHTML(html: string) {
@@ -47,8 +55,31 @@ function getLineHeight(fontSize: number) {
   return fontSize * 1.4;
 }
 
+interface Article {
+  id: string;
+  title: string;
+  reading_date: string;
+  last_available_day: string;
+  year: string;
+  volume: number;
+  topic: string;
+  chapter: number;
+  content: string;
+}
+
+interface LeeArchive {
+  meta: {
+    version: string;
+    last_updated: string;
+    total_articles: number;
+  };
+  articles: Article[];
+}
+
 export default function LeeDayPage() {
-  const { date } = useLocalSearchParams();
+  const { date: dateParam } = useLocalSearchParams();
+  // ✅ 处理路由参数可能是数组的情况
+  const date = Array.isArray(dateParam) ? dateParam[0] : dateParam;
   const colors = useThemeColors();
   const { fontSize, getFontSizeValue } = useFontSize(); // 直接使用全局字号设定
 
@@ -58,29 +89,108 @@ export default function LeeDayPage() {
   const scrollViewRef = useRef<ScrollView>(null);
   const fadeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // ✅ 找出对应日期的文章
-  const article = (leeArchive.articles || []).find(
-    (a) => a.reading_date === date
-  );
+  // ✅ 数据加载状态
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [article, setArticle] = useState<Article | null>(null);
 
-  if (!article) {
-    return (
-      <View style={[styles.center, { backgroundColor: colors.background }]}>
-        <Text
-          style={{
-            color: colors.text,
-            fontSize,
-          }}>
-          ❌ 没有找到 {date} 的内容
-        </Text>
-      </View>
-    );
-  }
-
-  const storageKey = `lee-scroll-${date}`;
-
-  // ✅ 页面加载后自动恢复滚动位置
+  // ✅ 从缓存或远程获取数据
   useEffect(() => {
+    const fetchArchive = async () => {
+      if (!date) {
+        setError('缺少日期参数');
+        setLoading(false);
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        // 先检查缓存
+        const cachedData = await AsyncStorage.getItem(CACHE_KEY);
+        const cacheTimestamp = await AsyncStorage.getItem(CACHE_TIMESTAMP_KEY);
+        
+        if (cachedData && cacheTimestamp) {
+          const timestamp = parseInt(cacheTimestamp, 10);
+          const now = Date.now();
+          
+          // 如果缓存未过期，使用缓存
+          if (now - timestamp < CACHE_DURATION) {
+            const archive: LeeArchive = JSON.parse(cachedData);
+            const foundArticle = archive.articles.find(
+              (a) => a.reading_date === date
+            );
+            if (foundArticle) {
+              setArticle(foundArticle);
+              setLoading(false);
+              return;
+            }
+          }
+        }
+
+        // 从远程获取数据
+        const response = await fetch(`${LEE_ARCHIVE_URL}?t=${Date.now()}`);
+        if (!response.ok) {
+          throw new Error(`获取数据失败: ${response.status}`);
+        }
+        
+        const archive: LeeArchive = await response.json();
+        
+        // 保存到缓存
+        await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(archive));
+        await AsyncStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+        
+        // 查找对应日期的文章（确保日期格式一致）
+        const foundArticle = archive.articles.find(
+          (a) => a.reading_date === date
+        );
+        
+        if (foundArticle) {
+          setArticle(foundArticle);
+        } else {
+          // ✅ 调试信息：列出所有可用日期
+          const availableDates = archive.articles.map(a => a.reading_date).sort();
+          console.log(`[Lee] 查找日期: ${date}`);
+          console.log(`[Lee] 可用日期:`, availableDates);
+          setError(`没有找到 ${date} 的内容。可用日期: ${availableDates.slice(0, 5).join(', ')}...`);
+        }
+      } catch (err: any) {
+        console.error('加载李常受文集失败:', err);
+        setError(err.message || '加载失败，请检查网络连接');
+        
+        // 如果网络失败，尝试使用缓存（即使过期）
+        try {
+          const cachedData = await AsyncStorage.getItem(CACHE_KEY);
+          if (cachedData) {
+            const archive: LeeArchive = JSON.parse(cachedData);
+            const foundArticle = archive.articles.find(
+              (a) => a.reading_date === date
+            );
+            if (foundArticle) {
+              setArticle(foundArticle);
+              setError('使用缓存数据（可能不是最新版本）');
+              return;
+            }
+          }
+        } catch (cacheErr) {
+          console.error('读取缓存失败:', cacheErr);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchArchive();
+  }, [date]);
+
+  // ✅ 存储键（必须在所有条件返回之前定义）
+  const storageKey = date ? `lee-scroll-${date}` : '';
+
+  // ✅ 页面加载后自动恢复滚动位置（必须在所有条件返回之前）
+  useEffect(() => {
+    if (!article || !date || !storageKey) return;
+    
     const restoreScroll = async () => {
       try {
         const savedY = await AsyncStorage.getItem(storageKey);
@@ -97,7 +207,54 @@ export default function LeeDayPage() {
       }
     };
     restoreScroll();
-  }, [date]);
+  }, [article, date, storageKey]);
+
+  // ✅ 加载中或错误状态
+  if (loading) {
+    return (
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <ActivityIndicator size="large" color={colors.primary} />
+        <Text
+          style={{
+            color: colors.text,
+            fontSize,
+            marginTop: 16,
+          }}>
+          加载中...
+        </Text>
+      </View>
+    );
+  }
+
+  if (error && !article) {
+    return (
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <Text
+          style={{
+            color: colors.error,
+            fontSize,
+            textAlign: 'center',
+            padding: 20,
+          }}>
+          ❌ {error}
+        </Text>
+      </View>
+    );
+  }
+
+  if (!article) {
+    return (
+      <View style={[styles.center, { backgroundColor: colors.background }]}>
+        <Text
+          style={{
+            color: colors.text,
+            fontSize,
+          }}>
+          ❌ 没有找到 {date} 的内容
+        </Text>
+      </View>
+    );
+  }
 
   // ✅ 格式化显示文字
   const collectionTitle = `李常受文集 ${article.year} 年第 ${article.volume} 册`;
@@ -127,7 +284,9 @@ export default function LeeDayPage() {
     setScrollPercent(percent);
 
     try {
-      await AsyncStorage.setItem(storageKey, contentOffset.y.toString());
+      if (storageKey) {
+        await AsyncStorage.setItem(storageKey, contentOffset.y.toString());
+      }
     } catch (err) {
       console.warn('保存阅读位置失败', err);
     }
@@ -196,6 +355,25 @@ export default function LeeDayPage() {
           {scrollPercent}%
         </Text>
       </Animated.View>
+
+      {/* ✅ 错误提示（如果有缓存数据但网络失败） */}
+      {error && article && (
+        <View
+          style={{
+            backgroundColor: colors.warning || '#FFA500',
+            padding: 8,
+            paddingHorizontal: 16,
+          }}>
+          <Text
+            style={{
+              color: '#FFFFFF',
+              fontSize: 12,
+              textAlign: 'center',
+            }}>
+            ⚠️ {error}
+          </Text>
+        </View>
+      )}
 
       {/* ✅ ScrollView 主体内容 */}
       <ScrollView
