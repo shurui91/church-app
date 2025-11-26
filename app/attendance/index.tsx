@@ -85,6 +85,15 @@ export default function AttendanceScreen() {
   
   // Get groups based on selected district
   const getGroupsForDistrict = (district: string | null): string[] => {
+    if (district === 'A') {
+      return ['1', '2', '3', '4', '5', '亲子排'];
+    }
+    if (district === 'B') {
+      return ['1', '2', '3', '4'];
+    }
+    if (district === 'C') {
+      return ['1', '2', '3', '4'];
+    }
     if (district === 'D') {
       return ['1', '2', '亲子'];
     }
@@ -122,11 +131,13 @@ export default function AttendanceScreen() {
       setSelectedDistrict(null);
       setSelectedGroup(null);
     } else if (meetingType === 'homeMeeting' || meetingType === 'prayer') {
-      // 小排聚会和祷告聚会 → 都需要选择大区+小排
-      setScope('small_group');
+      // 小排聚会和祷告聚会 → 都需要选择大区
+      // 祷告聚会+B大区 → 只需要大区，不需要小排
+      // 其他情况 → 需要大区+小排
       setScopeValue(null);
       setSelectedDistrict(null);
       setSelectedGroup(null);
+      // Scope will be set based on district selection
     } else {
       setScope(null);
       setScopeValue(null);
@@ -135,14 +146,34 @@ export default function AttendanceScreen() {
     }
   }, [meetingType, editingRecord]);
 
-  // Update scopeValue when district or group changes
+  // Update scope and scopeValue based on meeting type and district selection
   useEffect(() => {
-    if (selectedDistrict && selectedGroup) {
-      setScopeValue(`${selectedDistrict}${selectedGroup}`);
-    } else {
-      setScopeValue(null);
+    if (editingRecord) {
+      return;
     }
-  }, [selectedDistrict, selectedGroup]);
+    
+    if (meetingType === 'prayer' && (selectedDistrict === 'B' || selectedDistrict === 'D')) {
+      // 祷告聚会+B大区或D大区 → 只统计大区级别
+      setScope('district');
+      setScopeValue(selectedDistrict);
+      setSelectedGroup(null); // Clear group selection
+    } else if (meetingType === 'homeMeeting' || meetingType === 'prayer') {
+      // 小排聚会或其他祷告聚会 → 需要小排
+      if (selectedDistrict && selectedGroup) {
+        setScope('small_group');
+        setScopeValue(`${selectedDistrict}${selectedGroup}`);
+      } else if (selectedDistrict) {
+        // District selected but group not selected yet
+        setScope('small_group');
+        setScopeValue(null);
+      } else {
+        setScope('small_group');
+        setScopeValue(null);
+      }
+    }
+  }, [meetingType, selectedDistrict, selectedGroup, editingRecord]);
+
+  // Note: scopeValue is now updated in the useEffect above based on meeting type and district
 
   // Reset group selection when district changes
   useEffect(() => {
@@ -218,6 +249,19 @@ export default function AttendanceScreen() {
     return meetingType === 'homeMeeting' || meetingType === 'prayer';
   };
 
+  // Check if group selector should be shown
+  // Hide group selector for prayer meeting + B or D district
+  const shouldShowGroup = (): boolean => {
+    if (!shouldShowDistrictAndGroup()) {
+      return false;
+    }
+    // For prayer meeting with B or D district, don't show group selector
+    if (meetingType === 'prayer' && (selectedDistrict === 'B' || selectedDistrict === 'D')) {
+      return false;
+    }
+    return true;
+  };
+
   const validateForm = (): boolean => {
     if (!date) {
       Alert.alert(t('common.tip') || '提示', t('attendance.invalidDate') || '请选择日期');
@@ -258,7 +302,8 @@ export default function AttendanceScreen() {
         Alert.alert(t('common.tip') || '提示', t('attendance.invalidDistrict') || '请选择大区');
         return false;
       }
-      if (!selectedGroup) {
+      // Only require group selection if group selector should be shown
+      if (shouldShowGroup() && !selectedGroup) {
         Alert.alert(t('common.tip') || '提示', t('attendance.invalidGroup') || '请选择小排');
         return false;
       }
@@ -341,7 +386,14 @@ export default function AttendanceScreen() {
     setScopeValue(record.scopeValue);
     
     // Parse scopeValue to extract district and group
-    if (record.scopeValue && record.scopeValue.length >= 2) {
+    // For prayer meeting + B district, scopeValue is just the district (e.g., 'B')
+    // For other cases, scopeValue is district + group (e.g., 'A1', 'B2')
+    if (record.scope === 'district' && record.scopeValue) {
+      // District-level scope (prayer + B district)
+      setSelectedDistrict(record.scopeValue);
+      setSelectedGroup(null);
+    } else if (record.scopeValue && record.scopeValue.length >= 2) {
+      // Small group scope
       const district = record.scopeValue[0];
       const group = record.scopeValue.substring(1);
       setSelectedDistrict(district);
@@ -516,23 +568,25 @@ export default function AttendanceScreen() {
                   </TouchableOpacity>
                 </View>
 
-                {/* Group Picker */}
-                <View style={styles.inputContainer}>
-                  <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
-                    {t('attendance.selectGroup') || '选择小排'} *
-                  </Text>
-                  <TouchableOpacity
-                    style={[
-                      styles.inputWrapper,
-                      { backgroundColor: colors.background, borderColor: colors.border },
-                    ]}
-                    onPress={() => setShowGroupPicker(true)}>
-                    <Text style={[styles.inputText, { color: selectedGroup ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(20) }]}>
-                      {selectedGroup || t('attendance.selectGroup') || '选择小排'}
+                {/* Group Picker - Only show if shouldShowGroup() returns true */}
+                {shouldShowGroup() && (
+                  <View style={styles.inputContainer}>
+                    <Text style={[styles.label, { color: colors.text, fontSize: getFontSizeValue(18) }]}>
+                      {t('attendance.selectGroup') || '选择小排'} *
                     </Text>
-                    <Ionicons name="chevron-down-outline" size={20} color={colors.textSecondary} />
-                  </TouchableOpacity>
-                </View>
+                    <TouchableOpacity
+                      style={[
+                        styles.inputWrapper,
+                        { backgroundColor: colors.background, borderColor: colors.border },
+                      ]}
+                      onPress={() => setShowGroupPicker(true)}>
+                      <Text style={[styles.inputText, { color: selectedGroup ? colors.text : colors.textTertiary, fontSize: getFontSizeValue(20) }]}>
+                        {selectedGroup || t('attendance.selectGroup') || '选择小排'}
+                      </Text>
+                      <Ionicons name="chevron-down-outline" size={20} color={colors.textSecondary} />
+                    </TouchableOpacity>
+                  </View>
+                )}
               </>
             )}
 
