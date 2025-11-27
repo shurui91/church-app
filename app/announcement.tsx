@@ -6,10 +6,10 @@ import {
   View,
   TouchableOpacity,
   StyleSheet,
-  SafeAreaView,
   ActivityIndicator,
   RefreshControl,
 } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useThemeColors } from './src/hooks/useThemeColors';
@@ -19,6 +19,7 @@ export default function AnnouncementScreen() {
   const { t, i18n } = useTranslation();
   const colors = useThemeColors();
   const { getFontSizeValue } = useFontSize();
+  const insets = useSafeAreaInsets();
 
   const [activeTab, setActiveTab] = useState(0);
   const [announcement, setAnnouncement] = useState<string | null>(null);
@@ -136,7 +137,11 @@ export default function AnnouncementScreen() {
       <View
         style={[
           styles.tabContainer,
-          { backgroundColor: colors.card, borderBottomColor: colors.border },
+          { 
+            backgroundColor: colors.card, 
+            borderBottomColor: colors.border,
+            paddingTop: Math.max(insets.top, 12),
+          },
         ]}>
         {sections.map((section, index) => (
           <TouchableOpacity
