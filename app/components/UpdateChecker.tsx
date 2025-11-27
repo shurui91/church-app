@@ -50,12 +50,12 @@ export default function UpdateChecker({ onUpdateComplete, onUpdateSkipped, simul
 
   // 模拟下载进度更新
   const simulateDownloadProgress = async (duration: number) => {
-    const steps = 20; // 分20步更新进度
+    const steps = 30; // 分30步更新进度，更平滑
     const stepDuration = duration / steps;
     const progressStep = 100 / steps;
     
     // 模拟下载大小（随机生成一个合理的大小）
-    const sizeInMB = 8 + Math.random() * 12; // 8-20 MB
+    const sizeInMB = 5 + Math.random() * 15; // 5-20 MB
     setDownloadSize(`${sizeInMB.toFixed(1)} MB`);
 
     for (let i = 0; i <= steps; i++) {
@@ -106,16 +106,31 @@ export default function UpdateChecker({ onUpdateComplete, onUpdateSkipped, simul
       // 3. 检查 Updates 是否可用
       if (!Updates.isEnabled) {
         console.log('[UpdateChecker] Updates are not enabled');
+        // 即使不可用，也显示检查过程至少2秒
+        await new Promise(resolve => setTimeout(resolve, 2000));
         onUpdateSkipped();
         return;
       }
 
-      // 4. 检查是否有可用更新
+      // 4. 检查是否有可用更新（显示检查过程至少2.5秒）
       setStatus('checking');
+      
+      // 先等待一段时间，让用户看到"正在检查更新..."
+      const checkStartTime = Date.now();
+      const minCheckDuration = 2500; // 至少显示2.5秒
+      
       const update = await Updates.checkForUpdateAsync();
+      
+      // 确保检查过程至少持续 minCheckDuration 毫秒
+      const elapsedTime = Date.now() - checkStartTime;
+      if (elapsedTime < minCheckDuration) {
+        await new Promise(resolve => setTimeout(resolve, minCheckDuration - elapsedTime));
+      }
       
       if (!update.isAvailable) {
         console.log('[UpdateChecker] No update available');
+        // 没有更新时，再显示一下"检查完成"的状态
+        await new Promise(resolve => setTimeout(resolve, 500));
         onUpdateSkipped();
         return;
       }
@@ -124,7 +139,11 @@ export default function UpdateChecker({ onUpdateComplete, onUpdateSkipped, simul
       console.log('[UpdateChecker] Update available, downloading...');
       setStatus('downloading');
 
-      // 下载更新
+      // 开始下载前，先显示一下准备状态
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      // 下载更新（实际下载）
+      const downloadStartTime = Date.now();
       const fetchResult = await Updates.fetchUpdateAsync();
       
       if (!fetchResult.isNew) {
@@ -133,18 +152,31 @@ export default function UpdateChecker({ onUpdateComplete, onUpdateSkipped, simul
         return;
       }
 
+      // 模拟下载进度显示（即使实际下载很快，也要显示进度让用户看到）
+      const actualDownloadTime = Date.now() - downloadStartTime;
+      const minDownloadDuration = 6000; // 至少显示6秒下载过程
+      
+      if (actualDownloadTime < minDownloadDuration) {
+        // 如果实际下载很快，模拟一个更长的下载过程
+        await simulateDownloadProgress(minDownloadDuration);
+      } else {
+        // 如果实际下载时间较长，使用实际进度
+        // 这里简化处理，直接显示完成
+        await simulateDownloadProgress(Math.min(actualDownloadTime, 10000));
+      }
+
       // 6. 应用更新
       console.log('[UpdateChecker] Update downloaded, applying...');
       setStatus('applying');
 
-      // 延迟一下，让用户看到"正在应用更新"的状态
-      await new Promise(resolve => setTimeout(resolve, 500));
+      // 显示应用更新过程至少1.5秒
+      await new Promise(resolve => setTimeout(resolve, 1500));
 
       // 7. 标记完成并触发 reload
       setStatus('complete');
       
-      // 再延迟一下，让用户看到完成状态
-      await new Promise(resolve => setTimeout(resolve, 300));
+      // 显示完成状态至少1秒
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
       // 8. 执行 reload
       await Updates.reloadAsync();
