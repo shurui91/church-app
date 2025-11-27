@@ -86,7 +86,7 @@ export default function AttendanceScreen() {
   // Get groups based on selected district
   const getGroupsForDistrict = (district: string | null): string[] => {
     if (district === 'A') {
-      return ['1', '2', '3', '4', '5', '亲子排'];
+      return ['1', '2', '3', '4', '5', '亲子'];
     }
     if (district === 'B') {
       return ['1', '2', '3', '4'];
@@ -694,8 +694,9 @@ export default function AttendanceScreen() {
                     </View>
                     <Text style={[styles.recordType, { color: colors.textSecondary, fontSize: getFontSizeValue(18) }]}>
                       {getMeetingTypeLabel(item.meetingType)}
-                      {item.scope === 'full_congregation' && ' - 全会众'}
+                      {item.scope === 'full_congregation' && ' - 中文区'}
                       {item.scope === 'small_group' && item.scopeValue && ` - ${item.scopeValue}`}
+                      {item.scope === 'district' && item.scopeValue && ` - ${item.scopeValue}大区`}
                     </Text>
                     <View style={styles.recordCounts}>
                       <Text style={[styles.recordCount, { color: colors.text, fontSize: getFontSizeValue(18) }]}>

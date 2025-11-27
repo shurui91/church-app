@@ -3,14 +3,12 @@ import { Stack, usePathname } from 'expo-router';
 import CustomTabBar from './components/CustomTabBar';
 import BackButton from './components/BackButton';
 import AuthGuard from './components/AuthGuard';
+import UpdateChecker from './components/UpdateChecker';
 import { ThemeProvider } from './src/context/ThemeContext';
 import { FontSizeProvider, useFontSize } from './src/context/FontSizeContext';
 import { AuthProvider } from './src/context/AuthContext';
 import { useThemeColors } from './src/hooks/useThemeColors';
-import { useEffect } from 'react';
-import { Alert } from 'react-native';
-import * as Updates from 'expo-updates';
-import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 
 // 定义需要显示底部导航栏的路由白名单
 const TAB_BAR_ROUTES = [
@@ -25,7 +23,6 @@ function ThemedLayout() {
   const pathname = usePathname(); // ✅ 提前在组件顶层调用
   const colors = useThemeColors();
   const { getFontSizeValue } = useFontSize();
-  const { t } = useTranslation();
 
   // Don't show tab bar on login or index (splash) page
   const shouldShowTabBar =
@@ -102,30 +99,42 @@ function ThemedLayout() {
 }
 
 export default function RootLayout() {
-  useEffect(() => {
-    async function checkUpdate() {
-      try {
-        const update = await Updates.checkForUpdateAsync();
-        if (update.isAvailable) {
-          await Updates.fetchUpdateAsync();
-          await Updates.reloadAsync(); // 直接刷新，不弹提示
-        }
-      } catch (e) {
-        console.log('检查更新失败', e);
-      }
-    }
+  const [isUpdateChecking, setIsUpdateChecking] = useState(true);
+  const [shouldShowApp, setShouldShowApp] = useState(false);
 
-    checkUpdate();
-  }, []);
+  // 🔧 模拟模式：设置为 true 可以模拟大量更新下载（用于测试）
+  // 设置为 false 或删除此行以使用真实的更新检查
+  const SIMULATE_LARGE_UPDATE = false; // 改为 false 以禁用模拟模式
+
+  const handleUpdateComplete = () => {
+    // 更新完成，reload 会自动触发，这里不需要做任何事情
+    // 但如果 reload 没有立即生效，继续显示应用
+    setIsUpdateChecking(false);
+    setShouldShowApp(true);
+  };
+
+  const handleUpdateSkipped = () => {
+    // 没有更新或更新检查失败，直接显示应用
+    setIsUpdateChecking(false);
+    setShouldShowApp(true);
+  };
 
   return (
     <ThemeProvider>
       <FontSizeProvider>
-        <AuthProvider>
-          <AuthGuard>
-            <ThemedLayout />
-          </AuthGuard>
-        </AuthProvider>
+        {isUpdateChecking ? (
+          <UpdateChecker
+            onUpdateComplete={handleUpdateComplete}
+            onUpdateSkipped={handleUpdateSkipped}
+            simulateLargeUpdate={SIMULATE_LARGE_UPDATE}
+          />
+        ) : shouldShowApp ? (
+          <AuthProvider>
+            <AuthGuard>
+              <ThemedLayout />
+            </AuthGuard>
+          </AuthProvider>
+        ) : null}
       </FontSizeProvider>
     </ThemeProvider>
   );
