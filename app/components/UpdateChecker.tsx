@@ -186,7 +186,7 @@ export default function UpdateChecker({ onUpdateComplete, onUpdateSkipped, simul
     } catch (e: any) {
       console.error('[UpdateChecker] Update check/download failed:', e);
       setStatus('error');
-      setErrorMessage(e?.message || '更新检查失败');
+      setErrorMessage(e?.message || 'Update check failed');
       
       // 错误时也继续应用流程，不阻塞用户
       setTimeout(() => {
@@ -198,19 +198,19 @@ export default function UpdateChecker({ onUpdateComplete, onUpdateSkipped, simul
   const getStatusText = () => {
     switch (status) {
       case 'checking':
-        return '正在检查更新...';
+        return 'Checking for updates...';
       case 'downloading':
         return downloadSize 
-          ? `正在下载更新... (${downloadProgress.toFixed(0)}%)`
-          : '正在下载更新...';
+          ? `Downloading update... (${downloadProgress.toFixed(0)}%)`
+          : 'Downloading update...';
       case 'applying':
-        return '正在应用更新...';
+        return 'Applying update...';
       case 'complete':
-        return '更新完成！';
+        return 'Update complete!';
       case 'error':
-        return errorMessage || '更新失败';
+        return errorMessage || 'Update failed';
       default:
-        return '正在检查更新...';
+        return 'Checking for updates...';
     }
   };
 
@@ -284,7 +284,7 @@ export default function UpdateChecker({ onUpdateComplete, onUpdateSkipped, simul
               }
             ]}
           >
-            将在2秒后继续启动应用
+            Will continue launching app in 2 seconds
           </Text>
         )}
       </View>
