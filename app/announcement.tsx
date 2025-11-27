@@ -8,6 +8,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   RefreshControl,
+  Platform,
 } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
@@ -140,7 +141,9 @@ export default function AnnouncementScreen() {
           { 
             backgroundColor: colors.card, 
             borderBottomColor: colors.border,
-            paddingTop: Math.max(insets.top, 12),
+            // iOS: SafeAreaView已处理顶部安全区域，保持原有padding
+            // Android: 添加额外顶部间距，确保不被状态栏遮挡
+            paddingTop: Platform.OS === 'ios' ? 12 : Math.max(insets.top + 12, 20),
           },
         ]}>
         {sections.map((section, index) => (
