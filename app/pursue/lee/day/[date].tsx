@@ -48,11 +48,11 @@ function stripHTML(html: string) {
     .trim();
 }
 
-// ✅ 动态行距计算函数
+// ✅ 动态行距计算函数 - 更宽松的行间距以减少阅读疲劳
 function getLineHeight(fontSize: number) {
-  if (fontSize <= 16) return fontSize * 1.6;
-  if (fontSize <= 20) return fontSize * 1.5;
-  return fontSize * 1.4;
+  if (fontSize <= 16) return fontSize * 2.0;
+  if (fontSize <= 20) return fontSize * 1.9;
+  return fontSize * 1.8;
 }
 
 interface Article {
@@ -381,7 +381,7 @@ export default function LeeDayPage() {
         onScroll={handleScroll}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60 }}>
+        contentContainerStyle={{ paddingTop: 24, paddingBottom: 60 }}>
         {/* 顶部标题 */}
         <Text
           style={[
@@ -468,20 +468,25 @@ const styles = StyleSheet.create({
   collectionTitle: {
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 10,
+    marginTop: 8,
+    marginBottom: 16,
+    paddingHorizontal: 24,
   },
   topic: {
     textAlign: 'center',
-    marginBottom: 6,
+    marginBottom: 12,
     fontWeight: '500',
+    paddingHorizontal: 24,
   },
   chapterTitle: {
     textAlign: 'center',
-    marginBottom: 18,
+    marginBottom: 24,
     fontWeight: '600',
+    paddingHorizontal: 24,
   },
   content: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
+    marginTop: 8,
   },
   center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 });

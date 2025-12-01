@@ -285,10 +285,10 @@ function stripHTML(html: string): string {
     .trim();
 }
 
-// ✅ 动态行距计算
+// ✅ 动态行距计算 - 更宽松的行间距以减少阅读疲劳
 function getLineHeight(fontSize: number): number {
-  if (fontSize <= 20) return fontSize * 1.5;
-  return fontSize * 1.4;
+  if (fontSize <= 20) return fontSize * 2.0;
+  return fontSize * 1.9;
 }
 
 export default function ArticleDetailScreen() {
@@ -487,7 +487,7 @@ export default function ArticleDetailScreen() {
         onScroll={handleScroll}
         scrollEventThrottle={16}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ paddingBottom: 60 }}>
+        contentContainerStyle={{ paddingTop: 24, paddingBottom: 60 }}>
         {/* 标题 */}
         <Text
           style={[
@@ -583,16 +583,19 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 16,
-    paddingHorizontal: 20,
+    marginTop: 8,
+    marginBottom: 20,
+    paddingHorizontal: 24,
   },
   subtitle: {
     textAlign: 'center',
-    marginBottom: 24,
-    paddingHorizontal: 20,
+    marginBottom: 28,
+    paddingHorizontal: 24,
   },
   content: {
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
+    // 增加段落之间的间距，让阅读更舒适
+    marginTop: 8,
   },
 });
 

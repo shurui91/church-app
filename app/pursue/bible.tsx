@@ -571,8 +571,8 @@ export default function BibleScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollView: { flex: 1 },
-  content: { paddingHorizontal: 5, paddingTop: 8, paddingBottom: 60 },
-  title: { fontWeight: 'bold', textAlign: 'center', marginBottom: 12 },
+  content: { paddingHorizontal: 5, paddingTop: 24, paddingBottom: 60 },
+  title: { fontWeight: 'bold', textAlign: 'center', marginTop: 8, marginBottom: 12 },
   card: { padding: 16, borderRadius: 12, borderWidth: 1, marginBottom: 16 },
   planContainer: {
     marginBottom: 16,
