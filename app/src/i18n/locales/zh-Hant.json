@@ -122,7 +122,7 @@
     "phoneNotWhitelisted": "該手機號未在邀請列表中，請聯繫負責弟兄"
   },
   "attendance": {
-    "title": "人數統計",
+    "title": "人數匯報",
     "date": "日期",
     "meetingType": "聚會類型",
     "scope": "統計層級",

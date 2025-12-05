@@ -19,6 +19,16 @@ function canAccessAttendance(user) {
 }
 
 /**
+ * Helper function to check if user can access "view all attendance" feature
+ * Only super_admin, admin, and leader can access
+ */
+function canViewAllAttendance(user) {
+  if (!user) return false;
+  // Only allow super_admin, admin, and leader
+  return ['super_admin', 'admin', 'leader'].includes(user.role);
+}
+
+/**
  * Custom authorization middleware for attendance
  * Only blocks member role, all other roles can access
  */
@@ -245,6 +255,7 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
  * GET /api/attendance
  * Get attendance records for current user
  * Query params: ?limit=50&offset=0 (optional)
+ * Note: For "view all" feature, only super_admin, admin, leader can see all records
  */
 router.get('/', authenticate, authorizeAttendance, async (req, res) => {
   try {
@@ -255,9 +266,7 @@ router.get('/', authenticate, authorizeAttendance, async (req, res) => {
     console.log('[attendance GET] Query params:', { limit, offset });
 
     // Check if user can see all records (admin, super_admin, leader) or just their own
-    const canSeeAllRecords = ['super_admin', 'admin', 'leader'].includes(
-      user.role
-    );
+    const canSeeAllRecords = canViewAllAttendance(user);
     console.log('[attendance GET] Can see all records:', canSeeAllRecords);
 
     let records;
@@ -266,7 +275,9 @@ router.get('/', authenticate, authorizeAttendance, async (req, res) => {
       console.log('[attendance GET] Calling Attendance.findAll');
       records = await Attendance.findAll(limit, offset);
     } else {
-      // Regular users can only see their own records
+      // Regular users (including usher) can only see their own records
+      // But for "view all" feature, usher should not access this endpoint
+      // This is handled by frontend, but we keep this for backward compatibility
       console.log('[attendance GET] Calling Attendance.findByUser with userId:', user.id);
       records = await Attendance.findByUser(user.id, limit, offset);
     }

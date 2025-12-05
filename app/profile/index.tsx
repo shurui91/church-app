@@ -264,12 +264,20 @@ export default function ProfileScreen() {
 
         {/* 菜单 */}
         <View style={[styles.menuContainer, { backgroundColor: colors.card }]}>
-          {/* 人数统计 - 所有角色可见，只有 member 不可见 */}
+          {/* 人数汇报 - 所有角色可见，只有 member 不可见 */}
           {user?.role !== 'member' && (
             <MenuItem
               icon='clipboard-outline'
-              title={t('attendance.title') || '人数统计'}
+              title={t('attendance.title') || '人数汇报'}
               onPress={() => router.push('/attendance')}
+            />
+          )}
+          {/* 查看所有出席数据 - 只有 super_admin, admin, leader 可以访问 */}
+          {['super_admin', 'admin', 'leader'].includes(user?.role || '') && (
+            <MenuItem
+              icon='list-outline'
+              title='查看所有出席数据'
+              onPress={() => router.push('/attendance/view-all')}
             />
           )}
           <MenuItem

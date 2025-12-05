@@ -462,7 +462,7 @@ export default function AttendanceScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]} edges={[]}>
       <Stack.Screen
         options={{
-          title: t('attendance.title') || '人数统计',
+          title: t('attendance.title') || '人数汇报',
           headerShown: true,
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
