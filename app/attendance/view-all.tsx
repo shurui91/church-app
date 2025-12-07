@@ -528,10 +528,15 @@ export default function ViewAllAttendanceScreen() {
                           style={[
                             styles.barValue,
                             {
-                              color: colors.text,
+                              color: colors.isDark ? '#ffffff' : '#000000',
                               fontSize: getFontSizeValue(10),
                               bottom: adultsHeight + 2,
                               width: barWidth,
+                              backgroundColor: colors.isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.8)',
+                              borderRadius: 4,
+                              paddingHorizontal: 2,
+                              textAlign: 'center',
+                              fontWeight: '600',
                             },
                           ]}
                         >
@@ -579,10 +584,15 @@ export default function ViewAllAttendanceScreen() {
                             style={[
                               styles.barValue,
                               {
-                                color: colors.text,
+                                color: colors.isDark ? '#ffffff' : '#000000',
                                 fontSize: getFontSizeValue(10),
                                 bottom: youthHeight + 2,
                                 width: barWidth,
+                                backgroundColor: colors.isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.8)',
+                                borderRadius: 4,
+                                paddingHorizontal: 2,
+                                textAlign: 'center',
+                                fontWeight: '600',
                               },
                             ]}
                           >
@@ -646,12 +656,13 @@ export default function ViewAllAttendanceScreen() {
                         styles.xAxisLabel,
                         {
                           left: labelX - 15,
-                          color: colors.textSecondary,
+                          color: colors.isDark ? '#ffffff' : '#333333',
                           fontSize: getFontSizeValue(10),
-                          fontWeight: '500',
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          fontWeight: '600',
+                          backgroundColor: colors.isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.9)',
                           borderRadius: 4,
                           paddingVertical: 2,
+                          paddingHorizontal: 4,
                         },
                       ]}
                     >
@@ -804,13 +815,27 @@ export default function ViewAllAttendanceScreen() {
           <View style={styles.yAxisContainer}>
             {/* Top label: Maximum adults value - at top of chartArea (where max bars reach) */}
             <Text
-              style={[styles.yAxisLabel, { color: colors.textSecondary, fontSize: getFontSizeValue(11) }]}
+              style={[
+                styles.yAxisLabel,
+                {
+                  color: colors.isDark ? '#e0e0e0' : '#333333',
+                  fontSize: getFontSizeValue(11),
+                  fontWeight: '600',
+                },
+              ]}
             >
               {maxAdults}
             </Text>
             {/* Bottom label: 0 - at bottomY position (CHART_HEIGHT - 200 = 0) */}
             <Text
-              style={[styles.yAxisLabel, { color: colors.textSecondary, fontSize: getFontSizeValue(11) }]}
+              style={[
+                styles.yAxisLabel,
+                {
+                  color: colors.isDark ? '#e0e0e0' : '#333333',
+                  fontSize: getFontSizeValue(11),
+                  fontWeight: '600',
+                },
+              ]}
             >
               0
             </Text>
@@ -899,10 +924,15 @@ export default function ViewAllAttendanceScreen() {
                           style={[
                             styles.barValue,
                             {
-                              color: colors.text,
+                              color: colors.isDark ? '#ffffff' : '#000000',
                               fontSize: getFontSizeValue(10),
                               bottom: adultsHeight + 2,
                               width: barWidth,
+                              backgroundColor: colors.isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.8)',
+                              borderRadius: 4,
+                              paddingHorizontal: 2,
+                              textAlign: 'center',
+                              fontWeight: '600',
                             },
                           ]}
                         >
@@ -950,10 +980,15 @@ export default function ViewAllAttendanceScreen() {
                             style={[
                               styles.barValue,
                               {
-                                color: colors.text,
+                                color: colors.isDark ? '#ffffff' : '#000000',
                                 fontSize: getFontSizeValue(10),
                                 bottom: youthHeight + 2,
                                 width: barWidth,
+                                backgroundColor: colors.isDark ? 'rgba(0, 0, 0, 0.6)' : 'rgba(255, 255, 255, 0.8)',
+                                borderRadius: 4,
+                                paddingHorizontal: 2,
+                                textAlign: 'center',
+                                fontWeight: '600',
                               },
                             ]}
                           >
@@ -1017,12 +1052,13 @@ export default function ViewAllAttendanceScreen() {
                         styles.xAxisLabel,
                         {
                           left: labelX - 15,
-                          color: colors.textSecondary,
+                          color: colors.isDark ? '#ffffff' : '#333333',
                           fontSize: getFontSizeValue(10),
-                          fontWeight: '500',
-                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          fontWeight: '600',
+                          backgroundColor: colors.isDark ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.9)',
                           borderRadius: 4,
                           paddingVertical: 2,
+                          paddingHorizontal: 4,
                         },
                       ]}
                     >
