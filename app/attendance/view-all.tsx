@@ -449,11 +449,11 @@ export default function ViewAllAttendanceScreen() {
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={true}
-          contentContainerStyle={{ paddingRight: 16 }}
+          contentContainerStyle={{ paddingRight: 16, paddingBottom: 30 }}
           style={styles.chartScrollView}
           onScrollBeginDrag={() => setSelectedBar(null)}>
           <Pressable onPress={() => setSelectedBar(null)} style={{ flex: 1 }}>
-            <View style={[styles.chartArea, { width: totalChartWidth }]}>
+            <View style={[styles.chartArea, { width: totalChartWidth, paddingBottom: 30 }]}>
             {/* Grid lines - Use same style as main Sunday meeting chart */}
             {/* Top grid line (max value) - at top of chartArea where max bars reach */}
             <View
@@ -619,24 +619,39 @@ export default function ViewAllAttendanceScreen() {
               </Pressable>
             )}
 
-            {/* X-axis labels */}
+            {/* X-axis labels - Use same style as main Sunday meeting chart */}
             <View style={styles.xAxisContainer}>
               {chartData.map((item, index) => {
-                const showEvery = Math.max(1, Math.ceil(chartData.length / 8));
+                // Show label for every few points to avoid crowding on mobile
+                // Adjust based on chart width and data points (same logic as main chart)
+                const maxLabels = Math.floor(chartAreaWidth / 60); // Show max labels based on available width
+                const showEvery = Math.max(1, Math.ceil(chartData.length / maxLabels));
                 if (index % showEvery === 0 || index === chartData.length - 1) {
                   const date = new Date(item.date);
                   const month = date.getMonth() + 1;
                   const day = date.getDate();
-                  const x = (index * (groupWidth + barGroupSpacing)) + 30 + groupWidth / 2;
+                  // Calculate X position: base position + center of actual bar group
+                  // Bar group starts at: (index * (groupWidth + barGroupSpacing)) + 30
+                  const barGroupStartX = (index * (groupWidth + barGroupSpacing)) + 30;
+                  // If only adults bar is shown (prayer or youthChildren === 0), center on adults bar
+                  // Otherwise, center on the group (two bars)
+                  const hasYouthBar = !isPrayer && item.youthChildren > 0;
+                  const labelX = hasYouthBar 
+                    ? barGroupStartX + groupWidth / 2  // Center of two bars
+                    : barGroupStartX + barWidth / 2;    // Center of single adults bar
                   return (
                     <Text
                       key={`xaxis-${item.date}-${index}`}
                       style={[
                         styles.xAxisLabel,
                         {
-                          left: x - 12,
+                          left: labelX - 15,
                           color: colors.textSecondary,
-                          fontSize: getFontSizeValue(9),
+                          fontSize: getFontSizeValue(10),
+                          fontWeight: '500',
+                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          borderRadius: 4,
+                          paddingVertical: 2,
                         },
                       ]}
                     >
@@ -986,17 +1001,28 @@ export default function ViewAllAttendanceScreen() {
                   const date = new Date(item.date);
                   const month = date.getMonth() + 1;
                   const day = date.getDate();
-                  const x = (index * (groupWidth + barGroupSpacing)) + 30 + groupWidth / 2;
+                  // Calculate X position: base position + center of actual bar group
+                  // Bar group starts at: (index * (groupWidth + barGroupSpacing)) + 30
+                  const barGroupStartX = (index * (groupWidth + barGroupSpacing)) + 30;
+                  // If only adults bar is shown (youthChildren === 0), center on adults bar
+                  // Otherwise, center on the group (two bars)
+                  const hasYouthBar = item.youthChildren > 0;
+                  const labelX = hasYouthBar 
+                    ? barGroupStartX + groupWidth / 2  // Center of two bars
+                    : barGroupStartX + barWidth / 2;    // Center of single adults bar
                   return (
                     <Text
                       key={`xaxis-main-${item.date}-${index}`}
                       style={[
                         styles.xAxisLabel,
                         {
-                          left: x - 15,
+                          left: labelX - 15,
                           color: colors.textSecondary,
                           fontSize: getFontSizeValue(10),
                           fontWeight: '500',
+                          backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                          borderRadius: 4,
+                          paddingVertical: 2,
                         },
                       ]}
                     >
@@ -1525,6 +1551,7 @@ const styles = StyleSheet.create({
   chartArea: {
     height: CHART_HEIGHT - 60,
     marginTop: 30,
+    marginBottom: 30, // Add bottom margin for X-axis labels
     position: 'relative',
   },
   gridLine: {
@@ -1630,7 +1657,7 @@ const styles = StyleSheet.create({
   },
   xAxisContainer: {
     position: 'absolute',
-    bottom: -30,
+    bottom: -30, // Position below chartArea (accounting for marginBottom: 30)
     left: 0,
     right: 0,
     height: 30,
@@ -1702,7 +1729,7 @@ const styles = StyleSheet.create({
   scopeCard: {
     borderRadius: 12,
     borderWidth: 1,
-    overflow: 'hidden',
+    overflow: 'visible', // Changed from 'hidden' to allow X-axis labels to be visible
   },
   scopeCardHeader: {
     flexDirection: 'row',
@@ -1729,6 +1756,8 @@ const styles = StyleSheet.create({
   scopeCardContent: {
     padding: 16,
     paddingTop: 0,
+    paddingBottom: 16, // Ensure space for X-axis labels
+    overflow: 'visible', // Allow X-axis labels to be visible
   },
   scopeStatistics: {
     flexDirection: 'row',
@@ -1748,5 +1777,6 @@ const styles = StyleSheet.create({
   },
   scopeChartContainer: {
     marginVertical: 12,
+    minHeight: CHART_HEIGHT - 30, // Ensure enough space for chart + X-axis labels
   },
 });
