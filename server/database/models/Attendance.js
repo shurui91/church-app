@@ -48,6 +48,7 @@ export class Attendance {
   /**
    * Create or update an attendance record
    * Logic:
+   * - If id is provided, update the record with that id directly
    * - For full_congregation: Allows multiple records (same date + meetingType can have multiple entries)
    * - For small_group/district: If same date + meetingType + scopeValue exists, update it; otherwise insert new
    * @param {string} date - Date in ISO format (YYYY-MM-DD)
@@ -59,6 +60,7 @@ export class Attendance {
    * @param {number} createdBy - User ID who created the record
    * @param {string} [district] - District (optional, kept for backward compatibility)
    * @param {string} [notes] - Notes (optional)
+   * @param {number} [id] - Record ID (optional, if provided, update this record directly)
    * @returns {Promise<Object>} Created or updated attendance object
    */
   static async createOrUpdate(
@@ -70,7 +72,8 @@ export class Attendance {
     youthChildCount,
     createdBy,
     district = null,
-    notes = null
+    notes = null,
+    id = null
   ) {
     const db = await getDatabase();
     const now = getCurrentTimestamp();
@@ -79,6 +82,39 @@ export class Attendance {
     const normalizedScopeValue = scope === 'full_congregation' ? null : (scopeValue || null);
 
     try {
+      // If id is provided, update the record directly by ID
+      // Convert id to number if it's a string
+      const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
+      
+      // Use console.error for higher priority logging to avoid rate limiting
+      console.error('[Attendance.createOrUpdate] CHECK - id:', id, 'numericId:', numericId, 'type:', typeof id, 'isValid:', numericId !== null && numericId !== undefined && !isNaN(numericId) && numericId > 0);
+      
+      if (numericId !== null && numericId !== undefined && !isNaN(numericId) && numericId > 0) {
+        // Verify the record exists and belongs to the user (or user has permission)
+        const existing = await this.findById(numericId);
+        if (!existing) {
+          console.error('[Attendance.createOrUpdate] ERROR: Record with id not found:', numericId);
+          throw new Error(`Record with id ${numericId} not found`);
+        }
+        
+        console.error('[Attendance.createOrUpdate] UPDATE START - id:', numericId, 'date:', date);
+        
+        // Update all fields including date, meetingType, scope, scopeValue
+        const updateResult = await db.run(
+          `UPDATE attendance 
+           SET date = ?, meetingtype = ?, scope = ?, scopevalue = ?, adultcount = ?, youthchildcount = ?, createdby = ?, district = ?, notes = ?, updatedat = ?
+           WHERE id = ?`,
+          [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, numericId]
+        );
+        
+        console.error('[Attendance.createOrUpdate] UPDATE RESULT - rowsAffected:', updateResult?.changes || 'unknown');
+        
+        const updated = await this.findById(numericId);
+        console.error('[Attendance.createOrUpdate] UPDATE SUCCESS - returned id:', updated?.id);
+        return updated;
+      }
+      
+      console.error('[Attendance.createOrUpdate] CREATE MODE - id was:', id, 'numericId was:', numericId);
 
       // PostgreSQL stores field names in lowercase
       if (scope === 'full_congregation') {
@@ -242,18 +278,13 @@ export class Attendance {
         params.push(limit, offset);
       }
 
-      console.log('[Attendance.findByUser] SQL:', sql);
-      console.log('[Attendance.findByUser] Params:', params);
       const records = await db.all(sql, params);
-      console.log('[Attendance.findByUser] Raw records:', records);
-      console.log('[Attendance.findByUser] Records count:', records?.length || 0);
       
       if (!records || records.length === 0) {
         return [];
       }
       
       const normalized = records.map(record => this.normalizeAttendanceFields(record));
-      console.log('[Attendance.findByUser] Normalized records:', normalized);
       return normalized;
     } catch (error) {
       console.error('[Attendance.findByUser] Error:', error);
@@ -283,18 +314,13 @@ export class Attendance {
         params.push(limit, offset);
       }
 
-      console.log('[Attendance.findAll] SQL:', sql);
-      console.log('[Attendance.findAll] Params:', params);
       const records = await db.all(sql, params);
-      console.log('[Attendance.findAll] Raw records:', records);
-      console.log('[Attendance.findAll] Records count:', records?.length || 0);
       
       if (!records || records.length === 0) {
         return [];
       }
       
       const normalized = records.map(record => this.normalizeAttendanceFields(record));
-      console.log('[Attendance.findAll] Normalized records:', normalized);
       return normalized;
     } catch (error) {
       console.error('[Attendance.findAll] Error:', error);

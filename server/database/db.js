@@ -136,14 +136,10 @@ export async function getDatabase() {
       const client = await pool.connect();
       try {
         const convertedSql = convertPlaceholders(sql);
-        console.log('[db.run] SQL:', convertedSql);
-        console.log('[db.run] Params:', params);
+        // Only log SQL and command type, not the full result data
+        const commandType = sql.trim().split(/\s+/)[0].toUpperCase();
+        console.log(`[db.run] ${commandType} query executed`);
         const result = await client.query(convertedSql, params);
-        console.log('[db.run] Query result:', {
-          rowCount: result.rowCount,
-          rows: result.rows,
-          command: result.command,
-        });
         // For INSERT with RETURNING id, extract the id
         // PostgreSQL returns the id in the first row
         if (result.rows && result.rows.length > 0) {
@@ -151,24 +147,22 @@ export async function getDatabase() {
           // Also check all possible key variations
           const row = result.rows[0];
           const id = row.id || row.ID || row.Id || row['id'] || row['ID'] || row['Id'];
-          console.log('[db.run] Extracted id:', id, 'from row:', row);
-          console.log('[db.run] Row keys:', Object.keys(row));
           if (id !== undefined && id !== null) {
+            console.log(`[db.run] ${commandType} successful, id: ${id}, rows affected: ${result.rowCount || 0}`);
             return {
               lastID: id,
               changes: result.rowCount || 0,
             };
           }
         }
+        console.log(`[db.run] ${commandType} successful, rows affected: ${result.rowCount || 0}`);
         return {
           lastID: null,
           changes: result.rowCount || 0,
         };
       } catch (error) {
-        console.error('[db.run] Error executing query:', error);
-        console.error('[db.run] SQL:', sql);
-        console.error('[db.run] Converted SQL:', convertPlaceholders(sql));
-        console.error('[db.run] Params:', params);
+        console.error('[db.run] Error executing query:', error.message);
+        console.error('[db.run] SQL:', sql.substring(0, 100) + (sql.length > 100 ? '...' : ''));
         throw error;
       } finally {
         client.release();

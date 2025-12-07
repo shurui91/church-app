@@ -329,14 +329,34 @@ export default function AttendanceScreen() {
 
     try {
       setSubmitting(true);
-      const response = await api.createOrUpdateAttendance({
+      const submitData: any = {
         date: formatDate(date),
         meetingType: meetingType!,
         scope: scope!,
         scopeValue: scope === 'full_congregation' ? null : scopeValue,
         adultCount: parseInt(adultCount),
         youthChildCount: parseInt(youthChildCount),
-      });
+      };
+      
+      // 如果正在编辑，传递记录ID（确保是数字类型）
+      if (editingRecord && editingRecord.id) {
+        // 确保 id 是数字类型
+        const recordId = typeof editingRecord.id === 'string' ? parseInt(editingRecord.id, 10) : editingRecord.id;
+        if (!isNaN(recordId) && recordId > 0) {
+          submitData.id = recordId;
+          console.log('[Attendance] Submitting with editingRecord.id:', recordId, '(converted from:', editingRecord.id, ')');
+          console.log('[Attendance] EditingRecord:', JSON.stringify(editingRecord));
+        } else {
+          console.error('[Attendance] Invalid editingRecord.id:', editingRecord.id);
+        }
+      } else {
+        console.log('[Attendance] Submitting new record (no editingRecord)');
+        console.log('[Attendance] EditingRecord state:', editingRecord);
+      }
+      
+      console.log('[Attendance] Submit data being sent:', JSON.stringify(submitData));
+      const response = await api.createOrUpdateAttendance(submitData);
+      console.log('[Attendance] Submit response:', JSON.stringify(response));
 
       if (response.success) {
         Alert.alert(t('common.tip') || '提示', t('attendance.submitSuccess') || '提交成功');

@@ -90,7 +90,12 @@ router.get(
  */
 router.post('/', authenticate, authorizeAttendance, async (req, res) => {
   try {
+    // Log the entire request body first to debug
+    console.error('[attendance POST] Full request body:', JSON.stringify(req.body));
+    console.error('[attendance POST] Request body keys:', Object.keys(req.body || {}));
+    
     const {
+      id,
       date,
       meetingType,
       scope,
@@ -100,6 +105,13 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
       notes,
     } = req.body;
     const user = req.user;
+    
+    console.error('[attendance POST] Extracted id:', id, 'type:', typeof id, 'value:', id);
+    
+    // Only log when id is provided (for debugging updates)
+    if (id !== undefined && id !== null && id !== '') {
+      console.log('[attendance POST] UPDATE request - id:', id, 'type:', typeof id);
+    }
 
     // Validate input
     if (!date) {
@@ -210,7 +222,32 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
     // Get user's district if available
     const district = user.district || null;
 
+    // If id is provided, validate it's a number
+    let recordId = null;
+    
+    // Check if id is provided and valid
+    // id can be number or string, but must be a valid positive integer
+    if (id !== undefined && id !== null && id !== '') {
+      // Parse id to number (handle both string and number types)
+      const parsedId = typeof id === 'number' ? id : parseInt(String(id), 10);
+      
+      // Validate that parsedId is a valid positive number
+      if (!isNaN(parsedId) && parsedId > 0 && Number.isInteger(parsedId)) {
+        recordId = parsedId;
+        console.error('[attendance POST] UPDATE MODE - id:', recordId, 'original:', id, 'type:', typeof id);
+      } else {
+        console.error('[attendance POST] ERROR: Invalid id format:', id, 'parsed to:', parsedId);
+        return res.status(400).json({
+          success: false,
+          message: '无效的记录ID',
+        });
+      }
+    } else {
+      console.error('[attendance POST] CREATE MODE - id was:', id, 'type:', typeof id, 'isUndefined:', id === undefined, 'isNull:', id === null);
+    }
+
     // Create or update attendance record
+    console.error('[attendance POST] Calling createOrUpdate with recordId:', recordId, 'type:', typeof recordId);
     const attendance = await Attendance.createOrUpdate(
       date,
       meetingType,
@@ -220,8 +257,15 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
       youthChildCount,
       user.id,
       district,
-      notes || null
+      notes || null,
+      recordId
     );
+    console.error('[attendance POST] createOrUpdate returned id:', attendance?.id, 'requested:', recordId);
+    
+    // Only log when updating (for debugging)
+    if (recordId) {
+      console.log('[attendance POST] Updated record id:', attendance?.id, '(requested:', recordId, ')');
+    }
 
     res.json({
       success: true,
@@ -260,30 +304,22 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
 router.get('/', authenticate, authorizeAttendance, async (req, res) => {
   try {
     const user = req.user;
-    console.log('[attendance GET] User:', { id: user.id, role: user.role });
     const limit = req.query.limit ? parseInt(req.query.limit) : null;
     const offset = req.query.offset ? parseInt(req.query.offset) : 0;
-    console.log('[attendance GET] Query params:', { limit, offset });
 
     // Check if user can see all records (admin, super_admin, leader) or just their own
     const canSeeAllRecords = canViewAllAttendance(user);
-    console.log('[attendance GET] Can see all records:', canSeeAllRecords);
 
     let records;
     if (canSeeAllRecords) {
       // Admins and leaders can see all records
-      console.log('[attendance GET] Calling Attendance.findAll');
       records = await Attendance.findAll(limit, offset);
     } else {
       // Regular users (including usher) can only see their own records
       // But for "view all" feature, usher should not access this endpoint
       // This is handled by frontend, but we keep this for backward compatibility
-      console.log('[attendance GET] Calling Attendance.findByUser with userId:', user.id);
       records = await Attendance.findByUser(user.id, limit, offset);
     }
-
-    console.log('[attendance GET] Records retrieved:', records?.length || 0);
-    console.log('[attendance GET] Records:', records);
 
     res.json({
       success: true,

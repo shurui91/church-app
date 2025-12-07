@@ -409,6 +409,7 @@ export const api = {
    * Create or update attendance record
    */
   async createOrUpdateAttendance(data: {
+    id?: number;
     date: string;
     meetingType: 'table' | 'homeMeeting' | 'prayer';
     scope: 'full_congregation' | 'district' | 'small_group';
