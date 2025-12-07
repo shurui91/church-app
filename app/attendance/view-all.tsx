@@ -84,7 +84,7 @@ export default function ViewAllAttendanceScreen() {
   const allRecordsLoadedRef = useRef(false); // Track if all records have been loaded for homeMeeting
   const [selectedBar, setSelectedBar] = useState<{date: string; adults: number; youthChildren: number; totalPeople: number; x: number; y: number; barType: 'adults' | 'youth'} | null>(null); // Selected bar for tooltip
 
-  // Load records
+  // Load records - optimized: only load records for current filter
   const loadRecords = async (reset = false) => {
     try {
       if (reset) {
@@ -97,7 +97,8 @@ export default function ViewAllAttendanceScreen() {
       }
 
       const currentOffset = reset ? 0 : offset;
-      const response = await api.getAttendanceRecords(RECORDS_PER_PAGE, currentOffset);
+      // Only load records for the current selected filter to reduce database load
+      const response = await api.getAttendanceRecords(RECORDS_PER_PAGE, currentOffset, selectedFilter);
 
       if (response.success) {
         const newRecords = response.data.records || [];
@@ -105,7 +106,12 @@ export default function ViewAllAttendanceScreen() {
         if (reset) {
           setAllRecords(newRecords);
         } else {
-          setAllRecords((prev) => [...prev, ...newRecords]);
+          // Remove duplicates when appending new records
+          setAllRecords((prev) => {
+            const existingIds = new Set(prev.map(r => r.id));
+            const uniqueNewRecords = newRecords.filter(r => !existingIds.has(r.id));
+            return [...prev, ...uniqueNewRecords];
+          });
         }
 
         // Check if there are more records
@@ -131,19 +137,27 @@ export default function ViewAllAttendanceScreen() {
     }
   };
 
-  // Filter records based on selected filter
+  // Since we're now loading records filtered by selectedFilter, we don't need to filter again
+  // But we keep this for backward compatibility and to handle filter changes
   useEffect(() => {
-    setRecords(allRecords.filter(record => record.meetingType === selectedFilter));
+    // If records are already filtered by API, use them directly
+    // Otherwise filter client-side (for backward compatibility)
+    // Also remove duplicates based on id to prevent key conflicts
+    const filtered = allRecords.filter(record => record.meetingType === selectedFilter);
+    const uniqueFiltered = filtered.filter((record, index, self) => 
+      index === self.findIndex(r => r.id === record.id)
+    );
+    setRecords(uniqueFiltered);
   }, [selectedFilter, allRecords]);
 
-  // Load all records (for homeMeeting grouping)
+  // Load all records - optimized: only load records for current filter
   const loadAllRecords = async () => {
     if (loadingAllRecords || loading) {
       console.log('[ViewAllAttendance] Already loading, skipping...');
       return;
     }
     
-    console.log('[ViewAllAttendance] Starting to load all records. Current count:', allRecords.length, 'hasMore:', hasMore);
+    console.log('[ViewAllAttendance] Starting to load all records for', selectedFilter, '. Current count:', allRecords.length, 'hasMore:', hasMore);
     setLoadingAllRecords(true);
     try {
       // Start from current offset
@@ -154,8 +168,9 @@ export default function ViewAllAttendanceScreen() {
       let totalLoaded = 0;
       
       while (currentHasMore && attempts < maxAttempts) {
-        console.log(`[ViewAllAttendance] Loading page ${attempts + 1}, offset: ${currentOffset}`);
-        const response = await api.getAttendanceRecords(RECORDS_PER_PAGE, currentOffset);
+        console.log(`[ViewAllAttendance] Loading page ${attempts + 1}, offset: ${currentOffset}, filter: ${selectedFilter}`);
+        // Only load records for the current selected filter
+        const response = await api.getAttendanceRecords(RECORDS_PER_PAGE, currentOffset, selectedFilter);
         
         if (response.success) {
           const newRecords = response.data.records || [];
@@ -163,8 +178,11 @@ export default function ViewAllAttendanceScreen() {
           
           if (newRecords.length > 0) {
             setAllRecords((prev) => {
-              const updated = [...prev, ...newRecords];
-              console.log(`[ViewAllAttendance] Total records now: ${updated.length}`);
+              // Remove duplicates when appending new records
+              const existingIds = new Set(prev.map(r => r.id));
+              const uniqueNewRecords = newRecords.filter(r => !existingIds.has(r.id));
+              const updated = [...prev, ...uniqueNewRecords];
+              console.log(`[ViewAllAttendance] Total records now: ${updated.length} (added ${uniqueNewRecords.length} new, skipped ${newRecords.length - uniqueNewRecords.length} duplicates)`);
               return updated;
             });
             currentOffset += newRecords.length;
@@ -196,36 +214,46 @@ export default function ViewAllAttendanceScreen() {
     }
   };
 
-  // Initial load
-  useEffect(() => {
-    loadRecords(true);
-  }, []);
+  // Track previous filter to detect changes
+  const prevFilterRef = useRef<MeetingType | null>(null);
 
-  // Auto-load all records when switching to homeMeeting or prayer tab
-  // This ensures we have all records for accurate grouping by scopeValue
+  // Initial load and handle filter changes
   useEffect(() => {
-    if ((selectedFilter === 'homeMeeting' || selectedFilter === 'prayer') && allRecords.length > 0) {
-      // Always load all records when switching to homeMeeting or prayer tab
-      // This is necessary for accurate grouping
-      if (hasMore && !loadingAllRecords && !loading && !allRecordsLoadedRef.current) {
-        console.log(`[ViewAllAttendance] Switching to ${selectedFilter}, loading all records...`);
-        console.log('[ViewAllAttendance] Current state - allRecords:', allRecords.length, 'hasMore:', hasMore, 'loading:', loading, 'loadingAllRecords:', loadingAllRecords);
-        allRecordsLoadedRef.current = true;
-        loadAllRecords().then(() => {
-          console.log(`[ViewAllAttendance] All records loaded for ${selectedFilter}`);
-          allRecordsLoadedRef.current = false;
-        }).catch((error) => {
-          console.error('[ViewAllAttendance] Error loading all records:', error);
-          allRecordsLoadedRef.current = false;
-        });
-      } else if (!hasMore) {
-        console.log(`[ViewAllAttendance] All records already loaded for ${selectedFilter}`);
-      }
-    } else if (selectedFilter !== 'homeMeeting' && selectedFilter !== 'prayer') {
-      // Reset flag when switching away from homeMeeting or prayer
+    const filterChanged = prevFilterRef.current !== null && prevFilterRef.current !== selectedFilter;
+    
+    if (filterChanged) {
+      // Filter changed: reset state and load records for new filter
+      console.log(`[ViewAllAttendance] Filter changed from ${prevFilterRef.current} to ${selectedFilter}, resetting...`);
+      setAllRecords([]);
+      setOffset(0);
+      setHasMore(true);
       allRecordsLoadedRef.current = false;
     }
-  }, [selectedFilter, hasMore, allRecords.length, loading, loadingAllRecords]);
+    
+    prevFilterRef.current = selectedFilter;
+    
+    // Load records for current filter
+    loadRecords(true);
+  }, [selectedFilter]);
+
+  // Auto-load all records when initial load completes
+  // Optimized: Only load records for the current filter to reduce database load
+  useEffect(() => {
+    if (allRecords.length > 0 && hasMore && !loadingAllRecords && !loading && !allRecordsLoadedRef.current) {
+      // Load all remaining records for the current filter only
+      // This ensures complete data without loading unnecessary records from other filters
+      console.log(`[ViewAllAttendance] Auto-loading all records for ${selectedFilter}...`);
+      allRecordsLoadedRef.current = true;
+      loadAllRecords().then(() => {
+        console.log(`[ViewAllAttendance] All records loaded for ${selectedFilter}`);
+        allRecordsLoadedRef.current = false;
+      }).catch((error) => {
+        console.error('[ViewAllAttendance] Error loading all records:', error);
+        allRecordsLoadedRef.current = false;
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allRecords.length, hasMore, loadingAllRecords, loading]);
 
   // Get meeting type label
   const getMeetingTypeLabel = (type: MeetingType): string => {
@@ -235,7 +263,7 @@ export default function ViewAllAttendanceScreen() {
   // Get scope label
   const getScopeLabel = (scope: Scope, scopeValue: string | null): string => {
     if (scope === 'full_congregation') {
-      return '全会众';
+      return '中文区';
     }
     if (scope === 'district' && scopeValue) {
       return `${scopeValue}大区`;
@@ -395,19 +423,22 @@ export default function ViewAllAttendanceScreen() {
   };
 
   // Render bar chart for a specific scope (smaller version for homeMeeting)
-  const renderScopeBarChart = (chartData: Array<{date: string; adults: number; youthChildren: number; totalPeople: number}>, isCompact = false) => {
+  // Using same logic as main Sunday meeting chart
+  // For prayer meetings, only show adults (youth/children is always 0)
+  const renderScopeBarChart = (chartData: {date: string; adults: number; youthChildren: number; totalPeople: number}[], isCompact = false, isPrayer = false) => {
     if (!chartData || chartData.length === 0) {
       return null;
     }
 
-    const maxValue = Math.max(...chartData.map(d => d.totalPeople), 1);
-    const chartAreaHeight = isCompact ? 150 : CHART_HEIGHT - 80;
+    const maxAdults = Math.max(...chartData.map(d => d.adults), 0); // Max adults value for Y-axis (same as main chart)
     const chartAreaWidth = CHART_WIDTH - 60;
     
-    const barSpacing = 2;
-    const barGroupSpacing = 4;
-    const barWidth = 12;
-    const groupWidth = barWidth * 2 + barSpacing;
+    // Use same bar dimensions as main Sunday meeting chart
+    // For prayer meetings, only show adults bar (single bar per date)
+    const barSpacing = 4; // Spacing between adults and youth/children bars (not used for prayer)
+    const barGroupSpacing = 28; // Increased spacing between date groups for better separation
+    const barWidth = 32; // Wider bars so numbers can fit on one line
+    const groupWidth = isPrayer ? barWidth : barWidth * 2 + barSpacing; // Single bar for prayer, two bars for homeMeeting
     const totalChartWidth = Math.max(
       chartAreaWidth,
       chartData.length * (groupWidth + barGroupSpacing) + 30
@@ -422,34 +453,43 @@ export default function ViewAllAttendanceScreen() {
           style={styles.chartScrollView}
           onScrollBeginDrag={() => setSelectedBar(null)}>
           <Pressable onPress={() => setSelectedBar(null)} style={{ flex: 1 }}>
-            <View style={[styles.chartArea, { width: totalChartWidth, height: chartAreaHeight }]}>
-            {/* Grid lines */}
-            {[1, 0.75, 0.5, 0.25, 0].map((ratio, index) => {
-              const y = chartAreaHeight * ratio + 30;
-              return (
-                <View
-                  key={index}
-                  style={[
-                    styles.gridLine,
-                    {
-                      top: y,
-                      borderColor: colors.borderLight || colors.border,
-                    },
-                  ]}
-                />
-              );
-            })}
+            <View style={[styles.chartArea, { width: totalChartWidth }]}>
+            {/* Grid lines - Use same style as main Sunday meeting chart */}
+            {/* Top grid line (max value) - at top of chartArea where max bars reach */}
+            <View
+              style={[
+                styles.gridLine,
+                {
+                  top: 0,
+                  borderColor: colors.borderLight || colors.border,
+                },
+              ]}
+            />
+            {/* Bottom grid line (0) - align with main Sunday meeting chart style */}
+            <View
+              style={[
+                styles.gridLine,
+                {
+                  top: CHART_HEIGHT - 200, // Same as main Sunday meeting chart
+                  borderColor: colors.borderLight || colors.border,
+                },
+              ]}
+            />
 
-            {/* Bars */}
+            {/* Bars - Adults only for prayer, Adults and Youth/Children side by side for homeMeeting */}
             <View style={styles.barsContainer}>
               {chartData.map((item, index) => {
                 const x = (index * (groupWidth + barGroupSpacing)) + 30;
-                const adultsHeight = (item.adults / maxValue) * (chartAreaHeight - 60);
-                const youthHeight = (item.youthChildren / maxValue) * (chartAreaHeight - 60);
-                const bottomY = chartAreaHeight - 30;
+                // chartArea height is CHART_HEIGHT - 60, use that for height calculation
+                const chartAreaActualHeight = CHART_HEIGHT - 60;
+                const adultsHeight = (item.adults / maxAdults) * chartAreaActualHeight;
+                const youthHeight = isPrayer ? 0 : (item.youthChildren / maxAdults) * chartAreaActualHeight;
+                // Bottom of chart area - all bars should align here (0 on Y-axis)
+                // chartArea bottom is at CHART_HEIGHT - 60 relative to chartArea container
+                const bottomY = CHART_HEIGHT - 230;
 
                 return (
-                  <View key={index} style={styles.barGroup}>
+                  <View key={`bar-group-${item.date}-${index}`} style={styles.barGroup}>
                     {/* Adults bar */}
                     <Pressable
                       onPress={() => {
@@ -467,8 +507,9 @@ export default function ViewAllAttendanceScreen() {
                         styles.barContainer,
                         {
                           left: x,
-                          bottom: bottomY - adultsHeight,
+                          bottom: bottomY, // All bars align at the same bottom position
                           width: barWidth,
+                          height: adultsHeight, // Height varies based on data
                         },
                       ]}
                     >
@@ -476,7 +517,7 @@ export default function ViewAllAttendanceScreen() {
                         style={[
                           styles.barSegment,
                           {
-                            height: Math.max(adultsHeight, 2),
+                            height: '100%', // Fill the entire container height
                             backgroundColor: colors.primary,
                             opacity: selectedBar?.date === item.date && selectedBar?.barType === 'adults' ? 0.7 : 1,
                           },
@@ -488,7 +529,7 @@ export default function ViewAllAttendanceScreen() {
                             styles.barValue,
                             {
                               color: colors.text,
-                              fontSize: getFontSizeValue(8),
+                              fontSize: getFontSizeValue(10),
                               bottom: adultsHeight + 2,
                               width: barWidth,
                             },
@@ -499,54 +540,57 @@ export default function ViewAllAttendanceScreen() {
                       )}
                     </Pressable>
 
-                    {/* Youth/Children bar */}
-                    <Pressable
-                      onPress={() => {
-                        setSelectedBar({
-                          date: item.date,
-                          adults: item.adults,
-                          youthChildren: item.youthChildren,
-                          totalPeople: item.totalPeople,
-                          x: x + barWidth + barSpacing + barWidth / 2,
-                          y: bottomY - youthHeight - 20,
-                          barType: 'youth',
-                        });
-                      }}
-                      style={[
-                        styles.barContainer,
-                        {
-                          left: x + barWidth + barSpacing,
-                          bottom: bottomY - youthHeight,
-                          width: barWidth,
-                        },
-                      ]}
-                    >
-                      <View
+                    {/* Youth/Children bar (only show for homeMeeting, not prayer, and only if value > 0) */}
+                    {!isPrayer && item.youthChildren > 0 && (
+                      <Pressable
+                        onPress={() => {
+                          setSelectedBar({
+                            date: item.date,
+                            adults: item.adults,
+                            youthChildren: item.youthChildren,
+                            totalPeople: item.totalPeople,
+                            x: x + barWidth + barSpacing + barWidth / 2,
+                            y: bottomY - youthHeight - 20,
+                            barType: 'youth',
+                          });
+                        }}
                         style={[
-                          styles.barSegment,
+                          styles.barContainer,
                           {
-                            height: Math.max(youthHeight, 2),
-                            backgroundColor: '#FF9800',
-                            opacity: selectedBar?.date === item.date && selectedBar?.barType === 'youth' ? 0.7 : 1,
+                            left: x + barWidth + barSpacing,
+                            bottom: bottomY, // All bars align at the same bottom position
+                            width: barWidth,
+                            height: youthHeight, // Height varies based on data
                           },
                         ]}
-                      />
-                      {youthHeight > 12 && (
-                        <Text
+                      >
+                        <View
                           style={[
-                            styles.barValue,
+                            styles.barSegment,
                             {
-                              color: colors.text,
-                              fontSize: getFontSizeValue(8),
-                              bottom: youthHeight + 2,
-                              width: barWidth,
+                              height: '100%', // Fill the entire container height
+                              backgroundColor: '#FF9800',
+                              opacity: selectedBar?.date === item.date && selectedBar?.barType === 'youth' ? 0.7 : 1,
                             },
                           ]}
-                        >
-                          {item.youthChildren}
-                        </Text>
-                      )}
-                    </Pressable>
+                        />
+                        {youthHeight > 12 && (
+                          <Text
+                            style={[
+                              styles.barValue,
+                              {
+                                color: colors.text,
+                                fontSize: getFontSizeValue(10),
+                                bottom: youthHeight + 2,
+                                width: barWidth,
+                              },
+                            ]}
+                          >
+                            {item.youthChildren}
+                          </Text>
+                        )}
+                      </Pressable>
+                    )}
                   </View>
                 );
               })}
@@ -586,7 +630,7 @@ export default function ViewAllAttendanceScreen() {
                   const x = (index * (groupWidth + barGroupSpacing)) + 30 + groupWidth / 2;
                   return (
                     <Text
-                      key={index}
+                      key={`xaxis-${item.date}-${index}`}
                       style={[
                         styles.xAxisLabel,
                         {
@@ -614,7 +658,7 @@ export default function ViewAllAttendanceScreen() {
   const renderScopeGroupCard = (group: {
     scopeValue: string;
     scope: Scope;
-    chartData: Array<{date: string; adults: number; youthChildren: number; totalPeople: number}>;
+    chartData: {date: string; adults: number; youthChildren: number; totalPeople: number}[];
     statistics: {
       recordCount: number;
       totalAdults: number;
@@ -628,7 +672,7 @@ export default function ViewAllAttendanceScreen() {
     const scopeLabel = getScopeLabel(group.scope, group.scopeValue);
 
     return (
-      <View key={group.scopeValue} style={[styles.scopeCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+      <View style={[styles.scopeCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
         <TouchableOpacity
           style={styles.scopeCardHeader}
           onPress={() => toggleScope(group.scopeValue)}
@@ -674,7 +718,7 @@ export default function ViewAllAttendanceScreen() {
             </View>
 
             {/* Chart */}
-            {renderScopeBarChart(group.chartData, true)}
+            {renderScopeBarChart(group.chartData, true, selectedFilter === 'prayer')}
 
             {/* Chart legend */}
             <View style={styles.chartLegend}>
@@ -684,18 +728,24 @@ export default function ViewAllAttendanceScreen() {
                   成年人
                 </Text>
               </View>
-              <View style={styles.legendItem}>
-                <View style={[styles.legendColor, { backgroundColor: '#FF9800' }]} />
-                <Text style={[styles.legendText, { color: colors.textSecondary, fontSize: getFontSizeValue(11) }]}>
-                  青少年/儿童
-                </Text>
-              </View>
+              {/* Only show youth/children legend for homeMeeting, not prayer */}
+              {selectedFilter !== 'prayer' && (
+                <View style={styles.legendItem}>
+                  <View style={[styles.legendColor, { backgroundColor: '#FF9800' }]} />
+                  <Text style={[styles.legendText, { color: colors.textSecondary, fontSize: getFontSizeValue(11) }]}>
+                    青少年/儿童
+                  </Text>
+                </View>
+              )}
             </View>
 
             {/* Chart info */}
             <View style={styles.chartInfo}>
               <Text style={[styles.chartInfoText, { color: colors.textSecondary, fontSize: getFontSizeValue(11) }]}>
-                最高: 成年人 {Math.max(...group.chartData.map(d => d.adults), 0)} 人, 青少年/儿童 {Math.max(...group.chartData.map(d => d.youthChildren), 0)} 人
+                {selectedFilter === 'prayer' 
+                  ? `最高: 成年人 ${Math.max(...group.chartData.map(d => d.adults), 0)} 人`
+                  : `最高: 成年人 ${Math.max(...group.chartData.map(d => d.adults), 0)} 人, 青少年/儿童 ${Math.max(...group.chartData.map(d => d.youthChildren), 0)} 人`
+                }
               </Text>
             </View>
           </View>
@@ -710,14 +760,14 @@ export default function ViewAllAttendanceScreen() {
       return null;
     }
 
-    const maxValue = Math.max(...chartData.map(d => d.totalPeople), 1);
-    const chartAreaHeight = CHART_HEIGHT - 80; // Leave space for labels
+    const maxAdults = Math.max(...chartData.map(d => d.adults), 0); // Max adults value for Y-axis
     const chartAreaWidth = CHART_WIDTH - 60; // Leave space for Y-axis
     
-    // Make bars narrower for mobile screens
-    const barSpacing = 2; // Reduced spacing between bar groups
-    const barGroupSpacing = 4; // Spacing between each date group
-    const barWidth = 12; // Fixed narrow width for each bar
+    // Wider bars and larger gaps for better visibility and interaction
+    // Showing both adults and youth/children side by side
+    const barSpacing = 4; // Spacing between adults and youth/children bars
+    const barGroupSpacing = 28; // Increased spacing between date groups for better separation
+    const barWidth = 32; // Wider bars so numbers can fit on one line
     const groupWidth = barWidth * 2 + barSpacing; // Width of one date group (2 bars + spacing)
     const totalChartWidth = Math.max(
       chartAreaWidth,
@@ -734,19 +784,21 @@ export default function ViewAllAttendanceScreen() {
         </View>
         
         <View style={styles.chartContent}>
-          {/* Y-axis labels */}
+          {/* Y-axis labels - Show max adults value and 0 */}
+          {/* Align with bar positions: bottomY = CHART_HEIGHT - 200 = 0 */}
           <View style={styles.yAxisContainer}>
-            {[1, 0.75, 0.5, 0.25, 0].map((ratio, index) => {
-              const value = Math.round(maxValue * ratio);
-              return (
-                <Text
-                  key={index}
-                  style={[styles.yAxisLabel, { color: colors.textSecondary, fontSize: getFontSizeValue(11) }]}
-                >
-                  {value}
-                </Text>
-              );
-            })}
+            {/* Top label: Maximum adults value - at top of chartArea (where max bars reach) */}
+            <Text
+              style={[styles.yAxisLabel, { color: colors.textSecondary, fontSize: getFontSizeValue(11) }]}
+            >
+              {maxAdults}
+            </Text>
+            {/* Bottom label: 0 - at bottomY position (CHART_HEIGHT - 200 = 0) */}
+            <Text
+              style={[styles.yAxisLabel, { color: colors.textSecondary, fontSize: getFontSizeValue(11) }]}
+            >
+              0
+            </Text>
           </View>
 
           {/* Scrollable chart area */}
@@ -758,34 +810,43 @@ export default function ViewAllAttendanceScreen() {
             onScrollBeginDrag={() => setSelectedBar(null)}>
             <Pressable onPress={() => setSelectedBar(null)} style={{ flex: 1 }}>
               <View style={[styles.chartArea, { width: totalChartWidth }]}>
-            {/* Grid lines */}
-            {[1, 0.75, 0.5, 0.25, 0].map((ratio, index) => {
-              const y = chartAreaHeight * ratio + 30;
-              return (
-                <View
-                  key={index}
-                  style={[
-                    styles.gridLine,
-                    {
-                      top: y,
-                      borderColor: colors.borderLight || colors.border,
-                    },
-                  ]}
-                />
-              );
-            })}
+            {/* Grid lines - Align with bar positions: bottomY = CHART_HEIGHT - 200 = 0 */}
+            {/* Top grid line (max value) - at top of chartArea where max bars reach */}
+            <View
+              style={[
+                styles.gridLine,
+                {
+                  top: 0,
+                  borderColor: colors.borderLight || colors.border,
+                },
+              ]}
+            />
+            {/* Bottom grid line (0) - at bottomY position (CHART_HEIGHT - 200 = 0) */}
+            <View
+              style={[
+                styles.gridLine,
+                {
+                  top: CHART_HEIGHT - 200, // Same as bottomY, align with bar bottoms
+                  borderColor: colors.borderLight || colors.border,
+                },
+              ]}
+            />
 
-            {/* Bars */}
+            {/* Bars - Adults and Youth/Children Side by Side */}
             <View style={styles.barsContainer}>
               {chartData.map((item, index) => {
                 const x = (index * (groupWidth + barGroupSpacing)) + 30;
-                const adultsHeight = (item.adults / maxValue) * chartAreaHeight;
-                const youthHeight = (item.youthChildren / maxValue) * chartAreaHeight;
-                const bottomY = chartAreaHeight + 30;
+                // chartArea height is CHART_HEIGHT - 60, use that for height calculation
+                const chartAreaActualHeight = CHART_HEIGHT - 60;
+                const adultsHeight = (item.adults / maxAdults) * chartAreaActualHeight;
+                const youthHeight = (item.youthChildren / maxAdults) * chartAreaActualHeight;
+                // Bottom of chart area - all bars should align here (0 on Y-axis)
+                // chartArea bottom is at CHART_HEIGHT - 60 relative to chartArea container
+                const bottomY = CHART_HEIGHT - 230;
 
                 return (
-                  <View key={index} style={styles.barGroup}>
-                    {/* Adults bar */}
+                  <View key={`bar-group-${item.date}-${index}`} style={styles.barGroup}>
+                    {/* Adults bar (left) */}
                     <Pressable
                       onPress={() => {
                         setSelectedBar({
@@ -802,8 +863,9 @@ export default function ViewAllAttendanceScreen() {
                         styles.barContainer,
                         {
                           left: x,
-                          bottom: bottomY - adultsHeight,
+                          bottom: bottomY, // All bars align at the same bottom position
                           width: barWidth,
+                          height: adultsHeight, // Height varies based on data
                         },
                       ]}
                     >
@@ -811,20 +873,19 @@ export default function ViewAllAttendanceScreen() {
                         style={[
                           styles.barSegment,
                           {
-                            height: Math.max(adultsHeight, 2),
+                            height: '100%', // Fill the entire container height
                             backgroundColor: colors.primary,
                             opacity: selectedBar?.date === item.date && selectedBar?.barType === 'adults' ? 0.7 : 1,
                           },
                         ]}
                       />
-                      {/* Value label on top */}
-                      {adultsHeight > 15 && (
+                      {adultsHeight > 12 && (
                         <Text
                           style={[
                             styles.barValue,
                             {
                               color: colors.text,
-                              fontSize: getFontSizeValue(9),
+                              fontSize: getFontSizeValue(10),
                               bottom: adultsHeight + 2,
                               width: barWidth,
                             },
@@ -835,55 +896,57 @@ export default function ViewAllAttendanceScreen() {
                       )}
                     </Pressable>
 
-                    {/* Youth/Children bar */}
-                    <Pressable
-                      onPress={() => {
-                        setSelectedBar({
-                          date: item.date,
-                          adults: item.adults,
-                          youthChildren: item.youthChildren,
-                          totalPeople: item.totalPeople,
-                          x: x + barWidth + barSpacing + barWidth / 2,
-                          y: bottomY - youthHeight - 20,
-                          barType: 'youth',
-                        });
-                      }}
-                      style={[
-                        styles.barContainer,
-                        {
-                          left: x + barWidth + barSpacing,
-                          bottom: bottomY - youthHeight,
-                          width: barWidth,
-                        },
-                      ]}
-                    >
-                      <View
+                    {/* Youth/Children bar (right, next to adults) - Only show if value > 0 */}
+                    {item.youthChildren > 0 && (
+                      <Pressable
+                        onPress={() => {
+                          setSelectedBar({
+                            date: item.date,
+                            adults: item.adults,
+                            youthChildren: item.youthChildren,
+                            totalPeople: item.totalPeople,
+                            x: x + barWidth + barSpacing + barWidth / 2,
+                            y: bottomY - youthHeight - 20,
+                            barType: 'youth',
+                          });
+                        }}
                         style={[
-                          styles.barSegment,
+                          styles.barContainer,
                           {
-                            height: Math.max(youthHeight, 2),
-                            backgroundColor: '#FF9800',
-                            opacity: selectedBar?.date === item.date && selectedBar?.barType === 'youth' ? 0.7 : 1,
+                            left: x + barWidth + barSpacing,
+                            bottom: bottomY, // All bars align at the same bottom position
+                            width: barWidth,
+                            height: youthHeight, // Height varies based on data
                           },
                         ]}
-                      />
-                      {/* Value label on top */}
-                      {youthHeight > 15 && (
-                        <Text
+                      >
+                        <View
                           style={[
-                            styles.barValue,
+                            styles.barSegment,
                             {
-                              color: colors.text,
-                              fontSize: getFontSizeValue(9),
-                              bottom: youthHeight + 2,
-                              width: barWidth,
+                              height: '100%', // Fill the entire container height
+                              backgroundColor: '#FF9800',
+                              opacity: selectedBar?.date === item.date && selectedBar?.barType === 'youth' ? 0.7 : 1,
                             },
                           ]}
-                        >
-                          {item.youthChildren}
-                        </Text>
-                      )}
-                    </Pressable>
+                        />
+                        {youthHeight > 12 && (
+                          <Text
+                            style={[
+                              styles.barValue,
+                              {
+                                color: colors.text,
+                                fontSize: getFontSizeValue(10),
+                                bottom: youthHeight + 2,
+                                width: barWidth,
+                              },
+                            ]}
+                          >
+                            {item.youthChildren}
+                          </Text>
+                        )}
+                      </Pressable>
+                    )}
                   </View>
                 );
               })}
@@ -912,11 +975,13 @@ export default function ViewAllAttendanceScreen() {
               </Pressable>
             )}
 
-            {/* X-axis labels */}
+            {/* X-axis labels - optimized for mobile readability */}
             <View style={styles.xAxisContainer}>
               {chartData.map((item, index) => {
-                // Show label for every few points to avoid crowding
-                const showEvery = Math.max(1, Math.ceil(chartData.length / 10));
+                // Show label for every few points to avoid crowding on mobile
+                // Adjust based on chart width and data points
+                const maxLabels = Math.floor(chartAreaWidth / 60); // Show max labels based on available width
+                const showEvery = Math.max(1, Math.ceil(chartData.length / maxLabels));
                 if (index % showEvery === 0 || index === chartData.length - 1) {
                   const date = new Date(item.date);
                   const month = date.getMonth() + 1;
@@ -924,13 +989,14 @@ export default function ViewAllAttendanceScreen() {
                   const x = (index * (groupWidth + barGroupSpacing)) + 30 + groupWidth / 2;
                   return (
                     <Text
-                      key={index}
+                      key={`xaxis-main-${item.date}-${index}`}
                       style={[
                         styles.xAxisLabel,
                         {
-                          left: x - 12,
+                          left: x - 15,
                           color: colors.textSecondary,
-                          fontSize: getFontSizeValue(9),
+                          fontSize: getFontSizeValue(10),
+                          fontWeight: '500',
                         },
                       ]}
                     >
@@ -965,7 +1031,7 @@ export default function ViewAllAttendanceScreen() {
         {/* Chart info */}
         <View style={styles.chartInfo}>
           <Text style={[styles.chartInfoText, { color: colors.textSecondary, fontSize: getFontSizeValue(12) }]}>
-            共 {chartData.length} 个数据点 | 最高: 成年人 {Math.max(...chartData.map(d => d.adults), 0)} 人, 青少年/儿童 {Math.max(...chartData.map(d => d.youthChildren), 0)} 人
+            共 {chartData.length} 个数据点 | 最高: 成年人 {maxAdults} 人, 青少年/儿童 {Math.max(...chartData.map(d => d.youthChildren), 0)} 人
           </Text>
         </View>
       </View>
@@ -1186,7 +1252,19 @@ export default function ViewAllAttendanceScreen() {
         )}
 
         {/* Bar Chart - only show for 主日聚会 */}
-        {selectedFilter === 'table' && renderBarChart()}
+        {selectedFilter === 'table' && (
+          <>
+            {loadingAllRecords && (
+              <View style={styles.loadingAllContainer}>
+                <ActivityIndicator size="small" color={colors.primary} />
+                <Text style={[styles.loadingAllText, { color: colors.textSecondary, fontSize: getFontSizeValue(14) }]}>
+                  正在加载所有数据...
+                </Text>
+              </View>
+            )}
+            {renderBarChart()}
+          </>
+        )}
 
         {/* Scope Grouped Charts - show for 小排聚会 and 祷告聚会 */}
         {(selectedFilter === 'homeMeeting' || selectedFilter === 'prayer') && (
@@ -1211,7 +1289,8 @@ export default function ViewAllAttendanceScreen() {
                     onRefresh={() => {
                       allRecordsLoadedRef.current = false;
                       loadRecords(true).then(() => {
-                        if ((selectedFilter === 'homeMeeting' || selectedFilter === 'prayer') && hasMore) {
+                        // Auto-load all records for any tab to ensure complete data
+                        if (hasMore) {
                           loadAllRecords();
                         }
                       });
@@ -1227,7 +1306,11 @@ export default function ViewAllAttendanceScreen() {
                       按统计层级分类 ({scopeGroupedData.length} 个层级)
                     </Text>
                   </View>
-                  {scopeGroupedData.map(group => renderScopeGroupCard(group))}
+                  {scopeGroupedData.map((group, index) => (
+                    <View key={group.scopeValue || `scope-${index}`}>
+                      {renderScopeGroupCard(group)}
+                    </View>
+                  ))}
                 </View>
               </ScrollView>
             )}
@@ -1246,7 +1329,12 @@ export default function ViewAllAttendanceScreen() {
         {selectedFilter !== 'homeMeeting' && selectedFilter !== 'prayer' && (
           <FlatList
             data={records}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item, index) => {
+              // Use combination of id, date, and index to ensure uniqueness
+              // This handles cases where id might be duplicate or undefined
+              const id = item.id ? item.id.toString() : `no-id-${index}`;
+              return `record-${id}-${item.date}-${item.meetingType}-${index}`;
+            }}
             renderItem={renderRecordItem}
             contentContainerStyle={[
               styles.listContent,
@@ -1258,8 +1346,16 @@ export default function ViewAllAttendanceScreen() {
             onEndReachedThreshold={0.5}
             refreshControl={
               <RefreshControl
-                refreshing={refreshing}
-                onRefresh={() => loadRecords(true)}
+                refreshing={refreshing || loadingAllRecords}
+                onRefresh={() => {
+                  allRecordsLoadedRef.current = false;
+                  loadRecords(true).then(() => {
+                    // Auto-load all records to ensure complete data
+                    if (hasMore) {
+                      loadAllRecords();
+                    }
+                  });
+                }}
                 tintColor={colors.primary}
                 colors={[colors.primary]}
               />
@@ -1416,11 +1512,12 @@ const styles = StyleSheet.create({
   },
   yAxisContainer: {
     width: 30,
-    height: CHART_HEIGHT - 60,
-    justifyContent: 'space-between',
+    height: CHART_HEIGHT - 20,
+    justifyContent: 'space-between', // Show both top (max) and bottom (0) labels
     alignItems: 'flex-end',
     paddingRight: 8,
-    paddingTop: 30,
+    paddingTop: 30, // Top padding aligns with chartArea marginTop
+    paddingBottom: CHART_HEIGHT - 230, // Bottom padding aligns with bottomY (0 position)
   },
   yAxisLabel: {
     textAlign: 'right',
@@ -1446,39 +1543,87 @@ const styles = StyleSheet.create({
   },
   barGroup: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 30, // Align with chart bottom (accounting for X-axis space)
     flexDirection: 'row',
+    alignItems: 'flex-end',
+    height: CHART_HEIGHT - 60, // Full height of chart area
+  },
+  stackedBarContainer: {
+    flexDirection: 'column-reverse', // Stack from bottom to top
+    justifyContent: 'flex-end',
+    alignItems: 'stretch', // Stretch to full width
+    height: '100%', // Take full height of parent
   },
   barContainer: {
     position: 'absolute',
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
+  barSegmentPressable: {
+    width: '100%',
+    borderRadius: 3,
+    minHeight: 2,
+    justifyContent: 'flex-end', // Align content to bottom
+    alignItems: 'center',
+    position: 'relative',
+  },
   barSegment: {
     width: '100%',
-    borderRadius: 2,
+    borderRadius: 3,
+    minHeight: 2,
   },
   barValue: {
     position: 'absolute',
     textAlign: 'center',
     fontWeight: '600',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 4,
+    paddingHorizontal: 2,
+    paddingVertical: 1,
   },
   tooltip: {
     position: 'absolute',
-    padding: 8,
-    borderRadius: 8,
+    padding: 12,
+    borderRadius: 12,
     borderWidth: 1,
-    minWidth: 120,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
+    minWidth: 160,
+    maxWidth: 200,
     zIndex: 1000,
+  },
+  tooltipHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
   },
   tooltipDate: {
     fontWeight: '600',
-    marginBottom: 4,
+    flex: 1,
+  },
+  tooltipCloseButton: {
+    padding: 4,
+    marginLeft: 8,
+  },
+  tooltipContent: {
+    borderTopWidth: 1,
+    paddingTop: 8,
+  },
+  tooltipRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 6,
+    gap: 8,
+  },
+  tooltipIndicator: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+  },
+  tooltipLabel: {
+    flex: 1,
+  },
+  tooltipValue: {
+    textAlign: 'right',
   },
   tooltipText: {
     marginTop: 2,
@@ -1493,7 +1638,10 @@ const styles = StyleSheet.create({
   xAxisLabel: {
     position: 'absolute',
     textAlign: 'center',
-    width: 30,
+    width: 35,
+    backgroundColor: 'rgba(255, 255, 255, 0.7)',
+    borderRadius: 4,
+    paddingVertical: 2,
   },
   chartInfo: {
     marginTop: 16,

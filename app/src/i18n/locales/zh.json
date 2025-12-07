@@ -127,7 +127,7 @@
     "meetingType": "聚会类型",
     "scope": "统计层级",
     "selectScope": "选择统计层级",
-    "scope.full_congregation": "全会众",
+    "scope.full_congregation": "中文区",
     "scope.district": "大区",
     "scope.small_group": "小排",
     "scopeValue": "分区/小组",

@@ -432,10 +432,11 @@ export const api = {
   /**
    * Get attendance records
    */
-  async getAttendanceRecords(limit?: number, offset?: number) {
+  async getAttendanceRecords(limit?: number, offset?: number, meetingType?: 'table' | 'homeMeeting' | 'prayer') {
     const params = new URLSearchParams();
     if (limit !== undefined) params.append('limit', limit.toString());
     if (offset !== undefined) params.append('offset', offset.toString());
+    if (meetingType) params.append('meetingType', meetingType);
     const query = params.toString();
     const url = query ? `/api/attendance?${query}` : '/api/attendance';
     const response = await apiRequest(url);

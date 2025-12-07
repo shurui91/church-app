@@ -300,14 +300,23 @@ export class Attendance {
    * Find all attendance records (admin only)
    * @param {number} [limit] - Limit number of records
    * @param {number} [offset] - Offset for pagination
+   * @param {string} [meetingType] - Optional filter by meeting type ('table', 'homeMeeting', 'prayer')
    * @returns {Promise<Array>} Array of attendance records
    */
-  static async findAll(limit = null, offset = 0) {
+  static async findAll(limit = null, offset = 0, meetingType = null) {
     const db = await getDatabase();
     try {
       // Use lowercase field names (PostgreSQL converts unquoted identifiers to lowercase)
-      let sql = 'SELECT * FROM attendance ORDER BY date DESC, createdat DESC';
+      let sql = 'SELECT * FROM attendance';
       const params = [];
+
+      // Add meetingType filter if provided
+      if (meetingType) {
+        sql += ' WHERE meetingtype = ?';
+        params.push(meetingType);
+      }
+
+      sql += ' ORDER BY date DESC, createdat DESC';
 
       if (limit !== null) {
         sql += ' LIMIT ? OFFSET ?';

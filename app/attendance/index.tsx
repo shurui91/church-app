@@ -125,7 +125,7 @@ export default function AttendanceScreen() {
     }
     
     if (meetingType === 'table') {
-      // 主日聚会 → 默认"全会众"
+      // 主日聚会 → 默认"中文区"
       setScope('full_congregation');
       setScopeValue(null);
       setSelectedDistrict(null);

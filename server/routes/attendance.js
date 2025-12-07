@@ -306,14 +306,26 @@ router.get('/', authenticate, authorizeAttendance, async (req, res) => {
     const user = req.user;
     const limit = req.query.limit ? parseInt(req.query.limit) : null;
     const offset = req.query.offset ? parseInt(req.query.offset) : 0;
+    const meetingType = req.query.meetingType || null; // Optional filter by meeting type
+
+    // Validate meetingType if provided
+    if (meetingType) {
+      const validMeetingTypes = ['table', 'homeMeeting', 'prayer'];
+      if (!validMeetingTypes.includes(meetingType)) {
+        return res.status(400).json({
+          success: false,
+          message: `无效的聚会类型。有效类型：${validMeetingTypes.join(', ')}`,
+        });
+      }
+    }
 
     // Check if user can see all records (admin, super_admin, leader) or just their own
     const canSeeAllRecords = canViewAllAttendance(user);
 
     let records;
     if (canSeeAllRecords) {
-      // Admins and leaders can see all records
-      records = await Attendance.findAll(limit, offset);
+      // Admins and leaders can see all records (optionally filtered by meetingType)
+      records = await Attendance.findAll(limit, offset, meetingType);
     } else {
       // Regular users (including usher) can only see their own records
       // But for "view all" feature, usher should not access this endpoint
