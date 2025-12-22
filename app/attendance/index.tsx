@@ -282,8 +282,8 @@ export default function AttendanceScreen() {
     
     // Check if date is more than 3 days ago
     const daysDiff = Math.floor((today.getTime() - selectedDate.getTime()) / (1000 * 60 * 60 * 24));
-    if (daysDiff >= 3) {
-      Alert.alert(t('common.tip') || '提示', t('attendance.tooLateToSubmit') || '提交太晚了，只能提交最近3天的记录');
+    if (daysDiff >= 7) {
+      Alert.alert(t('common.tip') || '提示', t('attendance.tooLateToSubmit') || '提交太晚了，只能提交最近7天的记录');
       return false;
     }
 
