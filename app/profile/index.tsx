@@ -23,6 +23,7 @@ export default function ProfileScreen() {
   const { user, logout, refreshUser, isAuthenticated, hasRole } = useAuth();
   const { getFontSizeValue } = useFontSize();
   const [loggingOut, setLoggingOut] = useState(false);
+  const [brotherFeaturesExpanded, setBrotherFeaturesExpanded] = useState(false);
   const isMountedRef = useRef(true);
   const shouldNavigateToLoginRef = useRef(false);
 
@@ -264,27 +265,53 @@ export default function ProfileScreen() {
 
         {/* 菜单 */}
         <View style={[styles.menuContainer, { backgroundColor: colors.card }]}>
-          {/* 人数汇报 - 所有角色可见，只有 member 不可见 */}
-          {user?.role !== 'member' && (
-            <MenuItem
-              icon='clipboard-outline'
-              title={t('attendance.title') || '人数汇报'}
-              onPress={() => router.push('/attendance')}
+          {/* 弟兄功能 - 可展开/折叠的菜单组 */}
+          <TouchableOpacity
+            style={[
+              styles.menuItem,
+              { borderBottomColor: colors.borderLight },
+            ]}
+            onPress={() => setBrotherFeaturesExpanded(!brotherFeaturesExpanded)}>
+            <View style={styles.menuLeft}>
+              <Ionicons name='people-outline' size={24} color={colors.text} />
+              <Text style={[styles.menuText, { color: colors.text }]}>
+                弟兄功能
+              </Text>
+            </View>
+            <Ionicons
+              name={brotherFeaturesExpanded ? 'chevron-down' : 'chevron-forward'}
+              size={20}
+              color={colors.textSecondary}
             />
+          </TouchableOpacity>
+
+          {/* 弟兄功能子菜单 - 展开时显示 */}
+          {brotherFeaturesExpanded && (
+            <View style={styles.subMenuContainer}>
+              {/* 人数汇报 - 所有角色可见，只有 member 不可见 */}
+              {user?.role !== 'member' && (
+                <SubMenuItem
+                  icon='clipboard-outline'
+                  title={t('attendance.title') || '人数汇报'}
+                  onPress={() => router.push('/attendance')}
+                />
+              )}
+              {/* 查看所有出席数据 - 只有 super_admin, admin, leader 可以访问 */}
+              {['super_admin', 'admin', 'leader'].includes(user?.role || '') && (
+                <SubMenuItem
+                  icon='list-outline'
+                  title='查看所有出席数据'
+                  onPress={() => router.push('/attendance/view-all')}
+                />
+              )}
+              <SubMenuItem
+                icon='calendar-outline'
+                title={t('travel.title') || '行程表'}
+                onPress={() => router.push('/travel')}
+              />
+            </View>
           )}
-          {/* 查看所有出席数据 - 只有 super_admin, admin, leader 可以访问 */}
-          {['super_admin', 'admin', 'leader'].includes(user?.role || '') && (
-            <MenuItem
-              icon='list-outline'
-              title='查看所有出席数据'
-              onPress={() => router.push('/attendance/view-all')}
-            />
-          )}
-          <MenuItem
-            icon='calendar-outline'
-            title={t('travel.title') || '行程表'}
-            onPress={() => router.push('/travel')}
-          />
+
           <MenuItem
             icon='settings-outline'
             title={t('profile.appSettings') || '应用设置'}
@@ -377,6 +404,35 @@ function MenuItem({
   );
 }
 
+// 子菜单项组件（用于弟兄功能下的子菜单）
+function SubMenuItem({
+  icon,
+  title,
+  onPress,
+}: {
+  icon: string;
+  title: string;
+  onPress: () => void;
+}) {
+  const colors = useThemeColors();
+
+  return (
+    <TouchableOpacity
+      style={[
+        styles.subMenuItem,
+        { borderBottomColor: colors.borderLight },
+      ]}
+      onPress={onPress}>
+      <View style={styles.subMenuLeft}>
+        <View style={[styles.subMenuIndicator, { backgroundColor: colors.borderLight }]} />
+        <Ionicons name={icon as any} size={20} color={colors.textSecondary} />
+        <Text style={[styles.subMenuText, { color: colors.textSecondary }]}>{title}</Text>
+      </View>
+      <Ionicons name='chevron-forward' size={18} color={colors.textSecondary} />
+    </TouchableOpacity>
+  );
+}
+
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollView: { flex: 1 },
@@ -408,6 +464,33 @@ const styles = StyleSheet.create({
   menuText: {
     fontSize: 16,
     marginLeft: 15,
+  },
+  subMenuContainer: {
+    backgroundColor: 'rgba(0, 0, 0, 0.02)',
+  },
+  subMenuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingLeft: 40,
+    paddingRight: 16,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+  },
+  subMenuLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  subMenuIndicator: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    marginRight: 12,
+  },
+  subMenuText: {
+    fontSize: 15,
+    marginLeft: 12,
   },
   userInfoContainer: {
     padding: 20,
