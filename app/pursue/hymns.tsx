@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Platform, ScrollView } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, Stack, useFocusEffect } from 'expo-router';
 import { useThemeColors } from '../src/hooks/useThemeColors';
@@ -82,24 +82,31 @@ export default function HymnsScreen() {
       />
 
       <SafeAreaView
-        edges={['top']}
+        edges={['bottom']}
         style={[styles.safeArea, { backgroundColor: colors.background }]}>
-        <View 
-          style={[
-            styles.container,
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={[
+            styles.scrollContent,
             {
-              // ✅ Android: 添加底部 padding，避免被 TabBar 遮挡
+              // ✅ 添加底部 padding，确保内容不被 TabBar 遮挡
+              // TabBar 高度约 60-70px，SafeAreaView 已处理底部安全区域
               paddingBottom: Platform.OS === 'android' 
-                ? Math.max(insets.bottom + 80, 90) // TabBar 高度约 60-70px + 安全区域
-                : Math.max(insets.bottom, 20),
-              // ✅ 添加顶部 padding，确保 Tab 不被状态栏遮挡
+                ? Math.max(insets.bottom + 70, 80) // Android: TabBar (~60px) + 安全区域
+                : Math.max(insets.bottom + 70, 80), // iOS: TabBar (~60px) + 安全区域
+              // ✅ 添加顶部 padding，确保内容有适当间距
+              // Stack.Screen header 已处理导航栏空间，这里只需要少量间距
               paddingTop: Platform.OS === 'android' 
-                ? Math.max(insets.top + 16, 20)
-                : 16,
+                ? 8 // Android: 少量顶部间距
+                : 8, // iOS: 少量顶部间距
             }
-          ]}>
-          {/* ✅ Tab 选择区 */}
-          <View style={styles.tabContainer}>
+          ]}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          bounces={true}>
+          <View style={styles.container}>
+            {/* ✅ Tab 选择区 */}
+            <View style={styles.tabContainer}>
             <TouchableOpacity
               style={[
                 styles.tab,
@@ -188,7 +195,8 @@ export default function HymnsScreen() {
               <Text style={styles.okText}>OK</Text>
             </TouchableOpacity>
           </View>
-        </View>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </>
   );
@@ -196,11 +204,19 @@ export default function HymnsScreen() {
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
-  container: {
+  scrollView: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'flex-start', // ✅ 改为从顶部开始，避免居中导致顶部被遮挡
+  },
+  scrollContent: {
+    flexGrow: 1,
     paddingHorizontal: 24,
+    // ✅ 确保内容可以滚动，即使内容不足一屏
+  },
+  container: {
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    width: '100%',
+    // ✅ 移除 minHeight，让内容自然流动
   },
   tabContainer: {
     flexDirection: 'row',

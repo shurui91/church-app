@@ -180,7 +180,7 @@ export default function AnnouncementScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20 },
+  container: { paddingHorizontal: 20, paddingTop: 20 }, // ✅ 移除底部 padding
   tabContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
