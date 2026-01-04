@@ -10,7 +10,10 @@ import {
   RefreshControl,
   Platform,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { Stack } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useThemeColors } from './src/hooks/useThemeColors';
@@ -125,7 +128,9 @@ export default function AnnouncementScreen() {
   ];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
+    <SafeAreaView
+      edges={['top']} // ✅ 只处理顶部安全区域，底部由 TabBar 的 SafeAreaView 处理
+      style={{ flex: 1, backgroundColor: colors.background }}>
       <Stack.Screen
         options={{
           title: t('announcement.title'),
@@ -138,12 +143,13 @@ export default function AnnouncementScreen() {
       <View
         style={[
           styles.tabContainer,
-          { 
-            backgroundColor: colors.card, 
+          {
+            backgroundColor: colors.card,
             borderBottomColor: colors.border,
             // iOS: SafeAreaView已处理顶部安全区域，保持原有padding
             // Android: 添加额外顶部间距，确保不被状态栏遮挡
-            paddingTop: Platform.OS === 'ios' ? 12 : Math.max(insets.top + 12, 20),
+            paddingTop:
+              Platform.OS === 'ios' ? 12 : Math.max(insets.top + 12, 20),
           },
         ]}>
         {sections.map((section, index) => (

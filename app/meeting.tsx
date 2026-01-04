@@ -88,6 +88,7 @@ export default function MeetingScreen() {
 
   return (
     <SafeAreaView
+	  edges={['top']} // ✅ 只处理顶部安全区域，底部由 TabBar 的 SafeAreaView 处理
       style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
@@ -105,7 +106,6 @@ export default function MeetingScreen() {
 
       <ScrollView
         style={styles.container}
-        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           {/* 页面标题 */}

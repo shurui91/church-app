@@ -72,7 +72,7 @@ export default function HymnDetail() {
 
       <ScrollView
         style={[styles.container, { backgroundColor: colors.background }]}
-        contentContainerStyle={{ paddingBottom: 40 }}>
+        contentContainerStyle={{ paddingBottom: 10 }}>
         {/* ✅ 显示 “大本诗歌 1” 或 “补充本诗歌 1” */}
         <Text
           style={{

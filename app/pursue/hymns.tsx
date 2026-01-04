@@ -1,6 +1,14 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Platform, ScrollView } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Platform,
+  ScrollView,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, Stack, useFocusEffect } from 'expo-router';
 import { useThemeColors } from '../src/hooks/useThemeColors';
 import chSongs from '../../assets/ch_songs.json'; // 大本诗歌
@@ -15,7 +23,6 @@ export default function HymnsScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const { t, i18n } = useTranslation(); // ✅ 获取翻译函数与当前语言
-  const insets = useSafeAreaInsets(); // ✅ 获取安全区域信息
   // 防止重复点击的 ref
   const isNavigatingRef = useRef(false);
 
@@ -82,119 +89,115 @@ export default function HymnsScreen() {
       />
 
       <SafeAreaView
-        edges={['bottom']}
+        edges={['top']} // ✅ 自动处理顶部安全区域
         style={[styles.safeArea, { backgroundColor: colors.background }]}>
         <ScrollView
           style={styles.scrollView}
           contentContainerStyle={[
             styles.scrollContent,
             {
-              // ✅ 添加底部 padding，确保内容不被 TabBar 遮挡
-              // TabBar 高度约 60-70px，SafeAreaView 已处理底部安全区域
-              paddingBottom: Platform.OS === 'android' 
-                ? Math.max(insets.bottom + 70, 80) // Android: TabBar (~60px) + 安全区域
-                : Math.max(insets.bottom + 70, 80), // iOS: TabBar (~60px) + 安全区域
+              // ✅ SafeAreaView 已自动处理底部安全区域（insets.bottom）
+              // 只需添加 TabBar 高度（约 65px）确保内容不被 TabBar 遮挡
+              paddingBottom: 65,
               // ✅ 添加顶部 padding，确保内容有适当间距
-              // Stack.Screen header 已处理导航栏空间，这里只需要少量间距
-              paddingTop: Platform.OS === 'android' 
-                ? 8 // Android: 少量顶部间距
-                : 8, // iOS: 少量顶部间距
-            }
+              paddingTop: 8,
+            },
           ]}
           showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+          keyboardShouldPersistTaps='handled'
           bounces={true}>
           <View style={styles.container}>
             {/* ✅ Tab 选择区 */}
             <View style={styles.tabContainer}>
-            <TouchableOpacity
-              style={[
-                styles.tab,
-                selectedBook === 'ch' && { backgroundColor: '#007AFF' },
-              ]}
-              onPress={() => setSelectedBook('ch')}>
-              <Text
+              <TouchableOpacity
                 style={[
-                  styles.tabText,
-                  { color: selectedBook === 'ch' ? 'white' : colors.text },
-                ]}>
-                {t('hymns.main')}
-              </Text>
-            </TouchableOpacity>
+                  styles.tab,
+                  selectedBook === 'ch' && { backgroundColor: '#007AFF' },
+                ]}
+                onPress={() => setSelectedBook('ch')}>
+                <Text
+                  style={[
+                    styles.tabText,
+                    { color: selectedBook === 'ch' ? 'white' : colors.text },
+                  ]}>
+                  {t('hymns.main')}
+                </Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[
-                styles.tab,
-                selectedBook === 'ts' && { backgroundColor: '#007AFF' },
-              ]}
-              onPress={() => setSelectedBook('ts')}>
-              <Text
+              <TouchableOpacity
                 style={[
-                  styles.tabText,
-                  { color: selectedBook === 'ts' ? 'white' : colors.text },
-                ]}>
-                {t('hymns.supplement')}
-              </Text>
-            </TouchableOpacity>
-          </View>
+                  styles.tab,
+                  selectedBook === 'ts' && { backgroundColor: '#007AFF' },
+                ]}
+                onPress={() => setSelectedBook('ts')}>
+                <Text
+                  style={[
+                    styles.tabText,
+                    { color: selectedBook === 'ts' ? 'white' : colors.text },
+                  ]}>
+                  {t('hymns.supplement')}
+                </Text>
+              </TouchableOpacity>
+            </View>
 
-          {/* 显示当前输入 */}
-          <Text style={[styles.display, { color: colors.text }]}>
-            {input || t('hymns.enterNumber')}
-          </Text>
+            {/* 显示当前输入 */}
+            <Text style={[styles.display, { color: colors.text }]}>
+              {input || t('hymns.enterNumber')}
+            </Text>
 
-          {/* 数字键盘 */}
-          <View style={styles.keypad}>
-            {['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].map(
-              (num, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[styles.key, { backgroundColor: colors.card }]}
-                  onPress={() => handlePress(num)}
-                  activeOpacity={0.7}>
-                  <Text style={[styles.keyText, { color: colors.text }]}>
-                    {num}
-                  </Text>
-                </TouchableOpacity>
-              )
-            )}
-          </View>
+            {/* 数字键盘 */}
+            <View style={styles.keypad}>
+              {['1', '2', '3', '4', '5', '6', '7', '8', '9', '0'].map(
+                (num, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[styles.key, { backgroundColor: colors.card }]}
+                    onPress={() => handlePress(num)}
+                    activeOpacity={0.7}>
+                    <Text style={[styles.keyText, { color: colors.text }]}>
+                      {num}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              )}
+            </View>
 
-          {/* ✅ 说明文字（仅大本） */}
-          <View
-            style={{
-              height: 28,
-              justifyContent: 'center',
-              marginBottom: 10,
-            }}>
-            {selectedBook === 'ch' && (
-              <Text style={[styles.note, { color: colors.text }]}>
-                {t('hymns.appendixNote')}
-              </Text>
-            )}
-          </View>
+            {/* ✅ 说明文字（仅大本） */}
+            <View
+              style={{
+                minHeight: 20, // ✅ 减小高度，使用 minHeight 而不是固定 height
+                justifyContent: 'center',
+                marginTop: 8, // ✅ 减小顶部间距
+                marginBottom: 8, // ✅ 减小底部间距
+              }}>
+              {selectedBook === 'ch' && (
+                <Text style={[styles.note, { color: colors.text }]}>
+                  {t('hymns.appendixNote')}
+                </Text>
+              )}
+            </View>
 
-          {/* 底部操作 */}
-          <View 
-            style={[
-              styles.actions,
-              {
-                // ✅ 添加底部 padding，确保按钮不被 TabBar 遮挡
-                marginBottom: Platform.OS === 'android' ? 20 : 10,
-              }
-            ]}>
-            <TouchableOpacity
-              style={[styles.actionBtn, styles.clearBtn]}
-              onPress={handleClear}>
-              <Text style={styles.clearText}>{t('common.clear')}</Text>
-            </TouchableOpacity>
+            {/* 底部操作 */}
+            <View
+              style={[
+                styles.actions,
+                {
+                  // ✅ 添加底部 padding，确保按钮不被 TabBar 遮挡
+                  marginBottom: Platform.OS === 'android' ? 20 : 10,
+                },
+              ]}>
+              <TouchableOpacity
+                style={[styles.actionBtn, styles.clearBtn]}
+                onPress={handleClear}>
+                <Text style={styles.clearText}>{t('common.clear')}</Text>
+              </TouchableOpacity>
 
-            <TouchableOpacity
-              style={[styles.actionBtn, styles.confirmBtn]}
-              onPress={handleConfirm}>
-              <Text style={styles.okText}>OK</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity
+                style={[styles.actionBtn, styles.confirmBtn]}
+                onPress={handleConfirm}>
+                <Text style={styles.okText}>OK</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -236,42 +239,42 @@ const styles = StyleSheet.create({
   display: {
     fontSize: 28,
     fontWeight: '600',
-    marginBottom: 30,
+    marginBottom: 20, // ✅ 减小显示框和键盘之间的间距
   },
   keypad: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    width: '80%',
+    width: '75%', // ✅ 减小键盘宽度，让按钮更紧凑
     justifyContent: 'center',
   },
   key: {
-    width: '30%',
+    width: '28%', // ✅ 减小按钮宽度
     aspectRatio: 1,
-    margin: '1.5%',
-    borderRadius: 12,
+    margin: '1.2%', // ✅ 减小按钮之间的间距
+    borderRadius: 10, // ✅ 稍微减小圆角
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 2,
   },
   keyText: {
-    fontSize: 24,
+    fontSize: 22, // ✅ 稍微减小字体
     fontWeight: '500',
   },
   actions: {
     flexDirection: 'row',
-    marginTop: 40,
-    gap: 20, // ✅ 减小按钮之间的间距
+    marginTop: 20, // ✅ 大幅减小顶部间距
+    gap: 16, // ✅ 进一步减小按钮之间的间距
     width: '100%',
     paddingHorizontal: 10,
     justifyContent: 'center',
   },
   actionBtn: {
-    paddingVertical: 16, // ✅ 稍微减小垂直 padding
-    paddingHorizontal: 40, // ✅ 减小水平 padding
-    borderRadius: 12,
-    minWidth: 120, // ✅ 减小最小宽度
+    paddingVertical: 14, // ✅ 进一步减小垂直 padding
+    paddingHorizontal: 36, // ✅ 进一步减小水平 padding
+    borderRadius: 10, // ✅ 稍微减小圆角
+    minWidth: 110, // ✅ 进一步减小最小宽度
     flex: 1, // ✅ 让按钮平均分配空间
-    maxWidth: 160, // ✅ 限制最大宽度
+    maxWidth: 150, // ✅ 进一步限制最大宽度
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -280,7 +283,7 @@ const styles = StyleSheet.create({
   },
   clearText: {
     color: '#333',
-    fontSize: 18,
+    fontSize: 16, // ✅ 稍微减小字体
     fontWeight: '600',
   },
   confirmBtn: {
@@ -288,7 +291,7 @@ const styles = StyleSheet.create({
   },
   okText: {
     color: 'white',
-    fontSize: 18,
+    fontSize: 16, // ✅ 稍微减小字体
     fontWeight: '700',
   },
   note: {
