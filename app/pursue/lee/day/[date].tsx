@@ -17,9 +17,9 @@ import { useFontSize } from '../../../src/context/FontSizeContext';
 import BackButton from '@/app/components/BackButton';
 import { LEE_ARCHIVE_URL } from '../../../src/config/dataSources';
 
-// 缓存键
-const CACHE_KEY = 'lee_archive_cache';
-const CACHE_TIMESTAMP_KEY = 'lee_archive_cache_timestamp';
+// 缓存键（v2: 更新为从 R2 读取，清除旧缓存）
+const CACHE_KEY = 'lee_archive_cache_v2';
+const CACHE_TIMESTAMP_KEY = 'lee_archive_cache_timestamp_v2';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24小时缓存
 
 // ✅ 去除 HTML 标签与常见实体

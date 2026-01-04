@@ -15,10 +15,10 @@ import { useTranslation } from 'react-i18next';
 import BackButton from '@/app/components/BackButton';
 import { LEE_ARCHIVE_URL } from '../../../src/config/dataSources';
 
-// 缓存键（与 day/[date].tsx 保持一致）
-const CACHE_KEY = 'lee_archive_cache';
-const CACHE_TIMESTAMP_KEY = 'lee_archive_cache_timestamp';
-const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24小时缓存
+// 缓存键（v2: 更新为从 R2 读取，清除旧缓存，与 day/[date].tsx 保持一致）
+const CACHE_KEY = 'lee_archive_cache_v2';
+const CACHE_TIMESTAMP_KEY = 'lee_archive_cache_timestamp_v2';
+// 注意：现在优先从远程获取，失败后再使用缓存，不再检查缓存过期时间
 
 interface Article {
   id: string;
@@ -83,61 +83,51 @@ export default function WeekPage() {
   const [loading, setLoading] = useState(true);
   const [validDates, setValidDates] = useState<Set<string>>(new Set());
 
-  // ✅ 从缓存或远程获取数据
+  // ✅ 优先从远程获取数据，失败后再使用缓存
   useEffect(() => {
     const fetchArchive = async () => {
       try {
         setLoading(true);
 
-        // 先检查缓存
-        const cachedData = await AsyncStorage.getItem(CACHE_KEY);
-        const cacheTimestamp = await AsyncStorage.getItem(CACHE_TIMESTAMP_KEY);
-        
-        if (cachedData && cacheTimestamp) {
-          const timestamp = parseInt(cacheTimestamp, 10);
-          const now = Date.now();
+        // 先尝试从远程获取数据
+        try {
+          const response = await fetch(`${LEE_ARCHIVE_URL}?t=${Date.now()}`);
+          if (!response.ok) {
+            throw new Error(`获取数据失败: ${response.status}`);
+          }
           
-          // 如果缓存未过期，使用缓存
-          if (now - timestamp < CACHE_DURATION) {
+          const archive: LeeArchive = await response.json();
+          
+          // 保存到缓存
+          await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(archive));
+          await AsyncStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
+          
+          // 提取有效日期
+          const dates = new Set(archive.articles.map((a) => a.reading_date));
+          setValidDates(dates);
+          setLoading(false);
+          return;
+        } catch (networkErr: any) {
+          console.warn('从远程获取数据失败，尝试使用缓存:', networkErr.message);
+          
+          // 远程获取失败，尝试使用缓存（无论是否过期）
+          const cachedData = await AsyncStorage.getItem(CACHE_KEY);
+          if (cachedData) {
             const archive: LeeArchive = JSON.parse(cachedData);
             const dates = new Set(archive.articles.map((a) => a.reading_date));
             setValidDates(dates);
             setLoading(false);
             return;
           }
+          
+          // 如果缓存也没有，抛出错误
+          throw new Error('无法获取数据：远程获取失败且无可用缓存');
         }
-
-        // 从远程获取数据
-        const response = await fetch(`${LEE_ARCHIVE_URL}?t=${Date.now()}`);
-        if (!response.ok) {
-          throw new Error(`获取数据失败: ${response.status}`);
-        }
-        
-        const archive: LeeArchive = await response.json();
-        
-        // 保存到缓存
-        await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(archive));
-        await AsyncStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
-        
-        // 提取有效日期
-        const dates = new Set(archive.articles.map((a) => a.reading_date));
-        setValidDates(dates);
       } catch (err: any) {
         console.error('加载李常受文集失败:', err);
-        
-        // 如果网络失败，尝试使用缓存（即使过期）
-        try {
-          const cachedData = await AsyncStorage.getItem(CACHE_KEY);
-          if (cachedData) {
-            const archive: LeeArchive = JSON.parse(cachedData);
-            const dates = new Set(archive.articles.map((a) => a.reading_date));
-            setValidDates(dates);
-          }
-        } catch (cacheErr) {
-          console.error('读取缓存失败:', cacheErr);
-        }
-      } finally {
         setLoading(false);
+        // 这里可以设置错误状态，但为了用户体验，不显示错误
+        // 让页面显示为空状态即可
       }
     };
 
