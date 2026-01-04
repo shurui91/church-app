@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Platform } from 'react-native';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter, Stack, useFocusEffect } from 'expo-router';
 import { useThemeColors } from '../src/hooks/useThemeColors';
 import chSongs from '../../assets/ch_songs.json'; // 大本诗歌
@@ -15,6 +15,7 @@ export default function HymnsScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const { t, i18n } = useTranslation(); // ✅ 获取翻译函数与当前语言
+  const insets = useSafeAreaInsets(); // ✅ 获取安全区域信息
   // 防止重复点击的 ref
   const isNavigatingRef = useRef(false);
 
@@ -81,8 +82,22 @@ export default function HymnsScreen() {
       />
 
       <SafeAreaView
+        edges={['top']}
         style={[styles.safeArea, { backgroundColor: colors.background }]}>
-        <View style={styles.container}>
+        <View 
+          style={[
+            styles.container,
+            {
+              // ✅ Android: 添加底部 padding，避免被 TabBar 遮挡
+              paddingBottom: Platform.OS === 'android' 
+                ? Math.max(insets.bottom + 80, 90) // TabBar 高度约 60-70px + 安全区域
+                : Math.max(insets.bottom, 20),
+              // ✅ 添加顶部 padding，确保 Tab 不被状态栏遮挡
+              paddingTop: Platform.OS === 'android' 
+                ? Math.max(insets.top + 16, 20)
+                : 16,
+            }
+          ]}>
           {/* ✅ Tab 选择区 */}
           <View style={styles.tabContainer}>
             <TouchableOpacity
@@ -153,7 +168,14 @@ export default function HymnsScreen() {
           </View>
 
           {/* 底部操作 */}
-          <View style={styles.actions}>
+          <View 
+            style={[
+              styles.actions,
+              {
+                // ✅ 添加底部 padding，确保按钮不被 TabBar 遮挡
+                marginBottom: Platform.OS === 'android' ? 20 : 10,
+              }
+            ]}>
             <TouchableOpacity
               style={[styles.actionBtn, styles.clearBtn]}
               onPress={handleClear}>
@@ -177,7 +199,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'flex-start', // ✅ 改为从顶部开始，避免居中导致顶部被遮挡
     paddingHorizontal: 24,
   },
   tabContainer: {
@@ -222,14 +244,20 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     marginTop: 40,
-    gap: 40,
+    gap: 20, // ✅ 减小按钮之间的间距
+    width: '100%',
+    paddingHorizontal: 10,
+    justifyContent: 'center',
   },
   actionBtn: {
-    paddingVertical: 18,
-    paddingHorizontal: 50,
+    paddingVertical: 16, // ✅ 稍微减小垂直 padding
+    paddingHorizontal: 40, // ✅ 减小水平 padding
     borderRadius: 12,
-    minWidth: 140,
+    minWidth: 120, // ✅ 减小最小宽度
+    flex: 1, // ✅ 让按钮平均分配空间
+    maxWidth: 160, // ✅ 限制最大宽度
     alignItems: 'center',
+    justifyContent: 'center',
   },
   clearBtn: {
     backgroundColor: '#ccc',
