@@ -13,9 +13,7 @@ import { useThemeColors } from '../../../src/hooks/useThemeColors';
 import { useFontSize } from '../../../src/context/FontSizeContext';
 import { useTranslation } from 'react-i18next';
 import BackButton from '@/app/components/BackButton';
-
-// 远程数据源 URL（与 day/[date].tsx 保持一致）
-const LEE_ARCHIVE_URL = 'https://lcs-ops-production.up.railway.app/files/lee_archive.json';
+import { LEE_ARCHIVE_URL } from '../../../src/config/dataSources';
 
 // 缓存键（与 day/[date].tsx 保持一致）
 const CACHE_KEY = 'lee_archive_cache';

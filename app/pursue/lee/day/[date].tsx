@@ -15,9 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemeColors } from '../../../src/hooks/useThemeColors';
 import { useFontSize } from '../../../src/context/FontSizeContext';
 import BackButton from '@/app/components/BackButton';
-
-// 远程数据源 URL
-const LEE_ARCHIVE_URL = 'https://lcs-ops-production.up.railway.app/files/lee_archive.json';
+import { LEE_ARCHIVE_URL } from '../../../src/config/dataSources';
 
 // 缓存键
 const CACHE_KEY = 'lee_archive_cache';

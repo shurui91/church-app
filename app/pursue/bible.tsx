@@ -74,7 +74,6 @@ export default function BibleScreen() {
   const [newChapters, setNewChapters] = useState<any[]>([]);
   const [formattedDate, setFormattedDate] = useState('');
   const [readingPlan, setReadingPlan] = useState('');
-  const [completed, setCompleted] = useState(false);
 
   const [scrollProgress] = useState(new Animated.Value(0));
   const [scrollPercent, setScrollPercent] = useState(0);
@@ -226,9 +225,6 @@ export default function BibleScreen() {
         'bible.new_testament'
       )}：${newLabel}`
     );
-    AsyncStorage.getItem(`checkin-${dateKey}`).then((val) =>
-      setCompleted(val === 'done')
-    );
 
     setTimeout(async () => {
       const savedY = await AsyncStorage.getItem(`scrollPos-${dateKey}`);
@@ -344,12 +340,6 @@ export default function BibleScreen() {
       isPlayingRef.current = true;
       speakSentence(prev);
     }, 150); // ✅ 稍微延迟启动，确保 stop 已完成
-  };
-
-  const handleCheckin = async () => {
-    const today = new Date();
-    await AsyncStorage.setItem(`checkin-${formatDateKey(today)}`, 'done');
-    setCompleted(true);
   };
 
   const renderChapter = (chapter: any[], idx: number, labelKey: string) => (
@@ -482,29 +472,6 @@ export default function BibleScreen() {
             {newChapters.map((chapter, idx) =>
               renderChapter(chapter, idx, 'bible.new_testament')
             )}
-
-            <TouchableOpacity
-              style={[
-                styles.checkinButton,
-                {
-                  backgroundColor: completed
-                    ? colors.borderLight
-                    : colors.primary,
-                },
-              ]}
-              onPress={handleCheckin}
-              disabled={completed}>
-              <Text
-                style={{
-                  color: completed ? colors.textSecondary : '#fff',
-                  fontSize,
-                  fontWeight: '600',
-                }}>
-                {completed
-                  ? t('bible.checkin_done')
-                  : t('bible.checkin_complete')}
-              </Text>
-            </TouchableOpacity>
           </View>
         </ScrollView>
 
@@ -581,12 +548,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: 'rgba(0, 122, 255, 0.1)',
     alignSelf: 'center',
-  },
-  checkinButton: {
-    marginTop: 20,
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
   },
   progressContainer: {
     flexDirection: 'row',
