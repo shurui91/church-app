@@ -61,7 +61,7 @@ export default function HymnDetail() {
       <Stack.Screen
         options={{
           headerShown: true, // ✅ 关键：启用 header
-          title: titleText, // ✅ 动态标题（如 “大本诗歌 23”）
+          title: titleText, // ✅ 动态标题（如 "大本诗歌 23"）
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
           headerTitleStyle: { color: colors.text },

@@ -26,6 +26,10 @@ export default function HymnsScreen() {
   // 防止重复点击的 ref
   const isNavigatingRef = useRef(false);
 
+  // ✅ TabBar 基础高度常量（与 CustomTabBar 的 container height 保持一致）
+  // 如果将来 CustomTabBar 高度改变，只需修改这个常量
+  const TAB_BAR_BASE_HEIGHT = 60;
+
   // ✅ 当页面重新获得焦点时，清空输入框
   useFocusEffect(
     useCallback(() => {
@@ -96,9 +100,10 @@ export default function HymnsScreen() {
           contentContainerStyle={[
             styles.scrollContent,
             {
-              // ✅ SafeAreaView 已自动处理底部安全区域（insets.bottom）
-              // 只需添加 TabBar 高度（约 65px）确保内容不被 TabBar 遮挡
-              paddingBottom: 65,
+              // ✅ SafeAreaView 的 edges={['top']} 只处理顶部安全区域
+              // 底部由 TabBar 的 SafeAreaView 处理，这里添加 TabBar 基础高度避免内容被遮挡
+              // TabBar 总高度 = TAB_BAR_BASE_HEIGHT (60px) + insets.bottom (由 TabBar 的 SafeAreaView 自动处理)
+              paddingBottom: TAB_BAR_BASE_HEIGHT,
               // ✅ 添加顶部 padding，确保内容有适当间距
               paddingTop: 8,
             },
