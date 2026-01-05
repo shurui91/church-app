@@ -86,12 +86,22 @@ async function parseResponse<T>(response: Response): Promise<T> {
 
   // Check if response is JSON
   if (!contentType || !contentType.includes('application/json')) {
+    // 如果是404错误，创建一个包含status的错误对象
+    if (response.status === 404) {
+      const error: any = new Error('API endpoint not found');
+      error.status = 404;
+      error.responseData = { success: false, message: 'API endpoint not found' };
+      throw error;
+    }
+    
     console.error('Non-JSON response:', text.substring(0, 200));
     console.error('Response status:', response.status);
     console.error('Response URL:', response.url);
-    throw new Error(
+    const error: any = new Error(
       `服务器返回了非JSON响应（状态码: ${response.status}）。请检查API服务器是否正常运行在 ${API_BASE_URL}`
     );
+    error.status = response.status;
+    throw error;
   }
 
   try {
@@ -454,6 +464,185 @@ export const api = {
       method: 'DELETE',
     });
     return parseResponse(response);
+  },
+
+  /**
+   * Gym Reservation APIs
+   */
+
+  /**
+   * Get available time slots for a specific date
+   */
+  async getGymTimeSlots(date: string) {
+    try {
+      const response = await apiRequest(`/api/gym/time-slots/${date}`);
+      return parseResponse<{
+        success: boolean;
+        data: {
+          timeSlots: Array<{
+            id: number;
+            startTime: string;
+            endTime: string;
+            duration: number;
+            isAvailable: boolean;
+            isReserved: boolean;
+            reservedBy?: {
+              id: number;
+              name: string;
+              phoneNumber: string;
+            };
+          }>;
+        };
+      }>(response);
+    } catch (error: any) {
+      // 如果API端点不存在（404），返回空的时间段列表
+      if (error.status === 404 || error.message?.includes('404')) {
+        console.warn('Gym API endpoint not found, returning empty time slots');
+        return {
+          success: true,
+          data: { timeSlots: [] },
+        };
+      }
+      throw error;
+    }
+  },
+
+  /**
+   * Create a gym reservation
+   */
+  async createGymReservation(data: {
+    date: string; // YYYY-MM-DD
+    startTime: string; // HH:mm
+    endTime: string; // HH:mm
+    duration: number; // minutes
+    notes?: string;
+    primaryUserId?: number;
+    helperUserId?: number;
+  }) {
+    try {
+      const response = await apiRequest('/api/gym/reservations', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      });
+      return parseResponse<{
+        success: boolean;
+        message: string;
+        data: {
+          reservation: any;
+        };
+      }>(response);
+    } catch (error: any) {
+      // 如果API端点不存在（404），返回友好的错误信息
+      if (error.status === 404 || error.message?.includes('404')) {
+        throw new Error('体育馆预约功能暂未开放，请稍后再试');
+      }
+      throw error;
+    }
+  },
+
+  /**
+   * Get current user's gym reservations
+   */
+  async getMyGymReservations() {
+    try {
+      const response = await apiRequest('/api/gym/reservations/my');
+      return parseResponse<{
+        success: boolean;
+        data: {
+          reservations: any[];
+          count: number;
+        };
+      }>(response);
+    } catch (error: any) {
+      // 如果API端点不存在（404），返回空的预约列表
+      if (error.status === 404 || error.message?.includes('404')) {
+        console.warn('Gym reservations API endpoint not found, returning empty list');
+        return {
+          success: true,
+          data: { reservations: [], count: 0 },
+        };
+      }
+      throw error;
+    }
+  },
+
+  /**
+   * Get gym reservation by ID
+   */
+  async getGymReservationById(id: number) {
+    const response = await apiRequest(`/api/gym/reservations/${id}`);
+    return parseResponse<{
+      success: boolean;
+      data: {
+        reservation: any;
+      };
+    }>(response);
+  },
+
+  /**
+   * Cancel a gym reservation
+   */
+  async cancelGymReservation(id: number) {
+    try {
+      const response = await apiRequest(`/api/gym/reservations/${id}/cancel`, {
+        method: 'POST',
+      });
+      return parseResponse<{
+        success: boolean;
+        message: string;
+      }>(response);
+    } catch (error: any) {
+      if (error.status === 404 || error.message?.includes('404')) {
+        throw new Error('体育馆预约功能暂未开放，请稍后再试');
+      }
+      throw error;
+    }
+  },
+
+  /**
+   * Check in to a gym reservation
+   */
+  async checkInGymReservation(id: number) {
+    try {
+      const response = await apiRequest(`/api/gym/reservations/${id}/check-in`, {
+        method: 'POST',
+      });
+      return parseResponse<{
+        success: boolean;
+        message: string;
+        data: {
+          reservation: any;
+        };
+      }>(response);
+    } catch (error: any) {
+      if (error.status === 404 || error.message?.includes('404')) {
+        throw new Error('体育馆预约功能暂未开放，请稍后再试');
+      }
+      throw error;
+    }
+  },
+
+  /**
+   * Check out from a gym reservation
+   */
+  async checkOutGymReservation(id: number) {
+    try {
+      const response = await apiRequest(`/api/gym/reservations/${id}/check-out`, {
+        method: 'POST',
+      });
+      return parseResponse<{
+        success: boolean;
+        message: string;
+        data: {
+          reservation: any;
+        };
+      }>(response);
+    } catch (error: any) {
+      if (error.status === 404 || error.message?.includes('404')) {
+        throw new Error('体育馆预约功能暂未开放，请稍后再试');
+      }
+      throw error;
+    }
   },
 
   /**

@@ -10,6 +10,10 @@
     "selectLanguage": "选择语言",
     "cancel": "取消"
   },
+  "gym": {
+    "title": "体育馆",
+    "myReservations": "我的预约"
+  },
   "meeting": {
     "pageTitle": "聚会",
     "onlineTitle": "线上聚会",
@@ -42,7 +46,7 @@
     "role": "角色",
     "role.super_admin": "超级管理员",
     "role.admin": "管理员",
-    "role.leader": "组长",
+    "role.responsible_one": "负责人",
     "role.member": "成员",
     "role.usher": "招待",
     "logout": "登出",

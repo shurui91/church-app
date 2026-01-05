@@ -171,12 +171,12 @@ Authorization: Bearer <your-jwt-token>
 - **方法**: PUT
 - **认证**: 需要 Bearer Token（admin 或 super_admin）
 - **权限说明**: 
-  - admin 可以修改 member/leader 角色
+  - admin 可以修改 member/responsible_one 角色
   - 只有 super_admin 可以修改 super_admin 角色
 - **请求体**:
 ```json
 {
-  "role": "leader"
+  "role": "responsible_one"
 }
 ```
 - **响应示例**:
@@ -189,7 +189,7 @@ Authorization: Bearer <your-jwt-token>
       "id": 1,
       "phoneNumber": "+1234567890",
       "name": "Test User",
-      "role": "leader",
+      "role": "responsible_one",
       "createdAt": "2025-11-01T23:45:21.301Z",
       "updatedAt": "2025-11-01T23:51:45.563Z"
     }

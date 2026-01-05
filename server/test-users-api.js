@@ -80,7 +80,7 @@ async function testUsersAPI() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        role: 'leader',
+        role: 'responsible_one',
       }),
     });
 

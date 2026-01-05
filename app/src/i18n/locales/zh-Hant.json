@@ -10,6 +10,10 @@
     "selectLanguage": "選擇語言",
     "cancel": "取消"
   },
+  "gym": {
+    "title": "體育館",
+    "myReservations": "我的預約"
+  },
   "meeting": {
     "pageTitle": "聚會",
     "onlineTitle": "線上聚會",
@@ -42,7 +46,7 @@
     "role": "角色",
     "role.super_admin": "超級管理員",
     "role.admin": "管理員",
-    "role.leader": "組長",
+    "role.responsible_one": "負責人",
     "role.member": "成員",
     "role.usher": "招待",
     "logout": "登出",

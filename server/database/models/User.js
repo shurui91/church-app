@@ -8,7 +8,7 @@ export class User {
   /**
    * Create a new user
    * @param {string} phoneNumber - User's phone number
-   * @param {string} role - User role (super_admin, admin, leader, member, usher)
+  * @param {string} role - User role (super_admin, admin, responsible_one, member, usher)
    * @param {string} [name] - User's name (optional, kept for backward compatibility)
    * @param {string} [nameZh] - User's Chinese name (optional)
    * @param {string} [nameEn] - User's English name (optional)

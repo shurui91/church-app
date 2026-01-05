@@ -78,6 +78,13 @@ function ThemedLayout() {
             presentation: 'card',
           }}
         />
+        <Stack.Screen 
+          name='gym' 
+          options={{
+            headerShown: false, // 自定义页面内 header
+            presentation: 'card',
+          }}
+        />
 
         {/* ✅ 调用时传入 pathname */}
         <Stack.Screen

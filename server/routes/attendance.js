@@ -14,18 +14,18 @@ function canAccessAttendance(user) {
   if (user.role === 'member') {
     return false;
   }
-  // Allow all other roles: super_admin, admin, leader, usher, etc.
+  // Allow all other roles: super_admin, admin, responsible_one, usher, etc.
   return true;
 }
 
 /**
  * Helper function to check if user can access "view all attendance" feature
- * Only super_admin, admin, and leader can access
+ * Only super_admin, admin, and responsible_one can access
  */
 function canViewAllAttendance(user) {
   if (!user) return false;
-  // Only allow super_admin, admin, and leader
-  return ['super_admin', 'admin', 'leader'].includes(user.role);
+  // Only allow super_admin, admin, and responsible_one
+  return ['super_admin', 'admin', 'responsible_one'].includes(user.role);
 }
 
 /**
@@ -299,7 +299,7 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
  * GET /api/attendance
  * Get attendance records for current user
  * Query params: ?limit=50&offset=0 (optional)
- * Note: For "view all" feature, only super_admin, admin, leader can see all records
+ * Note: For "view all" feature, only super_admin, admin, responsible_one can see all records
  */
 router.get('/', authenticate, authorizeAttendance, async (req, res) => {
   try {
@@ -319,12 +319,12 @@ router.get('/', authenticate, authorizeAttendance, async (req, res) => {
       }
     }
 
-    // Check if user can see all records (admin, super_admin, leader) or just their own
+    // Check if user can see all records (admin, super_admin, responsible_one) or just their own
     const canSeeAllRecords = canViewAllAttendance(user);
 
     let records;
     if (canSeeAllRecords) {
-      // Admins and leaders can see all records (optionally filtered by meetingType)
+      // Admins and responsible_one can see all records (optionally filtered by meetingType)
       records = await Attendance.findAll(limit, offset, meetingType);
     } else {
       // Regular users (including usher) can only see their own records

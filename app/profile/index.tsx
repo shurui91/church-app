@@ -296,8 +296,8 @@ export default function ProfileScreen() {
                   onPress={() => router.push('/attendance')}
                 />
               )}
-              {/* 查看所有出席数据 - 只有 super_admin, admin, leader 可以访问 */}
-              {['super_admin', 'admin', 'leader'].includes(user?.role || '') && (
+              {/* 查看所有出席数据 - 只有 super_admin, admin, responsible_one 可以访问 */}
+              {['super_admin', 'admin', 'responsible_one'].includes(user?.role || '') && (
                 <SubMenuItem
                   icon='list-outline'
                   title='查看所有出席数据'
@@ -312,6 +312,11 @@ export default function ProfileScreen() {
             </View>
           )}
 
+          <MenuItem
+            icon='basketball-outline'
+            title='体育馆'
+            onPress={() => router.push('/gym')}
+          />
           <MenuItem
             icon='settings-outline'
             title={t('profile.appSettings') || '应用设置'}

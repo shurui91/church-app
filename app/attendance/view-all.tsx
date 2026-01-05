@@ -52,8 +52,8 @@ export default function ViewAllAttendanceScreen() {
   const { t } = useTranslation();
   const { user } = useAuth();
 
-  // Permission check: only super_admin, admin, leader can access
-  const canAccess = ['super_admin', 'admin', 'leader'].includes(user?.role || '');
+  // Permission check: only super_admin, admin, responsible_one can access
+  const canAccess = ['super_admin', 'admin', 'responsible_one'].includes(user?.role || '');
 
   // Redirect if no permission
   useEffect(() => {
