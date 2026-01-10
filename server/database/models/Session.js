@@ -7,7 +7,7 @@ export class Session {
       const now = new Date().toISOString();
       await db.run(
         `
-        INSERT INTO sessions (userid, token, deviceid, deviceinfo, expiresat, revoked, createdat, updatedat)
+        INSERT INTO sessions ("userId", token, "deviceId", "deviceInfo", "expiresAt", revoked, "createdAt", "updatedAt")
         VALUES (?, ?, ?, ?, ?, FALSE, ?, ?)
       `,
         [userId, token, deviceId || null, deviceInfo || null, expiresAt, now, now]
@@ -24,10 +24,10 @@ export class Session {
       await db.run(
         `
         UPDATE sessions
-        SET revoked = TRUE, updatedat = ?
-        WHERE userid = ?
+        SET revoked = TRUE, "updatedAt" = ?
+        WHERE "userId" = ?
           AND revoked = FALSE
-          AND ($3::text IS NULL OR deviceid IS NULL OR deviceid != $3::text)
+          AND ($3::text IS NULL OR "deviceId" IS NULL OR "deviceId" != $3::text)
       `,
         [now, userId, deviceId]
       );
@@ -60,7 +60,7 @@ export class Session {
       await db.run(
         `
         UPDATE sessions
-        SET revoked = TRUE, updatedat = ?
+        SET revoked = TRUE, "updatedAt" = ?
         WHERE token = ?
       `,
         [now, token]
