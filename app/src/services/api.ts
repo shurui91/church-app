@@ -171,9 +171,14 @@ export const api = {
    * Verify code and login
    */
   async verifyCode(phoneNumber: string, code: string) {
+    const deviceId = Constants.installationId;
+    const deviceInfo = `${Constants.platform?.ios ? 'ios' : Constants.platform?.android ? 'android' : 'web'} ${
+      Constants.deviceName || 'device'
+    }`;
+
     const response = await apiRequest('/api/auth/verify-code', {
       method: 'POST',
-      body: JSON.stringify({ phoneNumber, code }),
+      body: JSON.stringify({ phoneNumber, code, deviceId, deviceInfo }),
     });
     const data = await parseResponse<{
       success: boolean;
@@ -479,7 +484,7 @@ export const api = {
       return parseResponse<{
         success: boolean;
         data: {
-          timeSlots: Array<{
+          timeSlots: {
             id: number;
             startTime: string;
             endTime: string;
@@ -491,7 +496,7 @@ export const api = {
               name: string;
               phoneNumber: string;
             };
-          }>;
+          }[];
         };
       }>(response);
     } catch (error: any) {
@@ -516,8 +521,6 @@ export const api = {
     endTime: string; // HH:mm
     duration: number; // minutes
     notes?: string;
-    primaryUserId?: number;
-    helperUserId?: number;
   }) {
     try {
       const response = await apiRequest('/api/gym/reservations', {
@@ -597,6 +600,19 @@ export const api = {
       }
       throw error;
     }
+  },
+
+  async confirmGymReservation(id: number) {
+    const response = await apiRequest(`/api/gym/reservations/${id}/confirm`, {
+      method: 'POST',
+    });
+    return parseResponse<{
+      success: boolean;
+      message: string;
+      data: {
+        reservation: any;
+      };
+    }>(response);
   },
 
   /**

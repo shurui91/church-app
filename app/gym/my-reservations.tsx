@@ -1,5 +1,5 @@
 // app/gym/my-reservations.tsx
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
+  Animated,
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -19,6 +20,8 @@ import BackButton from '../components/BackButton';
 import { api } from '../src/services/api';
 import { Ionicons } from '@expo/vector-icons';
 
+type ReservationStatus = 'pending' | 'checked_in' | 'checked_out' | 'cancelled';
+
 // 预约类型
 interface Reservation {
   id: number;
@@ -27,16 +30,22 @@ interface Reservation {
   startTime: string; // HH:mm
   endTime: string; // HH:mm
   duration: number; // 分钟
-  status: 'pending' | 'checked_in' | 'completed' | 'cancelled';
-  checkedInAt?: string;
-  checkedOutAt?: string;
+  status: ReservationStatus;
+  checkInAt?: string;
+  checkOutAt?: string;
   createdAt: string;
   updatedAt: string;
+  notes?: string | null;
 }
 
 // 日期格式化（用于显示）
+const toLocalDate = (dateString: string): Date => {
+  const [year, month, day] = dateString.split('-').map((value) => Number(value));
+  return new Date(year, month - 1, day);
+};
+
 const formatDateDisplay = (dateString: string): string => {
-  const date = new Date(dateString);
+  const date = toLocalDate(dateString);
   const month = date.getMonth() + 1;
   const day = date.getDate();
   const weekDay = ['日', '一', '二', '三', '四', '五', '六'][date.getDay()];
@@ -51,6 +60,90 @@ const formatDateForAPI = (date: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
+const formatDate = (date: Date): string => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const formatTime24 = (time: string): string => {
+  if (!time) return '';
+  const [hour, minute] = time.split(':').map((v) => Number(v));
+  if (Number.isNaN(hour) || Number.isNaN(minute)) return time;
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+};
+
+const normalizeReservation = (raw: any): Reservation => ({
+  id: raw.id,
+  userId: raw.user_id,
+  date: raw.date,
+  startTime: raw.start_time,
+  endTime: raw.end_time,
+  duration: raw.duration,
+  status: (raw.status as ReservationStatus) || 'pending',
+  checkInAt: raw.check_in_at,
+  checkOutAt: raw.check_out_at,
+  createdAt: raw.created_at,
+  updatedAt: raw.updated_at,
+  notes: raw.notes,
+});
+
+const sortReservationsChronologically = (list: Reservation[]): Reservation[] => {
+  return [...list].sort((a, b) => {
+    if (a.date !== b.date) {
+      return a.date.localeCompare(b.date);
+    }
+    return a.startTime.localeCompare(b.startTime);
+  });
+};
+
+const createMockReservations = (): Reservation[] => {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const yesterday = new Date(now);
+  yesterday.setDate(yesterday.getDate() - 1);
+  return [
+    {
+      id: 1,
+      userId: 1,
+      date: formatDateForAPI(now),
+      startTime: '09:00',
+      endTime: '10:30',
+      duration: 90,
+      status: 'pending',
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
+    },
+    {
+      id: 2,
+      userId: 1,
+      date: formatDateForAPI(tomorrow),
+      startTime: '14:00',
+      endTime: '15:00',
+      duration: 60,
+      status: 'checked_in',
+      checkInAt: now.toISOString(),
+      createdAt: now.toISOString(),
+      updatedAt: now.toISOString(),
+    },
+    {
+      id: 3,
+      userId: 1,
+      date: formatDateForAPI(yesterday),
+      startTime: '18:00',
+      endTime: '19:00',
+      duration: 60,
+      status: 'checked_out',
+      checkInAt: new Date(yesterday).toISOString(),
+      checkOutAt: new Date(yesterday.getTime() + 60 * 60 * 1000).toISOString(),
+      createdAt: yesterday.toISOString(),
+      updatedAt: yesterday.toISOString(),
+    },
+  ];
+};
+
 export default function MyReservationsScreen() {
   const router = useRouter();
   const colors = useThemeColors();
@@ -60,102 +153,38 @@ export default function MyReservationsScreen() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   // 加载我的预约
   const loadReservations = async () => {
+    setLoading(true);
     try {
       const response = await api.getMyGymReservations();
-      if (response.success && response.data.reservations.length > 0) {
-        setReservations(response.data.reservations);
+      if (response.success) {
+    const normalized = response.data.reservations.map(normalizeReservation);
+    const sorted = sortReservationsChronologically(normalized);
+    setReservations(sorted.length > 0 ? sorted : sortReservationsChronologically(createMockReservations()));
       } else {
-        // 如果API返回空或失败，使用模拟数据展示UI效果
-        const mockReservations: Reservation[] = [
-          {
-            id: 1,
-            userId: 1,
-            date: formatDateForAPI(new Date()),
-            startTime: '09:00',
-            endTime: '10:30',
-            duration: 90,
-            status: 'pending',
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-          {
-            id: 2,
-            userId: 1,
-            date: formatDateForAPI(new Date(Date.now() + 86400000)), // 明天
-            startTime: '14:00',
-            endTime: '15:00',
-            duration: 60,
-            status: 'checked_in',
-            checkedInAt: new Date().toISOString(),
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-          },
-          {
-            id: 3,
-            userId: 1,
-            date: formatDateForAPI(new Date(Date.now() - 86400000)), // 昨天
-            startTime: '18:00',
-            endTime: '19:00',
-            duration: 60,
-            status: 'completed',
-            checkedInAt: new Date(Date.now() - 86400000).toISOString(),
-            checkedOutAt: new Date(Date.now() - 86400000 + 3600000).toISOString(),
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-            updatedAt: new Date(Date.now() - 86400000 + 3600000).toISOString(),
-          },
-        ];
-        setReservations(mockReservations);
+        setReservations(createMockReservations());
       }
     } catch (error: any) {
-      console.log('使用模拟数据展示UI效果');
-      // 使用模拟数据
-      const mockReservations: Reservation[] = [
-        {
-          id: 1,
-          userId: 1,
-            date: formatDateForAPI(new Date()),
-          startTime: '09:00',
-          endTime: '10:30',
-          duration: 90,
-          status: 'pending',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: 2,
-          userId: 1,
-            date: formatDateForAPI(new Date(Date.now() + 86400000)), // 明天
-          startTime: '14:00',
-          endTime: '15:00',
-          duration: 60,
-          status: 'checked_in',
-          checkedInAt: new Date().toISOString(),
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-        },
-        {
-          id: 3,
-          userId: 1,
-            date: formatDateForAPI(new Date(Date.now() - 86400000)), // 昨天
-          startTime: '18:00',
-          endTime: '19:00',
-          duration: 60,
-          status: 'completed',
-          checkedInAt: new Date(Date.now() - 86400000).toISOString(),
-          checkedOutAt: new Date(Date.now() - 86400000 + 3600000).toISOString(),
-          createdAt: new Date(Date.now() - 86400000).toISOString(),
-          updatedAt: new Date(Date.now() - 86400000 + 3600000).toISOString(),
-        },
-      ];
-      setReservations(mockReservations);
+      console.log('使用模拟数据展示UI效果', error.message || error);
+      setReservations(createMockReservations());
     } finally {
       setLoading(false);
       setRefreshing(false);
     }
   };
+
+  useEffect(() => {
+    if (!loading && reservations.length > 0) {
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 400,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [loading, reservations.length]);
 
   // 下拉刷新
   const onRefresh = () => {
@@ -242,19 +271,25 @@ export default function MyReservationsScreen() {
   const currentReservations = reservations.filter(
     (r) => r.status === 'pending' || r.status === 'checked_in'
   );
-  const historyReservations = reservations.filter(
-    (r) => r.status === 'completed' || r.status === 'cancelled'
+  const todayKey = formatDate(new Date());
+  const historyReservations = reservations.filter((r) => r.status === 'checked_out');
+  const upcomingReservations = reservations.filter(
+    (r) => r.status === 'pending' || r.status === 'checked_in'
   );
+
+  const isPastDate = (dateString: string) => {
+    return formatDate(toLocalDate(dateString)) < todayKey;
+  };
 
   // 获取状态文本和颜色
   const getStatusInfo = (status: string) => {
     switch (status) {
       case 'pending':
-        return { text: '待签入', color: colors.primary };
+        return { text: '待签到', color: colors.primary };
       case 'checked_in':
         return { text: '使用中', color: colors.success || '#4CAF50' };
-      case 'completed':
-        return { text: '已完成', color: colors.textSecondary };
+      case 'checked_out':
+        return { text: '已签出', color: colors.textSecondary };
       case 'cancelled':
         return { text: '已取消', color: colors.error };
       default:
@@ -318,126 +353,159 @@ export default function MyReservationsScreen() {
             />
           }
           showsVerticalScrollIndicator={false}>
-          {/* 当前预约 */}
-          {currentReservations.length > 0 && (
+          {/* 未来预约 */}
+          {upcomingReservations.length > 0 && (
             <View style={styles.section}>
               <Text
                 style={[
                   styles.sectionTitle,
                   { color: colors.text, fontSize: getFontSizeValue(20) },
                 ]}>
-                当前预约
+                未来预约
               </Text>
-              {currentReservations.map((reservation) => {
+              {upcomingReservations.map((reservation) => {
                 const statusInfo = getStatusInfo(reservation.status);
+                const isPast = isPastDate(reservation.date);
+                const animatedStyle = {
+                  opacity: fadeAnim,
+                  transform: [
+                    {
+                      scale: fadeAnim.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.98, 1],
+                      }),
+                    },
+                  ],
+                };
                 return (
-                  <View
-                    key={reservation.id}
-                    style={[
-                      styles.reservationCard,
-                      { backgroundColor: colors.card },
-                    ]}>
-                    <View style={styles.reservationHeader}>
-                      <View style={styles.reservationInfo}>
-                        <Text
+                  <Animated.View key={reservation.id} style={animatedStyle}>
+                    <View
+                      style={[
+                        styles.reservationCard,
+                        { backgroundColor: isPast ? colors.borderLight : colors.card },
+                        isPast && styles.pastCard,
+                      ]}>
+                      <View style={styles.reservationHeader}>
+                        <View style={styles.reservationInfo}>
+                          <Text
+                            style={[
+                              styles.reservationDate,
+                              { color: colors.text, fontSize: getFontSizeValue(18) },
+                            ]}>
+                            {formatDateDisplay(reservation.date)}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.reservationTime,
+                              { color: colors.textSecondary, fontSize: getFontSizeValue(16) },
+                            ]}>
+                            {formatTime24(reservation.startTime)} - {formatTime24(reservation.endTime)}
+                          </Text>
+                        </View>
+                        <View
                           style={[
-                            styles.reservationDate,
-                            { color: colors.text, fontSize: getFontSizeValue(18) },
+                            styles.statusBadge,
+                            { backgroundColor: statusInfo.color + '20' },
                           ]}>
-                          {formatDateDisplay(reservation.date)}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.reservationTime,
-                            { color: colors.textSecondary, fontSize: getFontSizeValue(16) },
-                          ]}>
-                          {reservation.startTime} - {reservation.endTime}
-                        </Text>
+                          <Text
+                            style={[
+                              styles.statusText,
+                              { color: statusInfo.color, fontSize: getFontSizeValue(14) },
+                            ]}>
+                            {statusInfo.text}
+                          </Text>
+                        </View>
                       </View>
-                      <View
-                        style={[
-                          styles.statusBadge,
-                          { backgroundColor: statusInfo.color + '20' },
-                        ]}>
+
+                      {reservation.checkInAt && (
                         <Text
                           style={[
-                            styles.statusText,
-                            { color: statusInfo.color, fontSize: getFontSizeValue(14) },
+                            styles.checkInTime,
+                            { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
                           ]}>
-                          {statusInfo.text}
+                          签入时间：{new Date(reservation.checkInAt).toLocaleString('zh-CN')}
                         </Text>
+                      )}
+
+                      <View style={styles.actionArea}>
+                        <View style={styles.actionButtons}>
+                          <TouchableOpacity
+                            style={[
+                              styles.actionButton,
+                              styles.checkInButton,
+                              styles.largeButton,
+                              {
+                                backgroundColor: colors.primary,
+                                opacity: canCheckIn(reservation) ? 1 : 0.4,
+                              },
+                            ]}
+                            onPress={() => handleCheckIn(reservation)}
+                            disabled={!canCheckIn(reservation)}>
+                            <Ionicons name="checkmark-circle" size={24} color="#fff" />
+                            <Text
+                              style={[
+                                styles.actionButtonText,
+                                { fontSize: getFontSizeValue(16) },
+                              ]}>
+                              签入
+                            </Text>
+                          </TouchableOpacity>
+
+                          {reservation.status === 'pending' && (
+                            <TouchableOpacity
+                              style={[
+                                styles.actionButton,
+                                styles.cancelButton,
+                                styles.largeButton,
+                                {
+                                  backgroundColor: colors.error + '20',
+                                  borderColor: colors.error,
+                                },
+                              ]}
+                              onPress={() => handleCancel(reservation)}>
+                              <Ionicons name="close-circle" size={20} color={colors.error} />
+                              <Text
+                                style={[
+                                  styles.actionButtonText,
+                                  { color: colors.error, fontSize: getFontSizeValue(16) },
+                                ]}>
+                                取消
+                              </Text>
+                            </TouchableOpacity>
+                          )}
+
+                          {canCheckOut(reservation) && (
+                            <TouchableOpacity
+                              style={[
+                                styles.actionButton,
+                                styles.checkOutButton,
+                                styles.largeButton,
+                                { backgroundColor: colors.success || '#4CAF50' },
+                              ]}
+                              onPress={() => handleCheckOut(reservation)}>
+                              <Ionicons name="log-out" size={20} color="#fff" />
+                              <Text
+                                style={[
+                                  styles.actionButtonText,
+                                  { fontSize: getFontSizeValue(16) },
+                                ]}>
+                                签出
+                              </Text>
+                            </TouchableOpacity>
+                          )}
+                        </View>
+                        {!canCheckIn(reservation) && reservation.status === 'pending' && (
+                          <Text
+                            style={[
+                              styles.hintText,
+                              { color: colors.textSecondary, fontSize: getFontSizeValue(12) },
+                            ]}>
+                            需在预约开始前15分钟才能签到
+                          </Text>
+                        )}
                       </View>
                     </View>
-
-                    {reservation.checkedInAt && (
-                      <Text
-                        style={[
-                          styles.checkInTime,
-                          { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
-                        ]}>
-                        签入时间：{new Date(reservation.checkedInAt).toLocaleString('zh-CN')}
-                      </Text>
-                    )}
-
-                    <View style={styles.actionButtons}>
-                      {canCheckIn(reservation) && (
-                        <TouchableOpacity
-                          style={[
-                            styles.actionButton,
-                            styles.checkInButton,
-                            { backgroundColor: colors.primary },
-                          ]}
-                          onPress={() => handleCheckIn(reservation)}>
-                          <Ionicons name="checkmark-circle" size={20} color="#fff" />
-                          <Text
-                            style={[
-                              styles.actionButtonText,
-                              { fontSize: getFontSizeValue(16) },
-                            ]}>
-                            签入
-                          </Text>
-                        </TouchableOpacity>
-                      )}
-
-                      {canCheckOut(reservation) && (
-                        <TouchableOpacity
-                          style={[
-                            styles.actionButton,
-                            styles.checkOutButton,
-                            { backgroundColor: colors.success || '#4CAF50' },
-                          ]}
-                          onPress={() => handleCheckOut(reservation)}>
-                          <Ionicons name="log-out" size={20} color="#fff" />
-                          <Text
-                            style={[
-                              styles.actionButtonText,
-                              { fontSize: getFontSizeValue(16) },
-                            ]}>
-                            签出
-                          </Text>
-                        </TouchableOpacity>
-                      )}
-
-                      {reservation.status === 'pending' && (
-                        <TouchableOpacity
-                          style={[
-                            styles.actionButton,
-                            styles.cancelButton,
-                            { backgroundColor: colors.error + '20', borderColor: colors.error },
-                          ]}
-                          onPress={() => handleCancel(reservation)}>
-                          <Ionicons name="close-circle" size={20} color={colors.error} />
-                          <Text
-                            style={[
-                              styles.actionButtonText,
-                              { color: colors.error, fontSize: getFontSizeValue(16) },
-                            ]}>
-                            取消
-                          </Text>
-                        </TouchableOpacity>
-                      )}
-                    </View>
-                  </View>
+                  </Animated.View>
                 );
               })}
             </View>
@@ -476,7 +544,7 @@ export default function MyReservationsScreen() {
                             styles.reservationTime,
                             { color: colors.textSecondary, fontSize: getFontSizeValue(16) },
                           ]}>
-                          {reservation.startTime} - {reservation.endTime}
+                          {formatTime24(reservation.startTime)} - {formatTime24(reservation.endTime)}
                         </Text>
                       </View>
                       <View
@@ -494,22 +562,22 @@ export default function MyReservationsScreen() {
                       </View>
                     </View>
 
-                    {reservation.checkedInAt && (
+                    {reservation.checkInAt && (
                       <Text
                         style={[
                           styles.checkInTime,
                           { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
                         ]}>
-                        签入：{new Date(reservation.checkedInAt).toLocaleString('zh-CN')}
+                        签入：{new Date(reservation.checkInAt).toLocaleString('zh-CN')}
                       </Text>
                     )}
-                    {reservation.checkedOutAt && (
+                    {reservation.checkOutAt && (
                       <Text
                         style={[
                           styles.checkInTime,
                           { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
                         ]}>
-                        签出：{new Date(reservation.checkedOutAt).toLocaleString('zh-CN')}
+                        签出：{new Date(reservation.checkOutAt).toLocaleString('zh-CN')}
                       </Text>
                     )}
                   </View>
@@ -573,9 +641,19 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   reservationCard: {
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
+    padding: 18,
+    borderRadius: 18,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.05)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 3,
+  },
+  pastCard: {
+    borderColor: 'rgba(0,0,0,0.12)',
   },
   reservationHeader: {
     flexDirection: 'row',
@@ -608,7 +686,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   actionButtons: {
-    flexDirection: 'row',
+    flexDirection: 'column',
     gap: 12,
     marginTop: 12,
   },
@@ -616,10 +694,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 10,
+    paddingVertical: 14,
     paddingHorizontal: 16,
-    borderRadius: 8,
-    gap: 6,
+    borderRadius: 10,
+    gap: 8,
     flex: 1,
   },
   checkInButton: {},
@@ -631,6 +709,25 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '600',
+  },
+  hintText: {
+    fontSize: 12,
+    marginTop: 6,
+  },
+  actionArea: {
+    width: '100%',
+  },
+  largeButton: {
+    minHeight: 56,
+    width: '100%',
+    borderRadius: 14,
+  },
+  actionArea: {
+    width: '100%',
+  },
+  largeButton: {
+    minHeight: 54,
+    width: '100%',
   },
   emptyContainer: {
     alignItems: 'center',

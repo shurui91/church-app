@@ -22,6 +22,10 @@ import { api } from '../src/services/api';
 import { Ionicons } from '@expo/vector-icons';
 
 // 时间段类型
+const HALF_HOUR = 30;
+const OPENING_MINUTES = 7 * 60;
+const CLOSING_MINUTES = 22 * 60;
+
 interface TimeSlot {
   id: number;
   startTime: string; // HH:mm 格式，如 "09:00"
@@ -70,9 +74,7 @@ export default function GymScreen() {
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [duration, setDuration] = useState(60); // 默认1小时
   const [notes, setNotes] = useState('');
-  const [adminUsers, setAdminUsers] = useState<{ id: number; name: string }[]>([]);
-  const [selectedHelperId, setSelectedHelperId] = useState<number | null>(null);
-  const [loadingAdmins, setLoadingAdmins] = useState(false);
+  const [currentTimestamp, setCurrentTimestamp] = useState(new Date());
 
   // 计算日历天数
   const calendarDays = useMemo(() => {
@@ -144,27 +146,28 @@ export default function GymScreen() {
       const dateString = formatDate(date);
       const response = await api.getGymTimeSlots(dateString);
       if (response.success && response.data.timeSlots.length > 0) {
-        setTimeSlots(response.data.timeSlots);
+        const normalizedSlots = response.data.timeSlots.map((slot) => ({
+          ...slot,
+          isReserved: false,
+          reservedBy: undefined,
+        }));
+        setTimeSlots(normalizedSlots);
       } else {
         // 如果API返回空或失败，使用模拟数据展示UI效果
         const mockSlots: TimeSlot[] = [];
-        for (let hour = 7; hour < 22; hour++) {
-          // 模拟一些时间段已被预约
-          const isReserved = hour === 9 || hour === 14 || hour === 18;
+        for (let minutes = OPENING_MINUTES; minutes < CLOSING_MINUTES; minutes += HALF_HOUR) {
+          const startHour = Math.floor(minutes / 60);
+          const startMinute = minutes % 60;
+          const endMinutes = minutes + HALF_HOUR;
+          const endHour = Math.floor(endMinutes / 60);
+          const endMinute = endMinutes % 60;
           mockSlots.push({
-            id: hour,
-            startTime: `${String(hour).padStart(2, '0')}:00`,
-            endTime: `${String(hour + 1).padStart(2, '0')}:00`,
-            duration: 60,
+            id: minutes,
+            startTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
+            endTime: `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
+            duration: HALF_HOUR,
             isAvailable: true,
-            isReserved: isReserved,
-            reservedBy: isReserved
-              ? {
-                  id: 1,
-                  name: '张三',
-                  phoneNumber: '1234',
-                }
-              : undefined,
+            isReserved: false,
           });
         }
         setTimeSlots(mockSlots);
@@ -173,24 +176,21 @@ export default function GymScreen() {
       console.log('使用模拟数据展示UI效果', error);
       // 使用模拟数据
       const mockSlots: TimeSlot[] = [];
-      for (let hour = 7; hour < 22; hour++) {
-        const isReserved = hour === 9 || hour === 14 || hour === 18;
-        mockSlots.push({
-          id: hour,
-          startTime: `${String(hour).padStart(2, '0')}:00`,
-          endTime: `${String(hour + 1).padStart(2, '0')}:00`,
-          duration: 60,
-          isAvailable: true,
-          isReserved: isReserved,
-          reservedBy: isReserved
-            ? {
-                id: 1,
-                name: '张三',
-                phoneNumber: '1234',
-              }
-            : undefined,
-        });
-      }
+        for (let minutes = OPENING_MINUTES; minutes < CLOSING_MINUTES; minutes += HALF_HOUR) {
+          const startHour = Math.floor(minutes / 60);
+          const startMinute = minutes % 60;
+          const endMinutes = minutes + HALF_HOUR;
+          const endHour = Math.floor(endMinutes / 60);
+          const endMinute = endMinutes % 60;
+          mockSlots.push({
+            id: minutes,
+            startTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
+            endTime: `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
+            duration: HALF_HOUR,
+            isAvailable: true,
+            isReserved: false,
+          });
+        }
       setTimeSlots(mockSlots);
     } finally {
       setLoadingSlots(false);
@@ -218,34 +218,6 @@ export default function GymScreen() {
   };
 
   // 选择时间段并打开预约模态框
-  const loadAdminUsers = useCallback(async () => {
-    setLoadingAdmins(true);
-    try {
-      const [adminRes, superRes] = await Promise.all([
-        api.getUsers('admin'),
-        api.getUsers('super_admin'),
-      ]);
-
-      const adminList = [
-        ...(adminRes.success ? adminRes.data.users : []),
-        ...(superRes.success ? superRes.data.users : []),
-      ].map((user) => ({ id: user.id, name: user.nameZh || user.nameEn || user.name || user.phoneNumber }));
-
-      setAdminUsers(adminList);
-      setSelectedHelperId((prev) => prev ?? adminList[0]?.id ?? null);
-    } catch (error) {
-      console.warn('加载管理员列表失败:', error);
-    } finally {
-      setLoadingAdmins(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (showReservationModal) {
-      loadAdminUsers();
-    }
-  }, [showReservationModal, loadAdminUsers]);
-
   const handleTimeSlotSelect = (slot: TimeSlot) => {
     if (!slot.isAvailable || slot.isReserved) {
       return;
@@ -256,6 +228,8 @@ export default function GymScreen() {
       return;
     }
 
+    console.log('[Gym] Time slot tapped', { slot, selectedDate });
+
     setSelectedSlot(slot);
     setDuration(60); // 重置为默认1小时
     setNotes(''); // 清空备注
@@ -265,11 +239,6 @@ export default function GymScreen() {
   // 创建预约
   const handleCreateReservation = async () => {
     if (!selectedSlot || !selectedDate) {
-      return;
-    }
-
-    if (!selectedHelperId) {
-      Alert.alert('提示', '请选择一位管理员作为第二预约人');
       return;
     }
 
@@ -286,8 +255,6 @@ export default function GymScreen() {
         endTime: endTimeString,
         duration,
         notes: notes.trim() || undefined,
-        primaryUserId: user?.id,
-        helperUserId: selectedHelperId,
       });
       
       if (response.success) {
@@ -305,8 +272,8 @@ export default function GymScreen() {
     }
   };
 
-  // 时长选项（30分钟、60分钟、90分钟、120分钟）
-  const durationOptions = [30, 60, 90, 120];
+  // 时长选项（60分钟、90分钟、120分钟）
+  const durationOptions = [60, 90, 120];
 
   // 初始化：选择今天
   useEffect(() => {
@@ -316,6 +283,17 @@ export default function GymScreen() {
       loadTimeSlots(today);
     }
   }, [loadTimeSlots]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTimestamp(new Date());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const todayKey = formatDate(currentTimestamp);
+  const currentMinutes = currentTimestamp.getHours() * 60 + currentTimestamp.getMinutes();
+  const isSelectedDateToday = selectedDate ? formatDate(selectedDate) === todayKey : false;
 
   // 获取月份名称
   const getMonthName = (date: Date): string => {
@@ -343,6 +321,15 @@ export default function GymScreen() {
           ),
         }}
       />
+      <View style={[styles.demoNotice, { backgroundColor: colors.primary + '15' }]}>
+        <Text
+          style={[
+            styles.demoNoticeText,
+            { color: colors.primary, fontWeight: '700' },
+          ]}>
+          此功能仅作演示使用
+        </Text>
+      </View>
 
       <ScrollView
         style={styles.scrollView}
@@ -478,7 +465,7 @@ export default function GymScreen() {
                   styles.timeSlotsHint,
                   { color: colors.textSecondary, fontSize: getFontSizeValue(13) },
                 ]}>
-                选择开始时间后，可选择30分钟-2小时
+                选择开始时间后，可选择60分钟-2小时
               </Text>
             </View>
 
@@ -496,62 +483,85 @@ export default function GymScreen() {
               </Text>
             ) : (
               <View style={styles.timeSlotsGrid}>
-                {timeSlots.map((slot) => (
-                  <TouchableOpacity
-                    key={slot.id}
-                    style={[
-                      styles.timeSlotGridItem,
-                      {
-                        backgroundColor:
-                          slot.isReserved
-                            ? colors.error + '15'
-                            : slot.isAvailable
-                            ? colors.primary + '10'
-                            : colors.background,
-                        borderColor:
-                          slot.isReserved
-                            ? colors.error
-                            : slot.isAvailable
-                            ? colors.primary
-                            : colors.borderLight,
-                      },
-                    ]}
-                    onPress={() => handleTimeSlotSelect(slot)}
-                    disabled={!slot.isAvailable || slot.isReserved}>
-                    <Text
-                      style={[
-                        styles.timeSlotGridTime,
-                        {
-                          color: slot.isReserved
-                            ? colors.error
-                            : slot.isAvailable
-                            ? colors.primary
-                            : colors.textSecondary,
-                          fontSize: getFontSizeValue(18),
-                          fontWeight: '600',
-                        },
-                      ]}>
-                      {slot.startTime}
-                    </Text>
-                    {slot.isReserved ? (
-                      <Text
-                        style={[
-                          styles.timeSlotGridStatus,
-                          { color: colors.error, fontSize: getFontSizeValue(11) },
-                        ]}>
-                        已约
-                      </Text>
-                    ) : (
-                      <Text
-                        style={[
-                          styles.timeSlotGridHint,
-                          { color: colors.textTertiary, fontSize: getFontSizeValue(11) },
-                        ]}>
-                        可选
-                      </Text>
-                    )}
-                  </TouchableOpacity>
-                ))}
+        {timeSlots.map((slot) => {
+          const slotMinutes =
+            parseInt(slot.startTime.split(':')[0], 10) * 60 +
+            parseInt(slot.startTime.split(':')[1], 10);
+          const isPastSlot = isSelectedDateToday && slotMinutes < currentMinutes;
+          const disabled = !slot.isAvailable || slot.isReserved || isPastSlot;
+          const backgroundColor = isPastSlot
+            ? colors.borderLight
+            : slot.isReserved
+            ? colors.error + '15'
+            : slot.isAvailable
+            ? colors.primary + '10'
+            : colors.borderLight;
+          const borderColor = isPastSlot
+            ? colors.borderLight
+            : slot.isReserved
+            ? colors.error
+            : slot.isAvailable
+            ? colors.primary
+            : colors.borderLight;
+          const textColor = isPastSlot
+            ? colors.textTertiary
+            : slot.isReserved
+            ? colors.error
+            : slot.isAvailable
+            ? colors.primary
+            : colors.textSecondary;
+
+          return (
+            <TouchableOpacity
+              key={slot.id}
+              style={[
+                styles.timeSlotGridItem,
+                {
+                  backgroundColor,
+                  borderColor,
+                },
+              ]}
+              onPress={() => handleTimeSlotSelect(slot)}
+              disabled={disabled}>
+              <Text
+                style={[
+                  styles.timeSlotGridTime,
+                  {
+                    color: textColor,
+                    fontSize: getFontSizeValue(18),
+                    fontWeight: '600',
+                  },
+                ]}>
+                {slot.startTime}
+              </Text>
+              {isPastSlot ? (
+                <Text
+                  style={[
+                    styles.timeSlotGridHint,
+                    { color: colors.textTertiary, fontSize: getFontSizeValue(11) },
+                  ]}>
+                  {t('gym.pastTimeSlot') || '已过'}
+                </Text>
+              ) : slot.isReserved ? (
+                <Text
+                  style={[
+                    styles.timeSlotGridStatus,
+                    { color: colors.error, fontSize: getFontSizeValue(11) },
+                  ]}>
+                  已约
+                </Text>
+              ) : (
+                <Text
+                  style={[
+                    styles.timeSlotGridHint,
+                    { color: colors.textTertiary, fontSize: getFontSizeValue(11) },
+                  ]}>
+                  可选
+                </Text>
+              )}
+            </TouchableOpacity>
+          );
+        })}
               </View>
             )}
           </View>
@@ -710,7 +720,7 @@ export default function GymScreen() {
                       styles.personLabel,
                       { color: colors.text, fontSize: getFontSizeValue(14) },
                     ]}>
-                    主要预约人
+                    {t('gym.firstAppointmentPersonLabel') || '预约人'}
                   </Text>
                   <Text
                     style={[
@@ -719,46 +729,26 @@ export default function GymScreen() {
                     ]}>
                     {user?.nameZh || user?.nameEn || user?.name || user?.phoneNumber || '当前用户'}
                   </Text>
-                </View>
-                <View style={styles.personSection}>
-                  <Text
-                    style={[
-                      styles.personLabel,
-                      { color: colors.text, fontSize: getFontSizeValue(14) },
-                    ]}>
-                    协助预约人（管理员 / 超级管理员）
-                  </Text>
-                  {loadingAdmins ? (
-                    <ActivityIndicator size="small" color={colors.primary} />
-                  ) : adminUsers.length === 0 ? (
-                    <Text style={styles.personHint}>暂无可选用户</Text>
-                  ) : (
-                    <View style={styles.adminList}>
-                      {adminUsers.map((admin) => (
-                        <TouchableOpacity
-                          key={admin.id}
+                  {(user?.district || user?.groupNum) && (
+                    <View style={styles.personMeta}>
+                      {user?.district && (
+                        <Text
                           style={[
-                            styles.adminItem,
-                            selectedHelperId === admin.id && {
-                              borderColor: colors.primary,
-                              backgroundColor: colors.primary + '10',
-                            },
-                          ]}
-                          onPress={() => setSelectedHelperId(admin.id)}>
-                          <Text
-                            style={[
-                              styles.adminName,
-                              {
-                                color:
-                                  selectedHelperId === admin.id
-                                    ? colors.primary
-                                    : colors.text,
-                              },
-                            ]}>
-                            {admin.name || `ID:${admin.id}`}
-                          </Text>
-                        </TouchableOpacity>
-                      ))}
+                            styles.personMetaText,
+                            { color: colors.textTertiary, fontSize: getFontSizeValue(12) },
+                          ]}>
+                          大区：{user.district}
+                        </Text>
+                      )}
+                      {user?.groupNum && (
+                        <Text
+                          style={[
+                            styles.personMetaText,
+                            { color: colors.textTertiary, fontSize: getFontSizeValue(12) },
+                          ]}>
+                          小排：{user.groupNum}
+                        </Text>
+                      )}
                     </View>
                   )}
                 </View>
@@ -855,7 +845,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    margin: 2,
+    marginTop: 2,
   },
   dateCellOtherMonth: {
     opacity: 0.3,
@@ -919,6 +909,20 @@ const styles = StyleSheet.create({
   },
   timeSlotGridHint: {
     fontSize: 11,
+  },
+  demoNotice: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#FFC107',
+    marginHorizontal: 16,
+    marginBottom: 12,
+    alignItems: 'center',
+  },
+  demoNoticeText: {
+    fontSize: 14,
+    fontWeight: '700',
   },
   modalOverlay: {
     flex: 1,
@@ -1017,24 +1021,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  personHint: {
-    fontSize: 14,
-    color: '#999',
-  },
-  adminList: {
+  personMeta: {
     flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: 8,
+    gap: 12,
+    marginTop: 4,
   },
-  adminItem: {
-    borderWidth: 1,
-    borderRadius: 8,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-  },
-  adminName: {
-    fontSize: 14,
-    fontWeight: '600',
+  personMetaText: {
+    fontSize: 12,
   },
 });
 

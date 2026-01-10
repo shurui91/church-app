@@ -13,6 +13,10 @@
   "gym": {
     "title": "体育馆",
     "myReservations": "我的预约"
+    ,"firstAppointmentPersonLabel":"预约人"
+    ,"secondAppointmentPersonLabel":"第二预约人"
+    ,"noAvailableAdmins":"暂无可选用户"
+    ,"pastTimeSlot":"已过"
   },
   "meeting": {
     "pageTitle": "聚会",

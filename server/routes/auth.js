@@ -8,6 +8,7 @@ import {
 	sendVerificationCode,
 	validatePhoneNumber,
 } from '../services/sms.js';
+import { Session } from '../database/models/Session.js';
 
 const router = express.Router();
 
@@ -218,6 +219,20 @@ router.post('/verify-code', async (req, res) => {
     // Generate JWT token
     const token = generateToken(user);
 
+    const deviceId = req.body.deviceId || null;
+    const deviceInfo = req.body.deviceInfo || null;
+    const expiresDays = Number(process.env.SESSION_EXPIRES_DAYS || 7);
+    const expiresAt = new Date(Date.now() + expiresDays * 24 * 60 * 60 * 1000).toISOString();
+
+    await Session.revokeOtherSessions(user.id, deviceId);
+    await Session.create({
+      userId: user.id,
+      token,
+      deviceId,
+      deviceInfo,
+      expiresAt,
+    });
+
     // Return user info and token
     res.json({
       success: true,
@@ -309,6 +324,12 @@ router.post('/logout', authenticate, async (req, res) => {
   try {
     // With JWT, logout is handled client-side
     // But we could implement token blacklisting here if needed
+    const authHeader = req.headers.authorization;
+    const token = authHeader && authHeader.startsWith('Bearer ') ? authHeader.substring(7) : null;
+    if (token) {
+      await Session.revokeByToken(token);
+    }
+
     res.json({
       success: true,
       message: '登出成功',

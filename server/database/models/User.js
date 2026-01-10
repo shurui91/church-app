@@ -75,6 +75,25 @@ export class User {
   }
 
   /**
+   * Get role statistics for debugging
+   */
+  static async getRoleStats() {
+    const db = await getDatabase();
+    try {
+      return await db.all('SELECT role, COUNT(*) as count FROM users GROUP BY role');
+    } finally {
+      await db.close();
+    }
+  }
+
+  /**
+   * Helper to get database instance
+   */
+  static async getDb() {
+    return await getDatabase();
+  }
+
+  /**
    * Find user by phone number
    * @param {string} phoneNumber - User's phone number
    * @returns {Promise<Object|null>} User object or null if not found
@@ -177,6 +196,26 @@ export class User {
     } catch (error) {
       console.error('Error in User.findAll:', error);
       throw error;
+    } finally {
+      await db.close();
+    }
+  }
+
+  /**
+   * Find users by multiple roles
+   * @param {Array<string>} roles - Array of roles
+   * @returns {Promise<Array>} Array of user objects
+   */
+  static async findByRoles(roles) {
+    const db = await getDatabase();
+    try {
+      if (!roles || roles.length === 0) return [];
+      const placeholders = roles.map(() => '?').join(',');
+      const users = await db.all(
+        `SELECT * FROM users WHERE role IN (${placeholders}) ORDER BY namezh ASC`,
+        roles
+      );
+      return users.map(user => this.normalizeUserFields(user));
     } finally {
       await db.close();
     }

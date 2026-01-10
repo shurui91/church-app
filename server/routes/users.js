@@ -55,6 +55,57 @@ router.get('/', authenticate, authorize('admin', 'super_admin'), async (req, res
 });
 
 /**
+ * GET /api/users/admins
+ * Get all users with administrative roles (accessible by any authenticated user)
+ * Used for selecting "Second Booker" in gym reservations
+ */
+const allowAdminListWithoutAuth =
+  process.env.SKIP_ADMIN_AUTH === 'true' && process.env.NODE_ENV !== 'production';
+const adminRouteMiddleware = allowAdminListWithoutAuth ? [] : [authenticate];
+
+router.get('/admins', ...adminRouteMiddleware, async (req, res) => {
+  try {
+    const roles = ['super_admin', 'admin', 'responsible_one'];
+    
+    // 调试日志：检查数据库中各角色的数量
+    const stats = await User.getRoleStats(); 
+    console.log(`[API] Role stats in DB:`, stats);
+    
+    console.log(`[API] Fetching admins with roles: ${roles.join(', ')}`);
+    const users = await User.findByRoles(roles);
+    console.log(`[API] Found ${users.length} admin users in database`);
+    if (users.length > 0) {
+      console.log(`[API] First user found:`, { id: users[0].id, role: users[0].role, nameZh: users[0].nameZh });
+    }
+
+    const sanitizedUsers = users.map((user) => ({
+      id: user.id,
+      phoneNumber: user.phoneNumber,
+      name: user.name,
+      nameZh: user.nameZh,
+      nameEn: user.nameEn,
+      role: user.role,
+      district: user.district,
+      groupNum: user.groupNum,
+    }));
+
+    res.json({
+      success: true,
+      data: {
+        users: sanitizedUsers,
+        count: sanitizedUsers.length,
+      },
+    });
+  } catch (error) {
+    console.error('Error getting admin users:', error);
+    res.status(500).json({
+      success: false,
+      message: '获取管理员列表失败',
+    });
+  }
+});
+
+/**
  * GET /api/users/:id
  * Get user by ID (requires admin or super_admin role)
  */

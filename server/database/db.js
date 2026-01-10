@@ -10,7 +10,11 @@ dotenv.config();
  */
 function getPostgreSQLConfig() {
   // Check for DATABASE_URL first (Railway/Heroku style)
-  const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL || process.env.POSTGRES_PRIVATE_URL;
+  const databaseUrl =
+    process.env.DATABASE_URL ||
+    process.env.POSTGRES_URL ||
+    process.env.POSTGRES_PRIVATE_URL ||
+    process.env.DATABASE_PUBLIC_URL;
   
   if (databaseUrl) {
     // Parse DATABASE_URL to check if it needs SSL

@@ -20,7 +20,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const colors = useThemeColors();
   const { t } = useTranslation();
-  const { user, logout, refreshUser, isAuthenticated, hasRole } = useAuth();
+  const { user, logout, refreshUser, isAuthenticated } = useAuth();
   const { getFontSizeValue } = useFontSize();
   const [loggingOut, setLoggingOut] = useState(false);
   const [brotherFeaturesExpanded, setBrotherFeaturesExpanded] = useState(false);
@@ -266,57 +266,65 @@ export default function ProfileScreen() {
         {/* 菜单 */}
         <View style={[styles.menuContainer, { backgroundColor: colors.card }]}>
           {/* 弟兄功能 - 可展开/折叠的菜单组 */}
-          <TouchableOpacity
-            style={[
-              styles.menuItem,
-              { borderBottomColor: colors.borderLight },
-            ]}
-            onPress={() => setBrotherFeaturesExpanded(!brotherFeaturesExpanded)}>
-            <View style={styles.menuLeft}>
-              <Ionicons name='people-outline' size={24} color={colors.text} />
-              <Text style={[styles.menuText, { color: colors.text }]}>
-                弟兄功能
-              </Text>
-            </View>
-            <Ionicons
-              name={brotherFeaturesExpanded ? 'chevron-down' : 'chevron-forward'}
-              size={20}
-              color={colors.textSecondary}
-            />
-          </TouchableOpacity>
+          {['super_admin', 'admin', 'responsible_one'].includes(user?.role || '') && (
+            <>
+              <TouchableOpacity
+                style={[
+                  styles.menuItem,
+                  { borderBottomColor: colors.borderLight },
+                ]}
+                onPress={() => setBrotherFeaturesExpanded(!brotherFeaturesExpanded)}>
+                <View style={styles.menuLeft}>
+                  <Ionicons name='people-outline' size={24} color={colors.text} />
+                  <Text style={[styles.menuText, { color: colors.text }]}>
+                    弟兄功能
+                  </Text>
+                </View>
+                <Ionicons
+                  name={brotherFeaturesExpanded ? 'chevron-down' : 'chevron-forward'}
+                  size={20}
+                  color={colors.textSecondary}
+                />
+              </TouchableOpacity>
 
-          {/* 弟兄功能子菜单 - 展开时显示 */}
-          {brotherFeaturesExpanded && (
-            <View style={styles.subMenuContainer}>
-              {/* 人数汇报 - 所有角色可见，只有 member 不可见 */}
-              {user?.role !== 'member' && (
-                <SubMenuItem
-                  icon='clipboard-outline'
-                  title={t('attendance.title') || '人数汇报'}
-                  onPress={() => router.push('/attendance')}
-                />
+              {/* 弟兄功能子菜单 - 展开时显示 */}
+              {brotherFeaturesExpanded && (
+                <View style={styles.subMenuContainer}>
+                  {/* 人数汇报 - 所有角色可见，只有 member 不可见 */}
+                  {user?.role !== 'member' && (
+                    <SubMenuItem
+                      icon='clipboard-outline'
+                      title={t('attendance.title') || '人数汇报'}
+                      onPress={() => router.push('/attendance')}
+                    />
+                  )}
+                  {/* 查看所有出席数据 - 只有 super_admin, admin, responsible_one 可以访问 */}
+                  {['super_admin', 'admin', 'responsible_one'].includes(user?.role || '') && (
+                    <SubMenuItem
+                      icon='list-outline'
+                      title='查看所有出席数据'
+                      onPress={() => router.push('/attendance/view-all')}
+                    />
+                  )}
+                  {['super_admin', 'admin', 'responsible_one'].includes(user?.role || '') && (
+                    <SubMenuItem
+                      icon='calendar-outline'
+                      title={t('travel.title') || '行程表'}
+                      onPress={() => router.push('/travel')}
+                    />
+                  )}
+                </View>
               )}
-              {/* 查看所有出席数据 - 只有 super_admin, admin, responsible_one 可以访问 */}
-              {['super_admin', 'admin', 'responsible_one'].includes(user?.role || '') && (
-                <SubMenuItem
-                  icon='list-outline'
-                  title='查看所有出席数据'
-                  onPress={() => router.push('/attendance/view-all')}
-                />
-              )}
-              <SubMenuItem
-                icon='calendar-outline'
-                title={t('travel.title') || '行程表'}
-                onPress={() => router.push('/travel')}
-              />
-            </View>
+            </>
           )}
 
-          <MenuItem
-            icon='basketball-outline'
-            title='体育馆'
-            onPress={() => router.push('/gym')}
-          />
+          {['super_admin', 'admin', 'responsible_one'].includes(user?.role || '') && (
+            <MenuItem
+              icon='basketball-outline'
+              title='体育馆'
+              onPress={() => router.push('/gym')}
+            />
+          )}
           <MenuItem
             icon='settings-outline'
             title={t('profile.appSettings') || '应用设置'}

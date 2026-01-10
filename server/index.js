@@ -8,6 +8,7 @@ import crashLogRoutes from './routes/crash-logs.js';
 import debugRoutes from './routes/debug-env.js';
 import travelRoutes from './routes/travel.js';
 import userRoutes from './routes/users.js';
+import gymRoutes from './routes/gym.js';
 
 // Load environment variables
 dotenv.config();
@@ -47,6 +48,7 @@ app.use('/api/attendance', attendanceRoutes);
 app.use('/api/travel', travelRoutes);
 app.use('/api/crash-logs', crashLogRoutes);
 app.use('/api', debugRoutes); // Temporary debug route
+app.use('/api', gymRoutes);
 
 // Start server
 const server = app.listen(PORT, () => {

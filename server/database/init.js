@@ -295,9 +295,12 @@ export async function initDatabase() {
         id SERIAL PRIMARY KEY,
         "userId" INTEGER NOT NULL,
         token TEXT NOT NULL UNIQUE,
+        "deviceId" TEXT,
         "deviceInfo" TEXT,
         "expiresAt" TEXT NOT NULL,
+        revoked BOOLEAN NOT NULL DEFAULT FALSE,
         "createdAt" TEXT NOT NULL,
+        "updatedAt" TEXT NOT NULL,
         FOREIGN KEY ("userId") REFERENCES users(id) ON DELETE CASCADE
       )
     `, []);
@@ -307,6 +310,26 @@ export async function initDatabase() {
     // PostgreSQL stores field names in lowercase, so use lowercase field names
     await createIndexIfColumnExists(db, 'idx_sessions_userid', 'sessions', 'userid');
     await createIndexIfColumnExists(db, 'idx_sessions_token', 'sessions', 'token');
+    await db.run(`
+      ALTER TABLE sessions
+      ADD COLUMN IF NOT EXISTS "deviceId" TEXT
+    `, []);
+    await db.run(`
+      ALTER TABLE sessions
+      ADD COLUMN IF NOT EXISTS "deviceInfo" TEXT
+    `, []);
+    await db.run(`
+      ALTER TABLE sessions
+      ADD COLUMN IF NOT EXISTS "expiresAt" TEXT NOT NULL DEFAULT ''
+    `, []);
+    await db.run(`
+      ALTER TABLE sessions
+      ADD COLUMN IF NOT EXISTS revoked BOOLEAN NOT NULL DEFAULT FALSE
+    `, []);
+    await db.run(`
+      ALTER TABLE sessions
+      ADD COLUMN IF NOT EXISTS "updatedAt" TEXT NOT NULL DEFAULT NOW()
+    `, []);
 
     // Create attendance table
     await db.run(`
@@ -320,7 +343,8 @@ export async function initDatabase() {
         "youthChildCount" INTEGER NOT NULL CHECK("youthChildCount" >= 0),
         "createdBy" INTEGER NOT NULL,
         district TEXT,
-        notes TEXT,
+      notes TEXT,
+      user_name TEXT,
         "createdAt" TEXT NOT NULL,
         "updatedAt" TEXT NOT NULL,
         FOREIGN KEY ("createdBy") REFERENCES users(id) ON DELETE CASCADE
@@ -386,6 +410,44 @@ export async function initDatabase() {
         console.error('Error creating composite index idx_travel_schedules_date_range:', err.message);
       }
     }
+
+    // Create gym_reservations table
+    await db.run(`
+      CREATE TABLE IF NOT EXISTS gym_reservations (
+        id SERIAL PRIMARY KEY,
+        primary_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        helper_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        date TEXT NOT NULL,
+        start_time TEXT NOT NULL,
+        end_time TEXT NOT NULL,
+        duration INTEGER NOT NULL,
+        notes TEXT,
+        status TEXT NOT NULL DEFAULT 'pending_confirmation',
+        confirmation_deadline TEXT,
+        confirmed_at TEXT,
+        confirmed_by INTEGER REFERENCES users(id),
+        created_at TEXT NOT NULL,
+        updated_at TEXT NOT NULL
+      )
+    `, []);
+    await createIndexIfColumnExists(db, 'idx_gym_reservations_primary_user', 'gym_reservations', 'primary_user_id');
+    await createIndexIfColumnExists(db, 'idx_gym_reservations_helper_user', 'gym_reservations', 'helper_user_id');
+    await createIndexIfColumnExists(db, 'idx_gym_reservations_status', 'gym_reservations', 'status');
+    await createIndexIfColumnExists(db, 'idx_gym_reservations_date', 'gym_reservations', 'date');
+    await db.run(`
+      ALTER TABLE gym_reservations
+      DROP CONSTRAINT IF EXISTS gym_reservations_status_check
+    `, []);
+    await db.run(`
+      ALTER TABLE gym_reservations
+      ADD CONSTRAINT gym_reservations_status_check
+        CHECK (status IN ('pending', 'checked_in', 'checked_out', 'cancelled'))
+    `, []);
+
+    await db.run(`
+      ALTER TABLE gym_reservations
+      ADD COLUMN IF NOT EXISTS user_name TEXT
+    `, []);
 
     // Create crash_logs table
     await db.run(`

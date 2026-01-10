@@ -12,7 +12,11 @@
   },
   "gym": {
     "title": "體育館",
-    "myReservations": "我的預約"
+    "myReservations": "我的預約",
+    "firstAppointmentPersonLabel": "預約人",
+    "secondAppointmentPersonLabel": "第二預約人",
+    "noAvailableAdmins": "暫無可選用戶"
+    ,"pastTimeSlot":"已過"
   },
   "meeting": {
     "pageTitle": "聚會",

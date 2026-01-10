@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { User } from '../database/models/User.js';
+import { Session } from '../database/models/Session.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-here-change-in-production';
 
@@ -68,6 +69,23 @@ export async function authenticate(req, res, next) {
         message: '用户不存在',
       });
     }
+
+    const session = await Session.findByToken(token);
+    if (!session || session.revoked) {
+      return res.status(401).json({
+        success: false,
+        message: '账号已在其他设备登录',
+      });
+    }
+
+    if (session.expiresAt && new Date(session.expiresAt) < new Date()) {
+      return res.status(401).json({
+        success: false,
+        message: '登录已过期，请重新登录',
+      });
+    }
+
+    req.session = session;
 
     // Attach user to request object
     req.user = user;
