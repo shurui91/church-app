@@ -18,7 +18,8 @@
           "zoomus",
           "zoomus"
         ]
-      }
+      },
+	  "icon": "./assets/images/icon.png"
     },
     "android": {
       "adaptiveIcon": {
@@ -26,7 +27,8 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "org.cerritos.bible"
+      "package": "org.cerritos.bible",
+	  "icon": "./assets/images/icon.png"
     },
     "web": {
       "bundler": "metro",
