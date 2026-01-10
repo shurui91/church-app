@@ -305,6 +305,7 @@ export async function initDatabase() {
       )
     `, []);
     console.log('Sessions table created or already exists');
+    await ensureSessionsIdSerial(db);
 
     // Create indexes for sessions table
     // PostgreSQL stores field names in lowercase, so use lowercase field names
@@ -481,6 +482,33 @@ export async function initDatabase() {
   } catch (err) {
     console.error('Error initializing database:', err);
     throw err;
+  }
+}
+
+/**
+ * Ensure sessions.id has SERIAL/sequence default so inserts auto-populate
+ */
+async function ensureSessionsIdSerial(db) {
+  try {
+    const columnInfo = await db.get(
+      `SELECT column_default FROM information_schema.columns WHERE table_name = 'sessions' AND column_name = 'id'`,
+      []
+    );
+
+    if (!columnInfo || !columnInfo.column_default || !columnInfo.column_default.includes('nextval')) {
+      await db.run(`CREATE SEQUENCE IF NOT EXISTS sessions_id_seq`, []);
+      await db.run(
+        `ALTER TABLE sessions ALTER COLUMN id SET DEFAULT nextval('sessions_id_seq')`,
+        []
+      );
+      await db.run(
+        `ALTER SEQUENCE sessions_id_seq OWNED BY sessions.id`,
+        []
+      );
+      console.log('Ensured sessions.id uses sessions_id_seq serial default');
+    }
+  } catch (error) {
+    console.error('Error ensuring sessions.id serial default:', error);
   }
 }
 
