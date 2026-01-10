@@ -54,7 +54,7 @@
       "eas": {
         "projectId": "3423f637-9020-4977-bbf1-b34097eb6f81"
       },
-      "apiUrl": "https://church-app-production-68eb.up.railway.app"
+	  "apiUrl": "https://church-app-production-68eb.up.railway.app"
     },
     "runtimeVersion": {
       "policy": "appVersion"
