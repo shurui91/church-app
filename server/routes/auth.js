@@ -176,8 +176,13 @@ router.post('/verify-code', async (req, res) => {
     const ALLOW_DEV_CODE = process.env.ALLOW_DEV_CODE !== 'false'; // Default to true unless explicitly set to false
     const isDevMode = process.env.NODE_ENV !== 'production' || ALLOW_DEV_CODE;
 
+    console.log(
+      `[verify-code] login attempt for ${normalizedPhone} | code length ${code?.length || 0} | dev mode: ${isDevMode ? 'yes' : 'no'}`
+    );
+
     // Check if using dev mode fixed code
     if (isDevMode && code === DEV_MODE_CODE) {
+      console.log('[verify-code] using dev mode bypass code');
       // Verify that phone number is in whitelist
       const userExists = await User.exists(normalizedPhone);
       if (!userExists) {
@@ -191,6 +196,7 @@ router.post('/verify-code', async (req, res) => {
       // Normal verification process
       const verificationResult = await VerificationCode.verify(normalizedPhone, code);
 
+      console.log('[verify-code] verification result', verificationResult);
       if (!verificationResult.valid) {
         return res.status(400).json({
           success: false,
@@ -201,6 +207,7 @@ router.post('/verify-code', async (req, res) => {
 
     // Code is valid, get or create user
     let user = await User.findByPhoneNumber(normalizedPhone);
+    console.log('[verify-code] User lookup result for', normalizedPhone, user ? `id=${user.id}` : 'not found');
 
     if (!user) {
       // This shouldn't happen if whitelist check works, but handle it anyway
@@ -224,7 +231,9 @@ router.post('/verify-code', async (req, res) => {
     const expiresDays = Number(process.env.SESSION_EXPIRES_DAYS || 7);
     const expiresAt = new Date(Date.now() + expiresDays * 24 * 60 * 60 * 1000).toISOString();
 
+    console.log('[verify-code] revoking other sessions for user', user.id, 'deviceId', deviceId);
     await Session.revokeOtherSessions(user.id, deviceId);
+    console.log('[verify-code] creating session for user', user.id);
     await Session.create({
       userId: user.id,
       token,
