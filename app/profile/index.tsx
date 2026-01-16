@@ -266,7 +266,7 @@ export default function ProfileScreen() {
         {/* 菜单 */}
         <View style={[styles.menuContainer, { backgroundColor: colors.card }]}>
           {/* 弟兄功能 - 可展开/折叠的菜单组 */}
-          {['super_admin', 'admin', 'responsible_one'].includes(user?.role || '') && (
+          {['super_admin', 'admin', 'responsible_one', 'usher'].includes(user?.role || '') && (
             <>
               <TouchableOpacity
                 style={[

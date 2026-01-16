@@ -170,7 +170,7 @@
     "invalidAdultCount": "請輸入成年人數量（0或正整數）",
     "invalidYouthChildCount": "請輸入青少年或兒童數量（0或正整數）",
     "futureDateNotAllowed": "不能選擇未來日期",
-    "tooLateToSubmit": "提交太晚了，只能提交最近3天的記錄",
+    "tooLateToSubmit": "提交太晚了，只能提交最近7天的記錄",
     "editRecord": "編輯",
     "deleteRecord": "刪除",
     "newRecord": "新增記錄",

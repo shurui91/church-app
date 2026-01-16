@@ -223,24 +223,16 @@ export default function AttendanceScreen() {
     return `${year}-${month}-${day}`;
   };
 
-  // Filter records to show only those within the last 3 days
   const getFilteredRecords = (): AttendanceRecord[] => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
-    
+    today.setHours(0, 0, 0, 0);
+
     return records.filter((record) => {
-      // Parse record date manually to avoid timezone issues
-      // record.date is in format "YYYY-MM-DD", parse it as local date
       const [year, month, day] = record.date.split('-').map(Number);
-      const recordDate = new Date(year, month - 1, day); // month is 0-indexed
+      const recordDate = new Date(year, month - 1, day);
       recordDate.setHours(0, 0, 0, 0);
-      
-      // Calculate days difference
       const daysDiff = Math.floor((today.getTime() - recordDate.getTime()) / (1000 * 60 * 60 * 24));
-      
-      // Show records within the last 3 days (0, 1, 2 days ago)
-      // If today is Nov 7, a record from Nov 4 (3 days ago) should be hidden
-      return daysDiff < 3;
+      return daysDiff <= 3;
     });
   };
 
@@ -280,13 +272,6 @@ export default function AttendanceScreen() {
       return false;
     }
     
-    // Check if date is more than 3 days ago
-    const daysDiff = Math.floor((today.getTime() - selectedDate.getTime()) / (1000 * 60 * 60 * 24));
-    if (daysDiff >= 7) {
-      Alert.alert(t('common.tip') || '提示', t('attendance.tooLateToSubmit') || '提交太晚了，只能提交最近7天的记录');
-      return false;
-    }
-
     if (!meetingType) {
       Alert.alert(t('common.tip') || '提示', t('attendance.invalidMeetingType') || '请选择聚会类型');
       return false;
