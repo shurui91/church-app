@@ -124,18 +124,16 @@ export class Attendance {
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
 
-      if (scope !== 'full_congregation') {
-        insertSql += `
-          ON CONFLICT ON CONSTRAINT attendance_unique_scope
-          DO UPDATE SET
-            adultcount = EXCLUDED.adultcount,
-            youthchildcount = EXCLUDED.youthchildcount,
-            createdby = EXCLUDED.createdby,
-            district = EXCLUDED.district,
-            notes = EXCLUDED.notes,
-            updatedat = EXCLUDED.updatedat
-        `;
-      }
+      insertSql += `
+        ON CONFLICT (date, meetingtype, scope, scopevalue) WHERE scope != 'full_congregation'
+        DO UPDATE SET
+          adultcount = EXCLUDED.adultcount,
+          youthchildcount = EXCLUDED.youthchildcount,
+          createdby = EXCLUDED.createdby,
+          district = EXCLUDED.district,
+          notes = EXCLUDED.notes,
+          updatedat = EXCLUDED.updatedat
+      `;
 
       insertSql += '\nRETURNING id';
 
