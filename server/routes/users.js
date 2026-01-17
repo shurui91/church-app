@@ -9,7 +9,7 @@ const router = express.Router();
  * Get all users (requires admin or super_admin role)
  * Query params: ?role=member (optional role filter)
  */
-router.get('/', authenticate, authorize('admin', 'super_admin'), async (req, res) => {
+router.get('/', authenticate, authorize('admin', 'super_admin', 'responsible_one'), async (req, res) => {
   try {
     const { role } = req.query;
     
