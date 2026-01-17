@@ -82,107 +82,69 @@ export class Attendance {
     const normalizedScopeValue = scope === 'full_congregation' ? null : (scopeValue || null);
 
     try {
-      // If id is provided, update the record directly by ID
-      // Convert id to number if it's a string
       const numericId = typeof id === 'string' ? parseInt(id, 10) : id;
-      
-      // Use console.error for higher priority logging to avoid rate limiting
       console.error('[Attendance.createOrUpdate] CHECK - id:', id, 'numericId:', numericId, 'type:', typeof id, 'isValid:', numericId !== null && numericId !== undefined && !isNaN(numericId) && numericId > 0);
-      
+
       if (numericId !== null && numericId !== undefined && !isNaN(numericId) && numericId > 0) {
-        // Verify the record exists and belongs to the user (or user has permission)
         const existing = await this.findById(numericId);
         if (!existing) {
           console.error('[Attendance.createOrUpdate] ERROR: Record with id not found:', numericId);
           throw new Error(`Record with id ${numericId} not found`);
         }
-        
+
         console.error('[Attendance.createOrUpdate] UPDATE START - id:', numericId, 'date:', date);
-        
-        // Update all fields including date, meetingType, scope, scopeValue
-        const updateResult = await db.run(
+        await db.run(
           `UPDATE attendance 
            SET date = ?, meetingtype = ?, scope = ?, scopevalue = ?, adultcount = ?, youthchildcount = ?, createdby = ?, district = ?, notes = ?, updatedat = ?
            WHERE id = ?`,
           [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, numericId]
         );
-        
-        console.error('[Attendance.createOrUpdate] UPDATE RESULT - rowsAffected:', updateResult?.changes || 'unknown');
-        
+
         const updated = await this.findById(numericId);
         console.error('[Attendance.createOrUpdate] UPDATE SUCCESS - returned id:', updated?.id);
         return updated;
       }
-      
-      console.error('[Attendance.createOrUpdate] CREATE MODE - id was:', id, 'numericId was:', numericId);
 
-      // PostgreSQL stores field names in lowercase
-      if (scope === 'full_congregation') {
-        // For full_congregation, always insert new record (allow multiple records)
-        // Use lowercase field names (PostgreSQL converts unquoted identifiers to lowercase)
-        // Note: id is SERIAL PRIMARY KEY, so it's automatically generated and should not be included in INSERT
-        const result = await db.run(
-          `INSERT INTO attendance (date, meetingtype, scope, scopevalue, adultcount, youthchildcount, createdby, district, notes, createdat, updatedat)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
-          [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
-        );
-        console.log('[Attendance.createOrUpdate] Insert result:', result);
-        if (!result.lastID) {
-          throw new Error('Failed to get inserted record ID');
-        }
-        return await this.findById(result.lastID);
-      } else {
-        // For small_group/district, check if record with same date + meetingType + scope + scopeValue exists
-        // (regardless of createdBy - new data overwrites old)
-        // PostgreSQL requires explicit type handling for NULL comparisons
-        // Use quoted field names to match table schema
-        let existing;
-        if (normalizedScopeValue === null || normalizedScopeValue === undefined) {
-          existing = await db.get(
-            `SELECT id FROM attendance 
-             WHERE date = ? AND meetingtype = ? AND scope = ? 
-             AND scopevalue IS NULL`,
-            [date, meetingType, scope]
-          );
-        } else {
-          existing = await db.get(
-            `SELECT id FROM attendance 
-             WHERE date = ? AND meetingtype = ? AND scope = ? 
-             AND scopevalue = ?`,
-            [date, meetingType, scope, normalizedScopeValue]
-          );
-        }
+      const insertParams = [
+        date,
+        meetingType,
+        scope,
+        normalizedScopeValue,
+        adultCount,
+        youthChildCount,
+        createdBy,
+        district,
+        notes,
+        now,
+        now,
+      ];
 
-        if (existing) {
-          // Get the id (PostgreSQL returns lowercase field names)
-          const existingId = existing.id || existing.ID || existing.Id;
-          console.log('[Attendance.createOrUpdate] Found existing record with id:', existingId);
-          
-          // Update existing record (overwrite with new data)
-          // Use lowercase field names (PostgreSQL converts unquoted identifiers to lowercase)
-          await db.run(
-            `UPDATE attendance 
-             SET adultcount = ?, youthchildcount = ?, createdby = ?, district = ?, notes = ?, updatedat = ?
-             WHERE id = ?`,
-            [adultCount, youthChildCount, createdBy, district, notes, now, existingId]
-          );
-          return await this.findById(existingId);
-        } else {
-          // Insert new record
-          // Use lowercase field names (PostgreSQL converts unquoted identifiers to lowercase)
-          // Note: id is SERIAL PRIMARY KEY, so it's automatically generated and should not be included in INSERT
-          const result = await db.run(
-            `INSERT INTO attendance (date, meetingtype, scope, scopevalue, adultcount, youthchildcount, createdby, district, notes, createdat, updatedat)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
-            [date, meetingType, scope, normalizedScopeValue, adultCount, youthChildCount, createdBy, district, notes, now, now]
-          );
-          console.log('[Attendance.createOrUpdate] Insert result:', result);
-          if (!result.lastID) {
-            throw new Error('Failed to get inserted record ID');
-          }
-          return await this.findById(result.lastID);
-        }
+      let insertSql = `
+        INSERT INTO attendance (date, meetingtype, scope, scopevalue, adultcount, youthchildcount, createdby, district, notes, createdat, updatedat)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+
+      if (scope !== 'full_congregation') {
+        insertSql += `
+          ON CONFLICT ON CONSTRAINT attendance_unique_scope
+          DO UPDATE SET
+            adultcount = EXCLUDED.adultcount,
+            youthchildcount = EXCLUDED.youthchildcount,
+            createdby = EXCLUDED.createdby,
+            district = EXCLUDED.district,
+            notes = EXCLUDED.notes,
+            updatedat = EXCLUDED.updatedat
+        `;
       }
+
+      insertSql += '\nRETURNING id';
+
+      const result = await db.run(insertSql, insertParams);
+      console.log('[Attendance.createOrUpdate] Insert/Upsert result:', result);
+      if (!result.lastID) {
+        throw new Error('Failed to get inserted/updated record ID');
+      }
+      return await this.findById(result.lastID);
     } catch (error) {
       console.error('[Attendance.createOrUpdate] Error:', error);
       console.error('[Attendance.createOrUpdate] Error code:', error.code);
@@ -197,44 +159,6 @@ export class Attendance {
         createdBy,
         district,
       });
-      
-      // Handle UNIQUE constraint violation (fallback)
-      if (error.message && (error.message.includes('UNIQUE constraint') || error.message.includes('duplicate key'))) {
-        // Try to find and update the existing record
-        // Use quoted field names to match table schema
-        // PostgreSQL requires explicit type handling for NULL comparisons
-        let existing;
-        if (normalizedScopeValue === null || normalizedScopeValue === undefined) {
-          existing = await db.get(
-            `SELECT id FROM attendance 
-             WHERE date = ? AND meetingtype = ? AND scope = ? 
-             AND scopevalue IS NULL`,
-            [date, meetingType, scope]
-          );
-        } else {
-          existing = await db.get(
-            `SELECT id FROM attendance 
-             WHERE date = ? AND meetingtype = ? AND scope = ? 
-             AND scopevalue = ?`,
-            [date, meetingType, scope, normalizedScopeValue]
-          );
-        }
-        
-        if (existing) {
-          // Get the id (PostgreSQL returns lowercase field names)
-          const existingId = existing.id || existing.ID || existing.Id;
-          console.log('[Attendance.createOrUpdate] Found existing record (fallback) with id:', existingId);
-          
-          // Use lowercase field names (PostgreSQL converts unquoted identifiers to lowercase)
-          await db.run(
-            `UPDATE attendance 
-             SET adultcount = ?, youthchildcount = ?, createdby = ?, district = ?, notes = ?, updatedat = ?
-             WHERE id = ?`,
-            [adultCount, youthChildCount, createdBy, district, notes, now, existingId]
-          );
-          return await this.findById(existingId);
-        }
-      }
       throw error;
     } finally {
       await db.close();

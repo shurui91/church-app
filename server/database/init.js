@@ -210,6 +210,24 @@ async function createIndexIfColumnExists(db, indexName, tableName, columnName) {
 }
 
 /**
+ * Ensure attendance table has unique index for non-full_congregation scopes
+ */
+async function ensureAttendanceUniqueConstraint(db) {
+  try {
+    await db.run(`
+      CREATE UNIQUE INDEX IF NOT EXISTS idx_attendance_unique_scope
+      ON attendance(date, meetingtype, scope, scopevalue)
+      WHERE scope != 'full_congregation'
+    `, []);
+    console.log('Ensured attendance unique index for small_group/district entries');
+  } catch (error) {
+    if (!error.message?.includes('already exists')) {
+      console.error('Error ensuring attendance unique constraint:', error.message || error);
+    }
+  }
+}
+
+/**
  * Initialize database and create tables
  */
 export async function initDatabase() {
@@ -376,6 +394,9 @@ export async function initDatabase() {
         console.error('Error creating composite index idx_attendance_date_type_scope:', err.message);
       }
     }
+
+    // Ensure unique constraint for small_group/district submissions
+    await ensureAttendanceUniqueConstraint(db);
 
     // Create travel_schedules table
     await db.run(`
