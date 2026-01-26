@@ -22,6 +22,8 @@ import { setAppLanguage } from './src/i18n';
 import { api } from './src/services/api';
 import { Ionicons } from '@expo/vector-icons';
 
+const SCROLL_CONTENT_BASE_PADDING = 100;
+
 export default function LoginScreen() {
   const router = useRouter();
   const colors = useThemeColors();
@@ -37,6 +39,7 @@ export default function LoginScreen() {
   const [error, setError] = useState<string | null>(null);
   const [checkingPhone, setCheckingPhone] = useState(false);
   const [phoneWhitelisted, setPhoneWhitelisted] = useState<boolean | null>(null);
+  const [keyboardHeight, setKeyboardHeight] = useState(0);
   const phoneInputRef = useRef<TextInput>(null);
   const codeInputRef = useRef<TextInput>(null);
   const scrollViewRef = useRef<ScrollView>(null);
@@ -77,6 +80,7 @@ export default function LoginScreen() {
     const keyboardWillShowListener = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
       (e) => {
+        setKeyboardHeight(e.endCoordinates.height);
         // Scroll to input when keyboard appears
         setTimeout(() => {
           if (phoneInputRef.current?.isFocused()) {
@@ -91,6 +95,7 @@ export default function LoginScreen() {
     const keyboardWillHideListener = Keyboard.addListener(
       Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
       () => {
+        setKeyboardHeight(0);
         // Optionally scroll back when keyboard hides
         // scrollViewRef.current?.scrollTo({ y: 0, animated: true });
       }
@@ -289,11 +294,14 @@ export default function LoginScreen() {
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}>
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 20 : 0}>
         <ScrollView
           ref={scrollViewRef}
           style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingBottom: SCROLL_CONTENT_BASE_PADDING + keyboardHeight },
+          ]}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           bounces={false}>
@@ -637,7 +645,7 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     flexGrow: 1,
-    paddingBottom: 100,
+    paddingBottom: SCROLL_CONTENT_BASE_PADDING,
   },
   content: {
     flex: 1,
