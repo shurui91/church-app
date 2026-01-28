@@ -148,7 +148,7 @@ export default function AnnouncementScreen() {
                         borderBottomColor: colors.border,
                         // iOS: SafeAreaView已处理顶部安全区域，保持原有padding
                         // Android: 添加额外顶部间距，确保不被状态栏遮挡
-                        paddingTop: Platform.OS === 'ios' ? 12 : insets.top || 0,
+                        // paddingTop: Platform.OS === 'ios' ? 12 : insets.top || 0,
                     },
                 ]}>
                 {sections.map((section, index) => (
