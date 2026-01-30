@@ -8,18 +8,15 @@
     "scheme": "churchincerritos",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-	"jsEngine": "hermes",
+    "jsEngine": "hermes",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "org.cerritos.bible",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "LSApplicationQueriesSchemes": [
-          "zoomus",
-          "zoomus"
-        ]
+        "LSApplicationQueriesSchemes": ["zoomus", "zoomus"]
       },
-	  "icon": "./assets/images/icon.png"
+      "icon": "./assets/images/icon.png"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,7 +25,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "org.cerritos.bible",
-	  "icon": "./assets/images/icon.png"
+      "icon": "./assets/images/icon.png"
     },
     "web": {
       "bundler": "metro",
@@ -56,7 +53,7 @@
       "eas": {
         "projectId": "3423f637-9020-4977-bbf1-b34097eb6f81"
       },
-	  "apiUrl": "https://church-app-production-68eb.up.railway.app"
+      "apiUrl": "https://church-app-production-68eb.up.railway.app"
     },
     "runtimeVersion": {
       "policy": "appVersion"
