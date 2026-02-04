@@ -19,7 +19,7 @@ import { useFontSize } from '../src/context/FontSizeContext';
 export default function ProfileScreen() {
   const router = useRouter();
   const colors = useThemeColors();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user, logout, refreshUser, isAuthenticated } = useAuth();
   const { getFontSizeValue } = useFontSize();
   const [loggingOut, setLoggingOut] = useState(false);
@@ -161,7 +161,7 @@ export default function ProfileScreen() {
                 </Text>
               </View>
             </View>
-            {(user.nameZh || user.nameEn || user.name) && (
+            {(user.nameZh || user.nameTw || user.nameEn || user.name) && (
               <View style={styles.userInfoRow}>
                 <Ionicons
                   name="person-outline"
@@ -184,7 +184,17 @@ export default function ProfileScreen() {
                       styles.userInfoValue,
                       { color: colors.text, fontSize: getFontSizeValue(20) },
                     ]}>
-                    {user.nameZh || user.nameEn || user.name || 'N/A'}
+                    {(() => {
+                      const lang = i18n.language;
+                      const isTraditional = lang === 'zh-Hant';
+                      const simplified = user.nameZh;
+                      const traditional = user.nameTw;
+                      const fallback = user.nameEn || user.name;
+                      if (isTraditional) {
+                        return traditional || simplified || fallback || 'N/A';
+                      }
+                      return simplified || traditional || fallback || 'N/A';
+                    })()}
                   </Text>
               </View>
             </View>
