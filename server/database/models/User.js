@@ -11,7 +11,7 @@ export class User {
   * @param {string} role - User role (super_admin, admin, responsible_one, member, usher)
    * @param {string} [name] - User's name (optional, kept for backward compatibility)
    * @param {string} [nameZh] - User's Chinese name (optional)
-   * @param {string} [nameEn] - User's English name (optional)
+   * @param {string} [nameTw] - User's Traditional Chinese name (optional)
    * @param {string} [district] - User's district (optional)
    * @param {string} [groupNum] - User's group number (optional)
    * @param {string} [email] - User's email (optional)
