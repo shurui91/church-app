@@ -50,6 +50,7 @@ async function migrateUsersTable() {
 
       const newColumns = [
         { name: 'nameZh', sql: 'ALTER TABLE users ADD COLUMN nameZh TEXT' },
+        { name: 'nameTw', sql: 'ALTER TABLE users ADD COLUMN nameTw TEXT' },
         { name: 'nameEn', sql: 'ALTER TABLE users ADD COLUMN nameEn TEXT' },
         { name: 'district', sql: 'ALTER TABLE users ADD COLUMN district TEXT' },
         { name: 'groupNum', sql: 'ALTER TABLE users ADD COLUMN groupNum TEXT' },

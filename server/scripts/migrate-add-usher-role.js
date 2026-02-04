@@ -43,7 +43,7 @@ async function migrate() {
         const columnNames = columns.map(col => col.name);
         // Exclude 'group' column (deprecated, use groupNum instead)
         const columnsToKeep = columnNames.filter(col => col !== 'group');
-        const baseColumns = ['id', 'phoneNumber', 'name', 'nameZh', 'nameEn', 'role', 'district', 'groupNum', 'createdAt', 'updatedAt'];
+        const baseColumns = ['id', 'phoneNumber', 'name', 'nameZh', 'nameTw', 'nameEn', 'role', 'district', 'groupNum', 'createdAt', 'updatedAt'];
         const additionalColumns = columnsToKeep.filter(col => !baseColumns.includes(col));
 
         console.log(`Found columns: ${columnNames.join(', ')}`);
@@ -53,11 +53,12 @@ async function migrate() {
 
         // Build CREATE TABLE statement with all columns
         let createTableSQL = `
-          CREATE TABLE IF NOT EXISTS users_new (
+            CREATE TABLE IF NOT EXISTS users_new (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             phoneNumber TEXT NOT NULL UNIQUE,
             name TEXT,
             nameZh TEXT,
+              nameTw TEXT,
             nameEn TEXT,
             role TEXT NOT NULL DEFAULT 'member' CHECK(role IN ('super_admin', 'admin', 'leader', 'member', 'usher')),
             district TEXT,

@@ -36,14 +36,16 @@ async function addUser() {
       null,             // birthdate
       null,             // joinDate
       'zh',             // preferredLanguage
-      null              // notes
+      null,             // notes
+      '張娟'            // nameTw
     );
     
     console.log('\n✅ User created successfully!');
     console.log(`   ID: ${user.id}`);
     console.log(`   Phone: ${user.phoneNumber}`);
     console.log(`   Name (legacy): ${user.name || 'N/A'}`);
-    console.log(`   Name (Chinese): ${user.nameZh || 'N/A'}`);
+    console.log(`   Name (Chinese simplified): ${user.nameZh || 'N/A'}`);
+    console.log(`   Name (Chinese traditional): ${user.nameTw || 'N/A'}`);
     console.log(`   Name (English): ${user.nameEn || 'N/A'}`);
     console.log(`   Role: ${user.role}`);
     console.log(`   District: ${user.district || 'N/A'}`);

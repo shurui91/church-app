@@ -24,20 +24,21 @@ async function listUsers() {
     // Display summary table
     console.log('Users in database (Summary):');
     console.log('─'.repeat(120));
-    console.log('ID\tPhone Number\t\tNameZh\t\tNameEn\t\tDistrict\tGroupNum\tRole\t\tStatus\t\tLanguage');
+    console.log('ID\tPhone Number\t\tNameZh\tNameTw\t\tNameEn\t\tDistrict\tGroupNum\tRole\t\tStatus\t\tLanguage');
     console.log('─'.repeat(120));
 
     users.forEach((user) => {
       const id = user.id.toString().padEnd(4);
       const phone = (user.phoneNumber || '').padEnd(18);
       const nameZh = (user.nameZh || user.name || 'N/A').padEnd(12).substring(0, 12);
+      const nameTw = (user.nameTw || user.nameZh || user.name || 'N/A').padEnd(12).substring(0, 12);
       const nameEn = (user.nameEn || 'N/A').padEnd(12).substring(0, 12);
       const district = (user.district || 'N/A').padEnd(10).substring(0, 10);
       const groupNum = (user.groupNum || 'N/A').padEnd(10).substring(0, 10);
       const role = (user.role || 'N/A').padEnd(10).substring(0, 10);
       const status = (user.status || 'N/A').padEnd(10).substring(0, 10);
       const language = (user.preferredLanguage || 'N/A').padEnd(8).substring(0, 8);
-      console.log(`${id}\t${phone}\t${nameZh}\t${nameEn}\t${district}\t${groupNum}\t${role}\t${status}\t${language}`);
+      console.log(`${id}\t${phone}\t${nameZh}\t${nameTw}\t${nameEn}\t${district}\t${groupNum}\t${role}\t${status}\t${language}`);
     });
 
     console.log('─'.repeat(120));
@@ -49,7 +50,8 @@ async function listUsers() {
       console.log(`  📱 Phone: ${user.phoneNumber || 'N/A'}`);
       console.log(`  👤 Names:`);
       console.log(`     - Name (legacy): ${user.name || '(null)'}`);
-      console.log(`     - Name (中文): ${user.nameZh || '(null)'}`);
+      console.log(`     - Name (Chinese simplified): ${user.nameZh || '(null)'}`);
+      console.log(`     - Name (Chinese traditional): ${user.nameTw || '(null)'}`);
       console.log(`     - Name (English): ${user.nameEn || '(null)'}`);
       console.log(`  🏢 Organization:`);
       console.log(`     - Role: ${user.role || 'N/A'}`);

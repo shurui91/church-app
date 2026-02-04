@@ -160,6 +160,7 @@ async function updateUsers() {
 
     for (const update of USER_UPDATES) {
       const { phoneNumber, ...fields } = update;
+      const nameTwInput = fields.nameTw ?? fields.nameZh ?? null;
       
       try {
         // 查找用户
@@ -174,13 +175,16 @@ async function updateUsers() {
         console.log(`\n📝 Updating user: ${phoneNumber} (ID: ${user.id})`);
 
         // 1. 更新姓名（使用现有的方法）
-        if (fields.nameZh !== undefined || fields.nameEn !== undefined) {
+        if (fields.nameZh !== undefined || fields.nameEn !== undefined || fields.nameTw !== undefined) {
           await User.updateNames(
             user.id,
             fields.nameZh !== undefined ? fields.nameZh : null,
-            fields.nameEn !== undefined ? fields.nameEn : null
+            fields.nameEn !== undefined ? fields.nameEn : null,
+            fields.nameTw !== undefined ? fields.nameTw : null
           );
-          console.log(`  ✓ Updated names: nameZh="${fields.nameZh || '(unchanged)'}", nameEn="${fields.nameEn || '(unchanged)'}"`);
+          console.log(
+            `  ✓ Updated names: nameZh="${fields.nameZh || '(unchanged)'}", nameEn="${fields.nameEn || '(unchanged)'}", nameTw="${fields.nameTw || '(unchanged)'}"`
+          );
         }
 
         // 更新兼容字段 name（如果提供）

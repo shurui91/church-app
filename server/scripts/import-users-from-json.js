@@ -56,24 +56,28 @@ async function importUsers() {
         }
 
         // Create user with all fields
-        const user = await User.create(
-          userData.phoneNumber,
-          userData.role || 'member',
-          userData.name || null,
-          userData.nameZh || null,
-          userData.nameEn || null,
-          userData.district || null,
-          userData.groupNum || null,
-          userData.email || null,
-          userData.status || 'active',
-          userData.gender || null,
-          userData.birthdate || null,
-          userData.joinDate || null,
-          userData.preferredLanguage || 'zh',
-          userData.notes || null
-        );
+      const nameTw = userData.nameTw ?? userData.nameZh ?? null;
 
-        console.log(`✅ Imported: ${user.phoneNumber} - ${user.name || user.nameZh || user.nameEn || 'N/A'} (${user.role})`);
+      const user = await User.create(
+        userData.phoneNumber,
+        userData.role || 'member',
+        userData.name || null,
+        userData.nameZh || null,
+        userData.nameEn || null,
+        userData.district || null,
+        userData.groupNum || null,
+        userData.email || null,
+        userData.status || 'active',
+        userData.gender || null,
+        userData.birthdate || null,
+        userData.joinDate || null,
+        userData.preferredLanguage || 'zh',
+        userData.notes || null,
+        nameTw
+      );
+
+        const displayZh = user.nameTw || user.nameZh || user.name || null;
+        console.log(`✅ Imported: ${user.phoneNumber} - ${user.name || displayZh || user.nameEn || 'N/A'} (${user.role})`);
         importedCount++;
       } catch (error) {
         console.error(`❌ Error importing ${userData.phoneNumber}:`, error.message);

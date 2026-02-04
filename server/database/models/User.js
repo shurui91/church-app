@@ -37,7 +37,8 @@ export class User {
     birthdate = null,
     joinDate = null,
     preferredLanguage = 'zh',
-    notes = null
+    notes = null,
+    nameTw = null
   ) {
     const db = await getDatabase();
     const now = getCurrentTimestamp();
@@ -45,9 +46,9 @@ export class User {
     try {
       // PostgreSQL stores field names in lowercase, so use lowercase field names
       const result = await db.run(
-        `INSERT INTO users (phonenumber, name, namezh, nameen, role, district, groupnum, email, status, gender, birthdate, joindate, preferredlanguage, notes, createdat, updatedat)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
-        [phoneNumber, name, nameZh, nameEn, role, district, groupNum, email, status, gender, birthdate, joinDate, preferredLanguage, notes, now, now]
+        `INSERT INTO users (phonenumber, name, namezh, nametw, nameen, role, district, groupnum, email, status, gender, birthdate, joindate, preferredlanguage, notes, createdat, updatedat)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
+        [phoneNumber, name, nameZh, nameTw, nameEn, role, district, groupNum, email, status, gender, birthdate, joinDate, preferredLanguage, notes, now, now]
       );
 
       return {
@@ -55,6 +56,7 @@ export class User {
         phoneNumber,
         name,
         nameZh,
+        nameTw,
         nameEn,
         role,
         district,
@@ -130,6 +132,7 @@ export class User {
     const fieldMap = {
       'phonenumber': 'phoneNumber',
       'namezh': 'nameZh',
+      'nametw': 'nameTw',
       'nameen': 'nameEn',
       'groupnum': 'groupNum',
       'createdat': 'createdAt',
@@ -280,14 +283,14 @@ export class User {
    * @param {string} [nameEn] - English name
    * @returns {Promise<Object|null>} Updated user object or null if not found
    */
-  static async updateNames(id, nameZh = null, nameEn = null) {
+  static async updateNames(id, nameZh = null, nameEn = null, nameTw = null) {
     const db = await getDatabase();
     const now = getCurrentTimestamp();
 
     try {
       const result = await db.run(
-        'UPDATE users SET namezh = ?, nameen = ?, updatedat = ? WHERE id = ?',
-        [nameZh, nameEn, now, id]
+        'UPDATE users SET namezh = ?, nameen = ?, nametw = ?, updatedat = ? WHERE id = ?',
+        [nameZh, nameEn, nameTw, now, id]
       );
 
       if (result.changes === 0) {

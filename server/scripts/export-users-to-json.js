@@ -33,6 +33,7 @@ async function exportUsers() {
         phoneNumber: user.phoneNumber,
         name: user.name || null,
         nameZh: user.nameZh || null,
+        nameTw: user.nameTw || null,
         nameEn: user.nameEn || null,
         role: user.role,
         district: user.district || null,

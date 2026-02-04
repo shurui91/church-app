@@ -252,6 +252,7 @@ export async function initDatabase() {
           "phoneNumber" TEXT NOT NULL UNIQUE,
           name TEXT,
           "nameZh" TEXT,
+          "nameTw" TEXT,
           "nameEn" TEXT,
           role TEXT NOT NULL DEFAULT 'member' CHECK(role IN ('super_admin', 'admin', 'responsible_one', 'member', 'usher')),
           district TEXT,
@@ -268,6 +269,7 @@ export async function initDatabase() {
     // Add additional columns if they don't exist
     // PostgreSQL stores field names in lowercase, so use lowercase field names
     await addColumnIfNotExists(db, 'users', 'namezh', 'TEXT');
+    await addColumnIfNotExists(db, 'users', 'nametw', 'TEXT');
     await addColumnIfNotExists(db, 'users', 'nameen', 'TEXT');
     await addColumnIfNotExists(db, 'users', 'district', 'TEXT');
     await addColumnIfNotExists(db, 'users', 'groupnum', 'TEXT');

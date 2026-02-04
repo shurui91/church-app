@@ -12,6 +12,28 @@ import { Session } from '../database/models/Session.js';
 
 const router = express.Router();
 
+const buildUserPayload = (user) => ({
+  id: user.id,
+  phoneNumber: user.phoneNumber,
+  name: user.name,
+  nameZh: user.nameZh,
+  nameTw: user.nameTw,
+  nameEn: user.nameEn,
+  role: user.role,
+  district: user.district,
+  groupNum: user.groupNum,
+  email: user.email,
+  status: user.status,
+  gender: user.gender,
+  birthdate: user.birthdate,
+  joinDate: user.joinDate,
+  preferredLanguage: user.preferredLanguage,
+  notes: user.notes,
+  lastLoginAt: user.lastLoginAt,
+  createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
+});
+
 /**
  * POST /api/auth/check-phone
  * Check if phone number is in whitelist (invited user)
@@ -247,26 +269,7 @@ router.post('/verify-code', async (req, res) => {
       success: true,
       message: '登录成功',
       data: {
-        user: {
-          id: user.id,
-          phoneNumber: user.phoneNumber,
-          name: user.name,
-          nameZh: user.nameZh,
-          nameEn: user.nameEn,
-          role: user.role,
-          district: user.district,
-          groupNum: user.groupNum,
-          email: user.email,
-          status: user.status,
-          gender: user.gender,
-          birthdate: user.birthdate,
-          joinDate: user.joinDate,
-          preferredLanguage: user.preferredLanguage,
-          notes: user.notes,
-          lastLoginAt: user.lastLoginAt,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-        },
+        user: buildUserPayload(user),
         token,
       },
     });
@@ -292,26 +295,7 @@ router.get('/me', authenticate, async (req, res) => {
     res.json({
       success: true,
       data: {
-        user: {
-          id: user.id,
-          phoneNumber: user.phoneNumber,
-          name: user.name,
-          nameZh: user.nameZh,
-          nameEn: user.nameEn,
-          role: user.role,
-          district: user.district,
-          groupNum: user.groupNum,
-          email: user.email,
-          status: user.status,
-          gender: user.gender,
-          birthdate: user.birthdate,
-          joinDate: user.joinDate,
-          preferredLanguage: user.preferredLanguage,
-          notes: user.notes,
-          lastLoginAt: user.lastLoginAt,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-        },
+        user: buildUserPayload(user),
       },
     });
   } catch (error) {

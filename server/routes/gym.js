@@ -151,8 +151,14 @@ router.post('/gym/reservations', gymMiddleware, async (req, res) => {
       return res.status(400).json({ success: false, message: '该时间段已被预约' });
     }
 
+    const preferredLanguage = req.user?.preferredLanguage;
+    const chineseName =
+      preferredLanguage === 'zh-Hant' ? req.user?.nameTw : req.user?.nameZh;
     const userName =
-      req.user?.nameZh || req.user?.name || req.user?.phoneNumber || '未知';
+      chineseName ||
+      req.user?.name ||
+      req.user?.phoneNumber ||
+      '未知';
     const reservation = await GymReservation.create({
       userId: req.user.id,
       date,

@@ -4,6 +4,28 @@ import { authenticate, authorize } from '../middleware/auth.js';
 
 const router = express.Router();
 
+const sanitizeUserPayload = (user) => ({
+  id: user.id,
+  phoneNumber: user.phoneNumber,
+  name: user.name,
+  nameZh: user.nameZh,
+  nameTw: user.nameTw,
+  nameEn: user.nameEn,
+  role: user.role,
+  district: user.district,
+  groupNum: user.groupNum,
+  email: user.email,
+  status: user.status,
+  gender: user.gender,
+  birthdate: user.birthdate,
+  joinDate: user.joinDate,
+  preferredLanguage: user.preferredLanguage,
+  notes: user.notes,
+  lastLoginAt: user.lastLoginAt,
+  createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
+});
+
 /**
  * GET /api/users
  * Get all users (requires admin or super_admin role)
@@ -17,26 +39,7 @@ router.get('/', authenticate, authorize('admin', 'super_admin', 'responsible_one
     const users = await User.findAll(role || null);
 
     // Remove sensitive information before sending
-    const sanitizedUsers = users.map(user => ({
-      id: user.id,
-      phoneNumber: user.phoneNumber,
-      name: user.name,
-      nameZh: user.nameZh,
-      nameEn: user.nameEn,
-      role: user.role,
-      district: user.district,
-      groupNum: user.groupNum,
-      email: user.email,
-      status: user.status,
-      gender: user.gender,
-      birthdate: user.birthdate,
-      joinDate: user.joinDate,
-      preferredLanguage: user.preferredLanguage,
-      notes: user.notes,
-      lastLoginAt: user.lastLoginAt,
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-    }));
+    const sanitizedUsers = users.map(user => sanitizeUserPayload(user));
 
     res.json({
       success: true,
@@ -78,16 +81,7 @@ router.get('/admins', ...adminRouteMiddleware, async (req, res) => {
       console.log(`[API] First user found:`, { id: users[0].id, role: users[0].role, nameZh: users[0].nameZh });
     }
 
-    const sanitizedUsers = users.map((user) => ({
-      id: user.id,
-      phoneNumber: user.phoneNumber,
-      name: user.name,
-      nameZh: user.nameZh,
-      nameEn: user.nameEn,
-      role: user.role,
-      district: user.district,
-      groupNum: user.groupNum,
-    }));
+    const sanitizedUsers = users.map((user) => sanitizeUserPayload(user));
 
     res.json({
       success: true,
@@ -132,26 +126,7 @@ router.get('/:id', authenticate, authorize('admin', 'super_admin'), async (req, 
     res.json({
       success: true,
       data: {
-        user: {
-          id: user.id,
-          phoneNumber: user.phoneNumber,
-          name: user.name,
-          nameZh: user.nameZh,
-          nameEn: user.nameEn,
-          role: user.role,
-          district: user.district,
-          groupNum: user.groupNum,  // 修复: 改为 groupNum
-          email: user.email,
-          status: user.status,
-          gender: user.gender,
-          birthdate: user.birthdate,
-          joinDate: user.joinDate,
-          preferredLanguage: user.preferredLanguage,
-          notes: user.notes,
-          lastLoginAt: user.lastLoginAt,
-          createdAt: user.createdAt,
-          updatedAt: user.updatedAt,
-        },
+        user: sanitizeUserPayload(user),
       },
     });
   } catch (error) {
@@ -240,26 +215,7 @@ router.put('/:id/role', authenticate, authorize('admin', 'super_admin'), async (
       success: true,
       message: '角色更新成功',
       data: {
-        user: {
-          id: updatedUser.id,
-          phoneNumber: updatedUser.phoneNumber,
-          name: updatedUser.name,
-          nameZh: updatedUser.nameZh,
-          nameEn: updatedUser.nameEn,
-          role: updatedUser.role,
-          district: updatedUser.district,
-          groupNum: updatedUser.groupNum,
-          email: updatedUser.email,
-          status: updatedUser.status,
-          gender: updatedUser.gender,
-          birthdate: updatedUser.birthdate,
-          joinDate: updatedUser.joinDate,
-          preferredLanguage: updatedUser.preferredLanguage,
-          notes: updatedUser.notes,
-          lastLoginAt: updatedUser.lastLoginAt,
-          createdAt: updatedUser.createdAt,
-          updatedAt: updatedUser.updatedAt,
-        },
+        user: sanitizeUserPayload(updatedUser),
       },
     });
   } catch (error) {
@@ -329,26 +285,7 @@ router.put('/:id/name', authenticate, async (req, res) => {
       success: true,
       message: '姓名更新成功',
       data: {
-        user: {
-          id: updatedUser.id,
-          phoneNumber: updatedUser.phoneNumber,
-          name: updatedUser.name,
-          nameZh: updatedUser.nameZh,
-          nameEn: updatedUser.nameEn,
-          role: updatedUser.role,
-          district: updatedUser.district,
-          groupNum: updatedUser.groupNum,
-          email: updatedUser.email,
-          status: updatedUser.status,
-          gender: updatedUser.gender,
-          birthdate: updatedUser.birthdate,
-          joinDate: updatedUser.joinDate,
-          preferredLanguage: updatedUser.preferredLanguage,
-          notes: updatedUser.notes,
-          lastLoginAt: updatedUser.lastLoginAt,
-          createdAt: updatedUser.createdAt,
-          updatedAt: updatedUser.updatedAt,
-        },
+        user: sanitizeUserPayload(updatedUser),
       },
     });
   } catch (error) {
@@ -368,7 +305,7 @@ router.put('/:id/name', authenticate, async (req, res) => {
 router.put('/:id/names', authenticate, async (req, res) => {
   try {
     const userId = parseInt(req.params.id);
-    const { nameZh, nameEn } = req.body;
+    const { nameZh, nameEn, nameTw } = req.body;
     const currentUser = req.user;
 
     // Validate input
@@ -398,7 +335,12 @@ router.put('/:id/names', authenticate, async (req, res) => {
     }
 
     // Update names
-    const updatedUser = await User.updateNames(userId, nameZh || null, nameEn || null);
+    const updatedUser = await User.updateNames(
+      userId,
+      nameZh || null,
+      nameEn || null,
+      nameTw || null
+    );
 
     if (!updatedUser) {
       return res.status(500).json({
@@ -411,26 +353,7 @@ router.put('/:id/names', authenticate, async (req, res) => {
       success: true,
       message: '姓名更新成功',
       data: {
-        user: {
-          id: updatedUser.id,
-          phoneNumber: updatedUser.phoneNumber,
-          name: updatedUser.name,
-          nameZh: updatedUser.nameZh,
-          nameEn: updatedUser.nameEn,
-          role: updatedUser.role,
-          district: updatedUser.district,
-          groupNum: updatedUser.groupNum,
-          email: updatedUser.email,
-          status: updatedUser.status,
-          gender: updatedUser.gender,
-          birthdate: updatedUser.birthdate,
-          joinDate: updatedUser.joinDate,
-          preferredLanguage: updatedUser.preferredLanguage,
-          notes: updatedUser.notes,
-          lastLoginAt: updatedUser.lastLoginAt,
-          createdAt: updatedUser.createdAt,
-          updatedAt: updatedUser.updatedAt,
-        },
+        user: sanitizeUserPayload(updatedUser),
       },
     });
   } catch (error) {
