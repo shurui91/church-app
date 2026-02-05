@@ -160,8 +160,8 @@ export default function AttendanceScreen() {
       setScope('district');
       setScopeValue(selectedDistrict);
       setSelectedGroup(null); // Clear group selection
-    } else if (meetingType === 'homeMeeting' || meetingType === 'prayer') {
-      // 小排聚会或其他祷告聚会 → 需要小排
+    } else if (meetingType === 'homeMeeting') {
+      // 小排聚会 → 需要小排
       if (selectedDistrict && selectedGroup) {
         setScope('small_group');
         setScopeValue(`${selectedDistrict}${selectedGroup}`);
@@ -251,7 +251,7 @@ export default function AttendanceScreen() {
       return false;
     }
     // For prayer meeting with B or D district, don't show group selector
-    if (meetingType === 'prayer' && (selectedDistrict === 'B' || selectedDistrict === 'D')) {
+    if (meetingType === 'prayer' && ['B', 'D', 'E'].includes(selectedDistrict || '')) {
       return false;
     }
     return true;
