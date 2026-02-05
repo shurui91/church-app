@@ -89,13 +89,16 @@ export default function AttendanceScreen() {
       return ['1', '2', '3', '4', '5', '亲子'];
     }
     if (district === 'B') {
-      return ['1', '2', '3', '4'];
+      return ['1', '2', '3', '4', '亲子'];
     }
     if (district === 'C') {
       return ['1', '2', '3', '4'];
     }
     if (district === 'D') {
       return ['1', '2', '亲子'];
+    }
+    if (district === 'E') {
+      return ['Cerritos', 'La Palma', 'Norwalk', 'Los Alamitos', 'Lakewood', 'NFM 1', 'NFM 2'];
     }
     return ['1', '2', '3', '4', '5'];
   };
@@ -152,8 +155,8 @@ export default function AttendanceScreen() {
       return;
     }
     
-    if (meetingType === 'prayer' && (selectedDistrict === 'B' || selectedDistrict === 'D')) {
-      // 祷告聚会+B大区或D大区 → 只统计大区级别
+    if (meetingType === 'prayer' && (selectedDistrict === 'B' || selectedDistrict === 'D' || selectedDistrict === 'E')) {
+      // 祷告聚会+B大区或D大区或E大区 → 只统计大区级别
       setScope('district');
       setScopeValue(selectedDistrict);
       setSelectedGroup(null); // Clear group selection
