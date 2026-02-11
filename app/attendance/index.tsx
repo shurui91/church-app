@@ -304,7 +304,7 @@ export default function AttendanceScreen() {
     }
 
     const resolved = resolveScopeAndValueFromSelection();
-    let effectiveScope = scope || resolved.scope;
+    const effectiveScope = scope || resolved.scope;
     if (!scope && resolved.scope) {
       setScope(resolved.scope);
     }
@@ -348,13 +348,23 @@ export default function AttendanceScreen() {
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
+    const resolved = resolveScopeAndValueFromSelection();
+
     try {
       setSubmitting(true);
       const submitData: any = {
         date: formatDate(date),
         meetingType: meetingType!,
-        scope: scope!,
-        scopeValue: scope === 'full_congregation' ? null : scopeValue,
+        scope: (() => {
+          return resolved.scope || scope!;
+        })(),
+        scopeValue: (() => {
+          const effectiveScope = resolved.scope || scope;
+          if (effectiveScope === 'full_congregation') {
+            return null;
+          }
+          return resolved.scopeValue || scopeValue;
+        })(),
         adultCount: parseInt(adultCount),
         youthChildCount: parseInt(youthChildCount),
       };
