@@ -250,11 +250,29 @@ export default function AttendanceScreen() {
     if (!shouldShowDistrictAndGroup()) {
       return false;
     }
-    // For prayer meeting with B or D district, don't show group selector
     if (meetingType === 'prayer' && ['B', 'D', 'E'].includes(selectedDistrict || '')) {
       return false;
     }
     return true;
+  };
+
+  const resolveScopeFromSelection = (): Scope | null => {
+    if (!meetingType) {
+      return null;
+    }
+    if (meetingType === 'table') {
+      return 'full_congregation';
+    }
+    if (meetingType === 'prayer' && ['B', 'D', 'E'].includes(selectedDistrict || '')) {
+      return 'district';
+    }
+    if (shouldShowGroup() && selectedDistrict && selectedGroup) {
+      return 'small_group';
+    }
+    if (shouldShowGroup() && selectedDistrict) {
+      return 'small_group';
+    }
+    return null;
   };
 
   const validateForm = (): boolean => {
@@ -280,7 +298,15 @@ export default function AttendanceScreen() {
       return false;
     }
 
-    if (!scope) {
+    let effectiveScope = scope;
+    if (!effectiveScope) {
+      effectiveScope = resolveScopeFromSelection();
+      if (effectiveScope) {
+        setScope(effectiveScope);
+      }
+    }
+
+    if (!effectiveScope) {
       Alert.alert(t('common.tip') || '提示', t('attendance.invalidScope') || '请选择统计层级');
       return false;
     }
