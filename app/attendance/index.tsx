@@ -256,23 +256,28 @@ export default function AttendanceScreen() {
     return true;
   };
 
-  const resolveScopeFromSelection = (): Scope | null => {
+  const resolveScopeAndValueFromSelection = (): { scope: Scope | null; scopeValue: string | null } => {
     if (!meetingType) {
-      return null;
+      return { scope: null, scopeValue: null };
     }
+
     if (meetingType === 'table') {
-      return 'full_congregation';
+      return { scope: 'full_congregation', scopeValue: null };
     }
+
     if (meetingType === 'prayer' && ['B', 'D', 'E'].includes(selectedDistrict || '')) {
-      return 'district';
+      return { scope: 'district', scopeValue: selectedDistrict };
     }
+
     if (shouldShowGroup() && selectedDistrict && selectedGroup) {
-      return 'small_group';
+      return { scope: 'small_group', scopeValue: `${selectedDistrict}${selectedGroup}` };
     }
+
     if (shouldShowGroup() && selectedDistrict) {
-      return 'small_group';
+      return { scope: 'small_group', scopeValue: null };
     }
-    return null;
+
+    return { scope: null, scopeValue: null };
   };
 
   const validateForm = (): boolean => {
@@ -298,12 +303,14 @@ export default function AttendanceScreen() {
       return false;
     }
 
-    let effectiveScope = scope;
-    if (!effectiveScope) {
-      effectiveScope = resolveScopeFromSelection();
-      if (effectiveScope) {
-        setScope(effectiveScope);
-      }
+    const resolved = resolveScopeAndValueFromSelection();
+    let effectiveScope = scope || resolved.scope;
+    if (!scope && resolved.scope) {
+      setScope(resolved.scope);
+    }
+
+    if (!scopeValue && resolved.scopeValue) {
+      setScopeValue(resolved.scopeValue);
     }
 
     if (!effectiveScope) {
