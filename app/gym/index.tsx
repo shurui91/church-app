@@ -206,8 +206,29 @@ export default function GymScreen() {
     loadTimeSlots(date);
   };
 
+  // 能否切换到上个月（仅当不在当月时，因过去日期不可预约）
+  const canGoPrevMonth = (): boolean => {
+    const today = new Date();
+    return (
+      currentMonth.getFullYear() > today.getFullYear() ||
+      currentMonth.getMonth() > today.getMonth()
+    );
+  };
+
+  // 能否切换到下个月（不能超过今天+30天）
+  const canGoNextMonth = (): boolean => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const maxDate = new Date(today);
+    maxDate.setDate(maxDate.getDate() + 30);
+    const nextMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
+    return nextMonth <= maxDate;
+  };
+
   // 切换月份
   const changeMonth = (direction: 'prev' | 'next') => {
+    if (direction === 'prev' && !canGoPrevMonth()) return;
+    if (direction === 'next' && !canGoNextMonth()) return;
     const newMonth = new Date(currentMonth);
     if (direction === 'prev') {
       newMonth.setMonth(newMonth.getMonth() - 1);
@@ -358,7 +379,7 @@ export default function GymScreen() {
               styles.gymDescription,
               { color: colors.textSecondary, fontSize: getFontSizeValue(16) },
             ]}>
-            开放时间：7:00 - 22:00
+            开放时间：8:00 - 21:00
           </Text>
         </View>
 
@@ -368,8 +389,13 @@ export default function GymScreen() {
           <View style={styles.monthHeader}>
             <TouchableOpacity
               onPress={() => changeMonth('prev')}
-              style={styles.monthButton}>
-              <Ionicons name="chevron-back" size={24} color={colors.text} />
+              style={styles.monthButton}
+              disabled={!canGoPrevMonth()}>
+              <Ionicons
+                name="chevron-back"
+                size={24}
+                color={canGoPrevMonth() ? colors.text : colors.textTertiary}
+              />
             </TouchableOpacity>
             <Text
               style={[
@@ -380,8 +406,13 @@ export default function GymScreen() {
             </Text>
             <TouchableOpacity
               onPress={() => changeMonth('next')}
-              style={styles.monthButton}>
-              <Ionicons name="chevron-forward" size={24} color={colors.text} />
+              style={styles.monthButton}
+              disabled={!canGoNextMonth()}>
+              <Ionicons
+                name="chevron-forward"
+                size={24}
+                color={canGoNextMonth() ? colors.text : colors.textTertiary}
+              />
             </TouchableOpacity>
           </View>
 

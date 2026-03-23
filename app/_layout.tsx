@@ -28,7 +28,18 @@ function ThemedLayout() {
   const shouldShowTabBar =
     pathname !== '/login' &&
     pathname !== '/' &&
-    TAB_BAR_ROUTES.some((route) => pathname.startsWith(route));
+    TAB_BAR_ROUTES.some((route) => {
+      if (!pathname.startsWith(route)) return false;
+      // pursue 仅在根路径 /pursue 显示 TabBar，子页（bible/hymns/lee/等）隐藏
+      if (route === '/pursue') {
+        return pathname === '/pursue' || pathname === '/pursue/';
+      }
+      // profile 仅在根路径显示 TabBar，子页（settings/privacy 等）隐藏
+      if (route === '/profile') {
+        return pathname === '/profile' || pathname === '/profile/';
+      }
+      return true;
+    });
 
   // ✅ 把 pathname 当作参数传入
   const defaultHeaderOptions = (title: string, pathname: string) => {
