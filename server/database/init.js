@@ -472,6 +472,16 @@ export async function initDatabase() {
       ALTER TABLE gym_reservations
       ADD COLUMN IF NOT EXISTS user_name TEXT
     `, []);
+    await addColumnIfNotExists(db, 'gym_reservations', 'helper_user_id', 'INTEGER REFERENCES users(id) ON DELETE SET NULL');
+    await addColumnIfNotExists(db, 'gym_reservations', 'user_id', 'INTEGER REFERENCES users(id) ON DELETE CASCADE');
+    try {
+      await db.run(
+        `UPDATE gym_reservations SET user_id = primary_user_id WHERE user_id IS NULL AND primary_user_id IS NOT NULL`,
+        []
+      );
+    } catch (e) {
+      if (!e.message?.includes('primary_user_id')) console.error('gym user_id migration:', e.message);
+    }
 
     // Create crash_logs table
     await db.run(`

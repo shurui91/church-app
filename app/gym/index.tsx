@@ -21,8 +21,8 @@ import BackButton from '../components/BackButton';
 import { api } from '../src/services/api';
 import { Ionicons } from '@expo/vector-icons';
 
-// 时间段类型
-const HALF_HOUR = 30;
+// 时间段类型（以60分钟为一个 slot）
+const SLOT_DURATION = 60;
 const OPENING_MINUTES = 7 * 60;
 const CLOSING_MINUTES = 22 * 60;
 
@@ -58,10 +58,49 @@ const getFirstDayOfMonth = (date: Date): number => {
   return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
 };
 
+// 将 API 返回的 slots 标准化为 60 分钟间隔（7:00, 8:00, ... 21:00）
+function normalizeTo60MinSlots(apiSlots: TimeSlot[]): TimeSlot[] {
+  const parseMinutes = (time: string) => {
+    const [h, m] = time.split(':').map(Number);
+    return (h ?? 0) * 60 + (m ?? 0);
+  };
+  const result: TimeSlot[] = [];
+  for (let minutes = OPENING_MINUTES; minutes < CLOSING_MINUTES; minutes += SLOT_DURATION) {
+    const startHour = Math.floor(minutes / 60);
+    const startMinute = minutes % 60;
+    const startStr = `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`;
+    const endMinutes = minutes + SLOT_DURATION;
+    const endHour = Math.floor(endMinutes / 60);
+    const endMinute = endMinutes % 60;
+    const endStr = `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`;
+
+    const slotStart = minutes;
+    const slotEnd = minutes + SLOT_DURATION;
+    const overlapping = apiSlots.filter((s) => {
+      const sStart = parseMinutes(s.startTime);
+      const sEnd = sStart + (s.duration ?? 30);
+      return sStart < slotEnd && sEnd > slotStart;
+    });
+    const isReserved = overlapping.some((s) => s.isReserved);
+    const reservedBy = overlapping.find((s) => s.reservedBy)?.reservedBy;
+
+    result.push({
+      id: minutes,
+      startTime: startStr,
+      endTime: endStr,
+      duration: SLOT_DURATION,
+      isAvailable: !isReserved,
+      isReserved,
+      reservedBy,
+    });
+  }
+  return result;
+}
+
 export default function GymScreen() {
   const router = useRouter();
   const colors = useThemeColors();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { getFontSizeValue } = useFontSize();
   const { user } = useAuth();
 
@@ -75,6 +114,9 @@ export default function GymScreen() {
   const [duration, setDuration] = useState(60); // 默认1小时
   const [notes, setNotes] = useState('');
   const [currentTimestamp, setCurrentTimestamp] = useState(new Date());
+  const [coUserId, setCoUserId] = useState<number | null>(null);
+  const [gymUsers, setGymUsers] = useState<{ id: number; nameZh?: string; nameTw?: string; nameEn?: string }[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
 
   // 计算日历天数
   const calendarDays = useMemo(() => {
@@ -146,26 +188,27 @@ export default function GymScreen() {
       const dateString = formatDate(date);
       const response = await api.getGymTimeSlots(dateString);
       if (response.success && response.data.timeSlots.length > 0) {
-        const normalizedSlots = response.data.timeSlots.map((slot) => ({
+        const rawSlots = response.data.timeSlots.map((slot) => ({
           ...slot,
-          isReserved: false,
-          reservedBy: undefined,
+          isReserved: !!slot.isReserved,
+          reservedBy: slot.reservedBy,
         }));
-        setTimeSlots(normalizedSlots);
+        const slots60 = normalizeTo60MinSlots(rawSlots);
+        setTimeSlots(slots60);
       } else {
         // 如果API返回空或失败，使用模拟数据展示UI效果
         const mockSlots: TimeSlot[] = [];
-        for (let minutes = OPENING_MINUTES; minutes < CLOSING_MINUTES; minutes += HALF_HOUR) {
+        for (let minutes = OPENING_MINUTES; minutes < CLOSING_MINUTES; minutes += SLOT_DURATION) {
           const startHour = Math.floor(minutes / 60);
           const startMinute = minutes % 60;
-          const endMinutes = minutes + HALF_HOUR;
+          const endMinutes = minutes + SLOT_DURATION;
           const endHour = Math.floor(endMinutes / 60);
           const endMinute = endMinutes % 60;
           mockSlots.push({
             id: minutes,
             startTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
             endTime: `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
-            duration: HALF_HOUR,
+            duration: SLOT_DURATION,
             isAvailable: true,
             isReserved: false,
           });
@@ -176,17 +219,17 @@ export default function GymScreen() {
       console.log('使用模拟数据展示UI效果', error);
       // 使用模拟数据
       const mockSlots: TimeSlot[] = [];
-        for (let minutes = OPENING_MINUTES; minutes < CLOSING_MINUTES; minutes += HALF_HOUR) {
+        for (let minutes = OPENING_MINUTES; minutes < CLOSING_MINUTES; minutes += SLOT_DURATION) {
           const startHour = Math.floor(minutes / 60);
           const startMinute = minutes % 60;
-          const endMinutes = minutes + HALF_HOUR;
+          const endMinutes = minutes + SLOT_DURATION;
           const endHour = Math.floor(endMinutes / 60);
           const endMinute = endMinutes % 60;
           mockSlots.push({
             id: minutes,
             startTime: `${String(startHour).padStart(2, '0')}:${String(startMinute).padStart(2, '0')}`,
             endTime: `${String(endHour).padStart(2, '0')}:${String(endMinute).padStart(2, '0')}`,
-            duration: HALF_HOUR,
+            duration: SLOT_DURATION,
             isAvailable: true,
             isReserved: false,
           });
@@ -250,16 +293,49 @@ export default function GymScreen() {
     }
 
     console.log('[Gym] Time slot tapped', { slot, selectedDate });
+    console.log('[Gym] before opening modal, showReservationModal=', showReservationModal);
 
     setSelectedSlot(slot);
     setDuration(60); // 重置为默认1小时
     setNotes(''); // 清空备注
+    setCoUserId(null); // 清空共同预约人
     setShowReservationModal(true);
   };
+
+  // 打开预约模态框时加载用户列表
+  useEffect(() => {
+	console.log('[Gym] right before Modal opened,');
+    if (showReservationModal) {
+      console.log('[Gym] Modal opened, fetching gym users');
+      setLoadingUsers(true);
+      api
+        .getGymUsers()
+        .then((res) => {
+          console.log('[Gym] gym users response', res);
+          if (res.success && res.data.users) {
+            setGymUsers(res.data.users);
+          } else {
+            setGymUsers([]);
+          }
+        })
+        .catch((err) => {
+          console.log('[Gym] gym users error', err);
+          setGymUsers([]);
+        })
+        .finally(() => {
+          setLoadingUsers(false);
+          console.log('[Gym] finished fetching gym users');
+        });
+    }
+  }, [showReservationModal]);
 
   // 创建预约
   const handleCreateReservation = async () => {
     if (!selectedSlot || !selectedDate) {
+      return;
+    }
+    if (!coUserId) {
+      Alert.alert('提示', '请选择第二位预约人');
       return;
     }
 
@@ -275,6 +351,7 @@ export default function GymScreen() {
         startTime: selectedSlot.startTime,
         endTime: endTimeString,
         duration,
+        coUserId,
         notes: notes.trim() || undefined,
       });
       
@@ -293,8 +370,8 @@ export default function GymScreen() {
     }
   };
 
-  // 时长选项（60分钟、90分钟、120分钟）
-  const durationOptions = [60, 90, 120];
+  // 时长选项（60分钟、120分钟）
+  const durationOptions = [60, 120];
 
   // 初始化：选择今天
   useEffect(() => {
@@ -342,16 +419,6 @@ export default function GymScreen() {
           ),
         }}
       />
-      <View style={[styles.demoNotice, { backgroundColor: colors.primary + '15' }]}>
-        <Text
-          style={[
-            styles.demoNoticeText,
-            { color: colors.primary, fontWeight: '700' },
-          ]}>
-          此功能仅作演示使用
-        </Text>
-      </View>
-
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[
@@ -496,7 +563,7 @@ export default function GymScreen() {
                   styles.timeSlotsHint,
                   { color: colors.textSecondary, fontSize: getFontSizeValue(13) },
                 ]}>
-                选择开始时间后，可选择60分钟-2小时
+                选择开始时间后，可选择1小时或2小时
               </Text>
             </View>
 
@@ -622,6 +689,10 @@ export default function GymScreen() {
               </TouchableOpacity>
             </View>
 
+            <ScrollView
+              style={styles.modalScroll}
+              showsVerticalScrollIndicator={true}
+              keyboardShouldPersistTaps="handled">
             {selectedSlot && selectedDate && (
               <>
                 <View style={styles.modalInfo}>
@@ -716,6 +787,63 @@ export default function GymScreen() {
                   </View>
                 </View>
 
+                {/* 共同预约人选择 */}
+                <View style={styles.coUserSection}>
+                  <Text
+                    style={[
+                      styles.durationLabel,
+                      { color: colors.text, fontSize: getFontSizeValue(16) },
+                    ]}>
+                    共同预约人（必选）
+                  </Text>
+                  {loadingUsers ? (
+                    <ActivityIndicator size="small" color={colors.primary} style={{ marginVertical: 12 }} />
+                  ) : gymUsers.length === 0 ? (
+                    <Text
+                      style={[
+                        styles.coUserEmpty,
+                        { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
+                      ]}>
+                      暂无可选用户（需有 super_admin/admin/负责人 角色）
+                    </Text>
+                  ) : (
+                    <ScrollView
+                      style={styles.coUserList}
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={styles.coUserListContent}>
+                      {gymUsers.map((u) => {
+                        const displayName =
+                          (i18n?.language === 'zh-Hant' ? u.nameTw : u.nameZh) || u.nameEn || `用户 ${u.id}`;
+                        const isSelected = coUserId === u.id;
+                        return (
+                          <TouchableOpacity
+                            key={u.id}
+                            style={[
+                              styles.coUserChip,
+                              {
+                                backgroundColor: isSelected ? colors.primary : colors.background,
+                                borderColor: isSelected ? colors.primary : colors.borderLight,
+                              },
+                            ]}
+                            onPress={() => setCoUserId(u.id)}>
+                            <Text
+                              style={[
+                                styles.coUserChipText,
+                                {
+                                  color: isSelected ? '#fff' : colors.text,
+                                  fontSize: getFontSizeValue(14),
+                                },
+                              ]}>
+                              {displayName}
+                            </Text>
+                          </TouchableOpacity>
+                        );
+                      })}
+                    </ScrollView>
+                  )}
+                </View>
+
                 {/* 备注 */}
                 <View style={styles.notesSection}>
                   <Text
@@ -801,6 +929,7 @@ export default function GymScreen() {
                 </TouchableOpacity>
               </>
             )}
+            </ScrollView>
           </View>
         </View>
       </Modal>
@@ -941,20 +1070,6 @@ const styles = StyleSheet.create({
   timeSlotGridHint: {
     fontSize: 11,
   },
-  demoNotice: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#FFC107',
-    marginHorizontal: 16,
-    marginBottom: 12,
-    alignItems: 'center',
-  },
-  demoNoticeText: {
-    fontSize: 14,
-    fontWeight: '700',
-  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -1014,6 +1129,34 @@ const styles = StyleSheet.create({
   },
   durationOptionTime: {
     fontSize: 12,
+  },
+  modalScroll: {
+    flexGrow: 1,
+  },
+  coUserSection: {
+    marginBottom: 20,
+  },
+  coUserList: {
+    marginTop: 8,
+    minHeight: 44,
+  },
+  coUserListContent: {
+    flexDirection: 'row',
+    gap: 10,
+    paddingVertical: 4,
+  },
+  coUserChip: {
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+    borderWidth: 2,
+  },
+  coUserChipText: {
+    fontWeight: '500',
+  },
+  coUserEmpty: {
+    marginTop: 8,
+    fontStyle: 'italic',
   },
   notesSection: {
     marginBottom: 20,

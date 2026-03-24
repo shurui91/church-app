@@ -41,6 +41,15 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// API root - 避免 "Cannot GET /api/" 或 "Cannot GET /api"
+app.get(['/api', '/api/'], (req, res) => {
+  res.json({
+    message: 'Church in Cerritos API',
+    status: 'running',
+    endpoints: ['/api/auth', '/api/users', '/api/attendance', '/api/travel', '/api/gym', '/api/crash-logs'],
+  });
+});
+
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);

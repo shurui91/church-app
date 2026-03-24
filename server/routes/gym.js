@@ -1,5 +1,6 @@
 import express from 'express';
 import { GymReservation } from '../database/models/GymReservation.js';
+import { User } from '../database/models/User.js';
 import { authenticate } from '../middleware/auth.js';
 import { getDatabase } from '../database/db.js';
 
@@ -44,13 +45,38 @@ const ensureGymUser = async (req, res, next) => {
 const gymMiddleware = [...gymAuthMiddleware, ensureGymUser];
 const OPENING_MINUTES = 7 * 60;
 const CLOSING_MINUTES = 22 * 60;
-const HALF_HOUR = 30;
+const SLOT_DURATION = 60; // 以60分钟为一个 slot
 
 function formatTime(minutes) {
   const hour = Math.floor(minutes / 60);
   const minute = minutes % 60;
   return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
 }
+
+/**
+ * GET /api/gym/users
+ * List users for co-reservation dropdown (only super_admin, admin, responsible_one; current user excluded)
+ */
+router.get('/gym/users', gymMiddleware, async (req, res) => {
+  try {
+    const allowedRoles = ['super_admin', 'admin', 'responsible_one'];
+    const users = await User.findByRoles(allowedRoles);
+    const currentId = req.user?.id;
+    const sanitized = users
+      .filter((u) => u.id !== currentId)
+      .map((u) => ({
+        id: u.id,
+        nameZh: u.nameZh,
+        nameTw: u.nameTw,
+        nameEn: u.nameEn,
+        phoneNumber: u.phoneNumber,
+      }));
+    res.json({ success: true, data: { users: sanitized } });
+  } catch (error) {
+    console.error('[gym GET users]', error);
+    res.status(500).json({ success: false, message: '获取用户列表失败' });
+  }
+});
 
 /**
  * GET /api/gym/time-slots/:date
@@ -67,9 +93,9 @@ router.get('/gym/time-slots/:date', gymMiddleware, async (req, res) => {
     const reservations = await GymReservation.findByDate(date);
 
     const slots = [];
-    for (let minutes = OPENING_MINUTES; minutes < CLOSING_MINUTES; minutes += HALF_HOUR) {
+    for (let minutes = OPENING_MINUTES; minutes < CLOSING_MINUTES; minutes += SLOT_DURATION) {
       const start = formatTime(minutes);
-      const end = formatTime(minutes + HALF_HOUR);
+      const end = formatTime(minutes + SLOT_DURATION);
       
       // Check if this specific slot is covered by any reservation
       const reservation = reservations.find(r => 
@@ -82,7 +108,7 @@ router.get('/gym/time-slots/:date', gymMiddleware, async (req, res) => {
         id: minutes,
         startTime: start,
         endTime: end,
-        duration: HALF_HOUR,
+        duration: SLOT_DURATION,
         isAvailable: !reservation,
         isReserved: !!reservation,
         reservedBy: reservation ? {
@@ -105,17 +131,22 @@ router.get('/gym/time-slots/:date', gymMiddleware, async (req, res) => {
  */
 router.post('/gym/reservations', gymMiddleware, async (req, res) => {
   try {
-    const { date, startTime, duration, notes } = req.body;
+    const { date, startTime, duration, notes, coUserId } = req.body;
     const MINUTES_PER_DAY = 24 * 60;
-    const minDuration = 30;
-    const maxDuration = 120;
-
     if (!date || !startTime || !duration) {
       return res.status(400).json({ success: false, message: '缺少必填字段' });
     }
 
-    if (duration < minDuration || duration > maxDuration || duration % 30 !== 0) {
-      return res.status(400).json({ success: false, message: '时长必须是30分钟的倍数，最多2小时' });
+    if (duration !== 60 && duration !== 120) {
+      return res.status(400).json({ success: false, message: '时长只能是60分钟或120分钟' });
+    }
+
+    const coUserIdNum = coUserId ? parseInt(String(coUserId), 10) : null;
+    if (!coUserIdNum || Number.isNaN(coUserIdNum)) {
+      return res.status(400).json({ success: false, message: '请选择第二位预约人' });
+    }
+    if (coUserIdNum === req.user.id) {
+      return res.status(400).json({ success: false, message: '不能选择自己作为第二位预约人' });
     }
 
     const [startHourStr, startMinuteStr] = startTime.split(':');
@@ -141,7 +172,10 @@ router.post('/gym/reservations', gymMiddleware, async (req, res) => {
     }
 
     if (await GymReservation.hasReservationOnDate(req.user.id, date)) {
-      return res.status(400).json({ success: false, message: '每天只能预约一次' });
+      return res.status(400).json({ success: false, message: '您当天已有预约' });
+    }
+    if (await GymReservation.hasReservationOnDate(coUserIdNum, date)) {
+      return res.status(400).json({ success: false, message: '第二位预约人当天已有预约' });
     }
 
     const endTime = formatTime(endTotalMinutes);
@@ -161,6 +195,7 @@ router.post('/gym/reservations', gymMiddleware, async (req, res) => {
       '未知';
     const reservation = await GymReservation.create({
       userId: req.user.id,
+      coUserId: coUserIdNum,
       date,
       startTime,
       endTime,
@@ -258,7 +293,9 @@ router.post('/gym/reservations/:id/check-in', gymMiddleware, async (req, res) =>
       return res.status(404).json({ success: false, message: '预约不存在' });
     }
 
-    if (reservation.user_id !== req.user.id) {
+    const isPrimary = reservation.user_id === req.user.id;
+    const isHelper = reservation.helper_user_id === req.user.id;
+    if (!isPrimary && !isHelper) {
       return res.status(403).json({ success: false, message: '只能为自己的预约签到' });
     }
 
@@ -297,7 +334,9 @@ router.post('/gym/reservations/:id/check-out', gymMiddleware, async (req, res) =
       return res.status(404).json({ success: false, message: '预约不存在' });
     }
 
-    if (reservation.user_id !== req.user.id) {
+    const isPrimary = reservation.user_id === req.user.id;
+    const isHelper = reservation.helper_user_id === req.user.id;
+    if (!isPrimary && !isHelper) {
       return res.status(403).json({ success: false, message: '只能为自己的预约签出' });
     }
 

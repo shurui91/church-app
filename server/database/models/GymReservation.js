@@ -2,15 +2,16 @@ import { getDatabase } from '../db.js';
 
 export class GymReservation {
   /**
-   * Create a new reservation for a user.
+   * Create a new reservation for two users (primary + co-user).
    */
-  static async create({ userId, date, startTime, endTime, duration, notes, userName }) {
+  static async create({ userId, coUserId, date, startTime, endTime, duration, notes, userName }) {
     const db = await getDatabase();
     try {
       const now = new Date().toISOString();
       const result = await db.run(
         `INSERT INTO gym_reservations (
            user_id,
+           helper_user_id,
            date,
            start_time,
            end_time,
@@ -20,9 +21,9 @@ export class GymReservation {
            user_name,
            created_at,
            updated_at
-         ) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)
          RETURNING id`,
-        [userId, date, startTime, endTime, duration, notes || null, userName || null, now, now]
+        [userId, coUserId || null, date, startTime, endTime, duration, notes || null, userName || null, now, now]
       );
       return await this.findById(result.lastID);
     } finally {
@@ -51,7 +52,7 @@ export class GymReservation {
   }
 
   /**
-   * List reservations for a single user.
+   * List reservations for a single user (as primary or co-user).
    */
   static async findByUser(userId) {
     const db = await getDatabase();
@@ -61,10 +62,10 @@ export class GymReservation {
         SELECT r.*, u.namezh AS user_name
         FROM gym_reservations r
         LEFT JOIN users u ON r.user_id = u.id
-        WHERE r.user_id = ?
+        WHERE r.user_id = ? OR r.helper_user_id = ?
         ORDER BY r.date DESC, r.start_time DESC
       `,
-        [userId]
+        [userId, userId]
       );
     } finally {
       await db.close();
@@ -112,7 +113,7 @@ export class GymReservation {
   }
 
   /**
-   * Check whether the user already has a reservation on the same date.
+   * Check whether the user (or co-user) already has a reservation on the same date.
    */
   static async hasReservationOnDate(userId, date) {
     const db = await getDatabase();
@@ -121,11 +122,11 @@ export class GymReservation {
         `
         SELECT COUNT(*) AS count
         FROM gym_reservations
-        WHERE user_id = ?
+        WHERE (user_id = ? OR helper_user_id = ?)
           AND date = ?
           AND status != 'cancelled'
       `,
-        [userId, date]
+        [userId, userId, date]
       );
       return row?.count > 0;
     } finally {
@@ -134,7 +135,7 @@ export class GymReservation {
   }
 
   /**
-   * Move a reservation from pending to checked_in.
+   * Move a reservation from pending to checked_in (primary or co-user can do it).
    */
   static async checkIn(id, userId) {
     const db = await getDatabase();
@@ -147,10 +148,10 @@ export class GymReservation {
             check_in_at = ?,
             updated_at = ?
         WHERE id = ?
-          AND user_id = ?
+          AND (user_id = ? OR helper_user_id = ?)
           AND status = 'pending'
       `,
-        [now, now, id, userId]
+        [now, now, id, userId, userId]
       );
       return result.changes > 0;
     } finally {
@@ -159,7 +160,7 @@ export class GymReservation {
   }
 
   /**
-   * Mark a checked-in reservation as checked-out.
+   * Mark a checked-in reservation as checked-out (primary or co-user can do it).
    */
   static async checkOut(id, userId) {
     const db = await getDatabase();
@@ -172,10 +173,10 @@ export class GymReservation {
             check_out_at = ?,
             updated_at = ?
         WHERE id = ?
-          AND user_id = ?
+          AND (user_id = ? OR helper_user_id = ?)
           AND status = 'checked_in'
       `,
-        [now, now, id, userId]
+        [now, now, id, userId, userId]
       );
       return result.changes > 0;
     } finally {
@@ -184,7 +185,7 @@ export class GymReservation {
   }
 
   /**
-   * Cancel an individual reservation (soft delete style).
+   * Cancel an individual reservation (primary or co-user can do it).
    */
   static async cancel(id, userId) {
     const db = await getDatabase();
@@ -196,10 +197,10 @@ export class GymReservation {
         SET status = 'cancelled',
             updated_at = ?
         WHERE id = ?
-          AND user_id = ?
+          AND (user_id = ? OR helper_user_id = ?)
           AND status != 'cancelled'
       `,
-        [now, id, userId]
+        [now, id, userId, userId]
       );
       return result.changes > 0;
     } finally {

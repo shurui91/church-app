@@ -476,6 +476,24 @@ export const api = {
    */
 
   /**
+   * Get users for co-reservation dropdown (excludes current user)
+   */
+  async getGymUsers() {
+    try {
+      const response = await apiRequest('/api/gym/users');
+      return parseResponse<{
+        success: boolean;
+        data: { users: { id: number; nameZh?: string; nameTw?: string; nameEn?: string; phoneNumber?: string }[] };
+      }>(response);
+    } catch (error: any) {
+      if (error.status === 404 || error.message?.includes('404')) {
+        return { success: true, data: { users: [] } };
+      }
+      throw error;
+    }
+  },
+
+  /**
    * Get available time slots for a specific date
    */
   async getGymTimeSlots(date: string) {
@@ -520,6 +538,7 @@ export const api = {
     startTime: string; // HH:mm
     endTime: string; // HH:mm
     duration: number; // minutes
+    coUserId: number; // 第二位预约人
     notes?: string;
   }) {
     try {
