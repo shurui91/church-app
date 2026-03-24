@@ -10,6 +10,7 @@ import {
   Alert,
   Modal,
   TextInput,
+  TouchableWithoutFeedback,
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -117,6 +118,13 @@ export default function GymScreen() {
   const [coUserId, setCoUserId] = useState<number | null>(null);
   const [gymUsers, setGymUsers] = useState<{ id: number; nameZh?: string; nameTw?: string; nameEn?: string }[]>([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
+  const [isCoUserDropdownOpen, setIsCoUserDropdownOpen] = useState(false);
+  const getUserDisplayName = (user: { id: number; nameZh?: string; nameTw?: string; nameEn?: string }) =>
+    (i18n?.language === 'zh-Hant' ? user.nameTw : user.nameZh) || user.nameEn || `用户 ${user.id}`;
+  const selectedCoUser = gymUsers.find((user) => user.id === coUserId);
+  const coUserDisplayName = selectedCoUser
+    ? getUserDisplayName(selectedCoUser)
+    : t('gym.selectCoUser') || 'Choose';
 
   // 计算日历天数
   const calendarDays = useMemo(() => {
@@ -304,7 +312,7 @@ export default function GymScreen() {
 
   // 打开预约模态框时加载用户列表
   useEffect(() => {
-	console.log('[Gym] right before Modal opened,');
+    console.log('[Gym] right before Modal opened,');
     if (showReservationModal) {
       console.log('[Gym] Modal opened, fetching gym users');
       setLoadingUsers(true);
@@ -807,40 +815,61 @@ export default function GymScreen() {
                       暂无可选用户（需有 super_admin/admin/负责人 角色）
                     </Text>
                   ) : (
-                    <ScrollView
-                      style={styles.coUserList}
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      contentContainerStyle={styles.coUserListContent}>
-                      {gymUsers.map((u) => {
-                        const displayName =
-                          (i18n?.language === 'zh-Hant' ? u.nameTw : u.nameZh) || u.nameEn || `用户 ${u.id}`;
-                        const isSelected = coUserId === u.id;
-                        return (
-                          <TouchableOpacity
-                            key={u.id}
-                            style={[
-                              styles.coUserChip,
-                              {
-                                backgroundColor: isSelected ? colors.primary : colors.background,
-                                borderColor: isSelected ? colors.primary : colors.borderLight,
-                              },
-                            ]}
-                            onPress={() => setCoUserId(u.id)}>
-                            <Text
-                              style={[
-                                styles.coUserChipText,
-                                {
-                                  color: isSelected ? '#fff' : colors.text,
-                                  fontSize: getFontSizeValue(14),
-                                },
-                              ]}>
-                              {displayName}
-                            </Text>
-                          </TouchableOpacity>
-                        );
-                      })}
-                    </ScrollView>
+                    <>
+                      <TouchableOpacity
+                        style={[
+                          styles.coUserDropdown,
+                          { borderColor: colors.borderLight, backgroundColor: colors.background },
+                        ]}
+                        onPress={() => setIsCoUserDropdownOpen(true)}>
+                        <Text
+                          style={[
+                            styles.coUserDropdownText,
+                            { color: coUserId ? colors.text : colors.textSecondary },
+                          ]}>
+                          {coUserDisplayName}
+                        </Text>
+                        <Ionicons name="chevron-down" size={18} color={colors.text} />
+                      </TouchableOpacity>
+                      <Modal
+                        visible={isCoUserDropdownOpen}
+                        transparent
+                        animationType="fade"
+                        onRequestClose={() => setIsCoUserDropdownOpen(false)}>
+                        <TouchableWithoutFeedback onPress={() => setIsCoUserDropdownOpen(false)}>
+                          <View style={styles.dropdownOverlay}>
+                            <TouchableWithoutFeedback>
+                              <View style={[styles.dropdownContainer, { backgroundColor: colors.card }]}>
+                                <ScrollView>
+                                  {gymUsers.map((u) => (
+                                    <TouchableOpacity
+                                      key={u.id}
+                                      style={[
+                                        styles.dropdownItem,
+                                        { backgroundColor: coUserId === u.id ? colors.primary + '10' : 'transparent' },
+                                      ]}
+                                      onPress={() => {
+                                        setCoUserId(u.id);
+                                        setIsCoUserDropdownOpen(false);
+                                      }}>
+                                      <Text
+                                        style={[
+                                          styles.dropdownItemText,
+                                          {
+                                            color: coUserId === u.id ? colors.primary : colors.text,
+                                          },
+                                        ]}>
+                                        {getUserDisplayName(u)}
+                                      </Text>
+                                    </TouchableOpacity>
+                                  ))}
+                                </ScrollView>
+                              </View>
+                            </TouchableWithoutFeedback>
+                          </View>
+                        </TouchableWithoutFeedback>
+                      </Modal>
+                    </>
                   )}
                 </View>
 
@@ -1157,6 +1186,37 @@ const styles = StyleSheet.create({
   coUserEmpty: {
     marginTop: 8,
     fontStyle: 'italic',
+  },
+  coUserDropdown: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+  },
+  coUserDropdownText: {
+    fontSize: 16,
+  },
+  dropdownOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
+  dropdownContainer: {
+    borderRadius: 12,
+    maxHeight: '60%',
+    padding: 8,
+  },
+  dropdownItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  dropdownItemText: {
+    fontSize: 16,
   },
   notesSection: {
     marginBottom: 20,
