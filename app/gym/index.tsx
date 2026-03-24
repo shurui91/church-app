@@ -116,14 +116,40 @@ export default function GymScreen() {
   const [notes, setNotes] = useState('');
   const [currentTimestamp, setCurrentTimestamp] = useState(new Date());
   const [coUserId, setCoUserId] = useState<number | null>(null);
-  const [gymUsers, setGymUsers] = useState<{ id: number; nameZh?: string; nameTw?: string; nameEn?: string }[]>([]);
+  const [gymUsers, setGymUsers] = useState<
+    { id: number; nameZh?: string; nameTw?: string; nameEn?: string; district?: string; groupNum?: string }[]
+  >([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [isCoUserDropdownOpen, setIsCoUserDropdownOpen] = useState(false);
-  const getUserDisplayName = (user: { id: number; nameZh?: string; nameTw?: string; nameEn?: string }) =>
-    (i18n?.language === 'zh-Hant' ? user.nameTw : user.nameZh) || user.nameEn || `用户 ${user.id}`;
-  const selectedCoUser = gymUsers.find((user) => user.id === coUserId);
+  const getUserDisplayName = (user: {
+    nameZh?: string;
+    nameTw?: string;
+    nameEn?: string;
+  }) =>
+    (i18n?.language === 'zh-Hant' ? user.nameTw : user.nameZh) || user.nameEn || '';
+  const getCoUserOptionLabel = (user: {
+    id: number;
+    nameZh?: string;
+    nameTw?: string;
+    nameEn?: string;
+  }) => getUserDisplayName(user) || `用户 ${user.id}`;
+  const getCoUserTriggerLabel = (user: {
+    id: number;
+    district?: string;
+    groupNum?: string;
+    nameZh?: string;
+    nameTw?: string;
+    nameEn?: string;
+  }) => {
+    const name = getCoUserOptionLabel(user);
+    const dg = [user.district, user.groupNum].filter(Boolean).join('');
+    return dg ? `${name} (${dg})` : name;
+  };
+  const selectedCoUser = gymUsers.find(
+    (user) => Number(user.id) === coUserId || String(user.id) === String(coUserId)
+  );
   const coUserDisplayName = selectedCoUser
-    ? getUserDisplayName(selectedCoUser)
+    ? getCoUserTriggerLabel(selectedCoUser)
     : t('gym.selectCoUser') || 'Choose';
 
   // 计算日历天数
@@ -320,8 +346,10 @@ export default function GymScreen() {
         .getGymUsers()
         .then((res) => {
           console.log('[Gym] gym users response', res);
-          if (res.success && res.data.users) {
+          if (res.success && res.data.users && res.data.users.length > 0) {
             setGymUsers(res.data.users);
+            const firstId = res.data.users[0].id;
+            setCoUserId(typeof firstId === 'string' ? Number(firstId) : firstId);
           } else {
             setGymUsers([]);
           }
@@ -454,7 +482,7 @@ export default function GymScreen() {
               styles.gymDescription,
               { color: colors.textSecondary, fontSize: getFontSizeValue(16) },
             ]}>
-            开放时间：8:00 - 21:00
+            开放时间：7:00 - 21:00
           </Text>
         </View>
 
@@ -846,21 +874,42 @@ export default function GymScreen() {
                                       key={u.id}
                                       style={[
                                         styles.dropdownItem,
-                                        { backgroundColor: coUserId === u.id ? colors.primary + '10' : 'transparent' },
+                                        {
+                                          backgroundColor:
+                                            Number(u.id) === coUserId || String(u.id) === String(coUserId)
+                                              ? colors.primary + '10'
+                                              : 'transparent',
+                                        },
                                       ]}
                                       onPress={() => {
-                                        setCoUserId(u.id);
+                                        setCoUserId(typeof u.id === 'string' ? Number(u.id) : u.id);
                                         setIsCoUserDropdownOpen(false);
                                       }}>
-                                      <Text
-                                        style={[
-                                          styles.dropdownItemText,
-                                          {
-                                            color: coUserId === u.id ? colors.primary : colors.text,
-                                          },
-                                        ]}>
-                                        {getUserDisplayName(u)}
-                                      </Text>
+                                      <View>
+                                        <Text
+                                          style={[
+                                            styles.dropdownItemText,
+                                            {
+                                              color:
+                                                Number(u.id) === coUserId || String(u.id) === String(coUserId)
+                                                  ? colors.primary
+                                                  : colors.text,
+                                            },
+                                          ]}>
+                                          {getCoUserOptionLabel(u)}
+                                        </Text>
+                                        {(u.district || u.groupNum) && (
+                                          <Text
+                                            style={[
+                                              styles.dropdownItemMeta,
+                                              { color: colors.textTertiary },
+                                            ]}>
+                                            {[u.district && `大区：${u.district}`, u.groupNum && `小排：${u.groupNum}`]
+                                              .filter(Boolean)
+                                              .join(' · ')}
+                                          </Text>
+                                        )}
+                                      </View>
                                     </TouchableOpacity>
                                   ))}
                                 </ScrollView>
@@ -1217,6 +1266,10 @@ const styles = StyleSheet.create({
   },
   dropdownItemText: {
     fontSize: 16,
+  },
+  dropdownItemMeta: {
+    fontSize: 12,
+    marginTop: 2,
   },
   notesSection: {
     marginBottom: 20,

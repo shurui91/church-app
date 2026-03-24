@@ -70,6 +70,8 @@ router.get('/gym/users', gymMiddleware, async (req, res) => {
         nameTw: u.nameTw,
         nameEn: u.nameEn,
         phoneNumber: u.phoneNumber,
+        district: u.district,
+        groupNum: u.groupNum,
       }));
     res.json({ success: true, data: { users: sanitized } });
   } catch (error) {
