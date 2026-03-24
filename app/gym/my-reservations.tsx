@@ -98,52 +98,6 @@ const sortReservationsChronologically = (list: Reservation[]): Reservation[] => 
   });
 };
 
-const createMockReservations = (): Reservation[] => {
-  const now = new Date();
-  const tomorrow = new Date(now);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  const yesterday = new Date(now);
-  yesterday.setDate(yesterday.getDate() - 1);
-  return [
-    {
-      id: 1,
-      userId: 1,
-      date: formatDateForAPI(now),
-      startTime: '09:00',
-      endTime: '10:30',
-      duration: 90,
-      status: 'pending',
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString(),
-    },
-    {
-      id: 2,
-      userId: 1,
-      date: formatDateForAPI(tomorrow),
-      startTime: '14:00',
-      endTime: '15:00',
-      duration: 60,
-      status: 'checked_in',
-      checkInAt: now.toISOString(),
-      createdAt: now.toISOString(),
-      updatedAt: now.toISOString(),
-    },
-    {
-      id: 3,
-      userId: 1,
-      date: formatDateForAPI(yesterday),
-      startTime: '18:00',
-      endTime: '19:00',
-      duration: 60,
-      status: 'checked_out',
-      checkInAt: new Date(yesterday).toISOString(),
-      checkOutAt: new Date(yesterday.getTime() + 60 * 60 * 1000).toISOString(),
-      createdAt: yesterday.toISOString(),
-      updatedAt: yesterday.toISOString(),
-    },
-  ];
-};
-
 export default function MyReservationsScreen() {
   const router = useRouter();
   const colors = useThemeColors();
@@ -161,15 +115,15 @@ export default function MyReservationsScreen() {
     try {
       const response = await api.getMyGymReservations();
       if (response.success) {
-    const normalized = response.data.reservations.map(normalizeReservation);
-    const sorted = sortReservationsChronologically(normalized);
-    setReservations(sorted.length > 0 ? sorted : sortReservationsChronologically(createMockReservations()));
+        const normalized = response.data.reservations.map(normalizeReservation);
+        const sorted = sortReservationsChronologically(normalized);
+        setReservations(sorted);
       } else {
-        setReservations(createMockReservations());
+        setReservations([]);
       }
     } catch (error: any) {
-      console.log('使用模拟数据展示UI效果', error.message || error);
-      setReservations(createMockReservations());
+      console.log('获取预约失败', error.message || error);
+      setReservations([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -268,18 +222,12 @@ export default function MyReservationsScreen() {
   }, []);
 
   // 分离当前预约和历史预约
-  const currentReservations = reservations.filter(
-    (r) => r.status === 'pending' || r.status === 'checked_in'
-  );
   const todayKey = formatDate(new Date());
-  const historyReservations = reservations.filter((r) => r.status === 'checked_out');
   const upcomingReservations = reservations.filter(
-    (r) => r.status === 'pending' || r.status === 'checked_in'
+    (r) => (r.status === 'pending' || r.status === 'checked_in') && formatDate(toLocalDate(r.date)) >= todayKey
   );
 
-  const isPastDate = (dateString: string) => {
-    return formatDate(toLocalDate(dateString)) < todayKey;
-  };
+  const isPastDate = (dateString: string) => formatDate(toLocalDate(dateString)) < todayKey;
 
   // 获取状态文本和颜色
   const getStatusInfo = (status: string) => {
@@ -511,83 +459,8 @@ export default function MyReservationsScreen() {
             </View>
           )}
 
-          {/* 历史预约 */}
-          {historyReservations.length > 0 && (
-            <View style={styles.section}>
-              <Text
-                style={[
-                  styles.sectionTitle,
-                  { color: colors.text, fontSize: getFontSizeValue(20) },
-                ]}>
-                历史预约
-              </Text>
-              {historyReservations.map((reservation) => {
-                const statusInfo = getStatusInfo(reservation.status);
-                return (
-                  <View
-                    key={reservation.id}
-                    style={[
-                      styles.reservationCard,
-                      { backgroundColor: colors.card },
-                    ]}>
-                    <View style={styles.reservationHeader}>
-                      <View style={styles.reservationInfo}>
-                        <Text
-                          style={[
-                            styles.reservationDate,
-                            { color: colors.text, fontSize: getFontSizeValue(18) },
-                          ]}>
-                          {formatDateDisplay(reservation.date)}
-                        </Text>
-                        <Text
-                          style={[
-                            styles.reservationTime,
-                            { color: colors.textSecondary, fontSize: getFontSizeValue(16) },
-                          ]}>
-                          {formatTime24(reservation.startTime)} - {formatTime24(reservation.endTime)}
-                        </Text>
-                      </View>
-                      <View
-                        style={[
-                          styles.statusBadge,
-                          { backgroundColor: statusInfo.color + '20' },
-                        ]}>
-                        <Text
-                          style={[
-                            styles.statusText,
-                            { color: statusInfo.color, fontSize: getFontSizeValue(14) },
-                          ]}>
-                          {statusInfo.text}
-                        </Text>
-                      </View>
-                    </View>
-
-                    {reservation.checkInAt && (
-                      <Text
-                        style={[
-                          styles.checkInTime,
-                          { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
-                        ]}>
-                        签入：{new Date(reservation.checkInAt).toLocaleString('zh-CN')}
-                      </Text>
-                    )}
-                    {reservation.checkOutAt && (
-                      <Text
-                        style={[
-                          styles.checkInTime,
-                          { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
-                        ]}>
-                        签出：{new Date(reservation.checkOutAt).toLocaleString('zh-CN')}
-                      </Text>
-                    )}
-                  </View>
-                );
-              })}
-            </View>
-          )}
-
           {/* 空状态 */}
-          {reservations.length === 0 && (
+          {!loading && upcomingReservations.length === 0 && (
             <View style={styles.emptyContainer}>
               <Ionicons name="calendar-outline" size={64} color={colors.textTertiary} />
               <Text
@@ -595,7 +468,14 @@ export default function MyReservationsScreen() {
                   styles.emptyText,
                   { color: colors.textSecondary, fontSize: getFontSizeValue(18) },
                 ]}>
-                暂无预约记录
+                您当前没有未来的预约
+              </Text>
+              <Text
+                style={[
+                  styles.emptySubText,
+                  { color: colors.textTertiary, fontSize: getFontSizeValue(14) },
+                ]}>
+                可以点击下方「去预约」按钮前往体育馆预约页面。
               </Text>
               <TouchableOpacity
                 style={[
@@ -738,6 +618,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     marginTop: 16,
     marginBottom: 24,
+  },
+  emptySubText: {
+    fontSize: 14,
+    marginBottom: 16,
   },
   createButton: {
     paddingVertical: 12,
