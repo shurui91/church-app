@@ -502,19 +502,38 @@ export const api = {
       return parseResponse<{
         success: boolean;
         data: {
-          timeSlots: {
+      timeSlots: {
+        id: number;
+        startTime: string;
+        endTime: string;
+        duration: number;
+        isAvailable: boolean;
+        isReserved: boolean;
+        reservedBy?: {
+          reservationId?: number;
+          status: string;
+          primary?: {
             id: number;
-            startTime: string;
-            endTime: string;
-            duration: number;
-            isAvailable: boolean;
-            isReserved: boolean;
-            reservedBy?: {
-              id: number;
-              name: string;
-              phoneNumber: string;
-            };
-          }[];
+            name?: string;
+            nameZh?: string;
+            nameTw?: string;
+            nameEn?: string;
+            phoneNumber?: string;
+            district?: string;
+            groupNum?: string;
+          };
+          helper?: {
+            id: number;
+            name?: string;
+            nameZh?: string;
+            nameTw?: string;
+            nameEn?: string;
+            phoneNumber?: string;
+            district?: string;
+            groupNum?: string;
+          };
+        };
+      }[];
         };
       }>(response);
     } catch (error: any) {
@@ -596,7 +615,30 @@ export const api = {
     return parseResponse<{
       success: boolean;
       data: {
-        reservation: any;
+        reservation: {
+          id: number;
+          date: string;
+          start_time: string;
+          end_time: string;
+          duration: number;
+          status: string;
+          helper_user_id?: number | null;
+          user_id?: number | null;
+          primary_namezh?: string;
+          primary_nametw?: string;
+          primary_nameen?: string;
+          primary_name?: string;
+          primary_phonenumber?: string;
+          primary_district?: string;
+          primary_groupnum?: string;
+          helper_namezh?: string;
+          helper_nametw?: string;
+          helper_nameen?: string;
+          helper_name?: string;
+          helper_phonenumber?: string;
+          helper_district?: string;
+          helper_groupnum?: string;
+        };
       };
     }>(response);
   },

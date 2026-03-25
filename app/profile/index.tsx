@@ -26,7 +26,6 @@ export default function ProfileScreen() {
   const [brotherFeaturesExpanded, setBrotherFeaturesExpanded] = useState(false);
   const isMountedRef = useRef(true);
   const shouldNavigateToLoginRef = useRef(false);
-
   // 页面加载时刷新用户信息（仅在已认证时）
   // 注意：不要在登出过程中刷新用户信息
   useEffect(() => {

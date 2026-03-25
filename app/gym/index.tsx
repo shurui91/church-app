@@ -35,10 +35,45 @@ interface TimeSlot {
   isAvailable: boolean; // 是否可用
   isReserved: boolean; // 是否已被预约
   reservedBy?: {
-    id: number;
-    name: string;
-    phoneNumber: string;
+    status: string;
+    primary?: ReservationUserInfo | null;
+    helper?: ReservationUserInfo | null;
   };
+}
+
+interface ReservationUserInfo {
+  id: number;
+  name?: string;
+  nameZh?: string;
+  nameTw?: string;
+  nameEn?: string;
+  phoneNumber?: string;
+  district?: string;
+  groupNum?: string;
+}
+interface ReservationDetail {
+  id: number;
+  date: string;
+  start_time: string;
+  end_time: string;
+  duration: number;
+  status: string;
+  helper_user_id?: number | null;
+  user_id?: number | null;
+  primary_namezh?: string;
+  primary_nametw?: string;
+  primary_nameen?: string;
+  primary_name?: string;
+  primary_phonenumber?: string;
+  primary_district?: string;
+  primary_groupnum?: string;
+  helper_namezh?: string;
+  helper_nametw?: string;
+  helper_nameen?: string;
+  helper_name?: string;
+  helper_phonenumber?: string;
+  helper_district?: string;
+  helper_groupnum?: string;
 }
 
 // 日期格式化函数
@@ -111,6 +146,10 @@ export default function GymScreen() {
   const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [showReservationModal, setShowReservationModal] = useState(false);
+  const [showReservedDetail, setShowReservedDetail] = useState(false);
+  const [reservedSlot, setReservedSlot] = useState<TimeSlot | null>(null);
+  const [reservedDetail, setReservedDetail] = useState<ReservationDetail | null>(null);
+  const [loadingReservedDetail, setLoadingReservedDetail] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [duration, setDuration] = useState(60); // 默认1小时
   const [notes, setNotes] = useState('');
@@ -151,6 +190,52 @@ export default function GymScreen() {
   const coUserDisplayName = selectedCoUser
     ? getCoUserTriggerLabel(selectedCoUser)
     : t('gym.selectCoUser') || 'Choose';
+  const getReservationUserDisplayName = (user?: ReservationUserInfo | null) => {
+    if (!user) return '';
+    const name =
+      (i18n?.language === 'zh-Hant' ? user.nameTw : user.nameZh) ||
+      user.nameZh ||
+      user.name ||
+      user.nameEn ||
+      user.phoneNumber;
+    return name || `用户 ${user.id}`;
+  };
+  const getReservationDistrictGroup = (user?: ReservationUserInfo | null) => {
+    if (!user) return '';
+    return [user.district, user.groupNum].filter(Boolean).join(' ');
+  };
+  const getDetailUserDisplayName = (detail: ReservationDetail | null, role: 'primary' | 'helper') => {
+    if (!detail) return '';
+    const prefix = role === 'primary' ? 'primary' : 'helper';
+    const name =
+      detail[`${prefix}_namezh` as keyof ReservationDetail] ||
+      detail[`${prefix}_nametw` as keyof ReservationDetail] ||
+      detail[`${prefix}_nameen` as keyof ReservationDetail] ||
+      detail[`${prefix}_name` as keyof ReservationDetail] ||
+      detail[`${prefix}_phonenumber` as keyof ReservationDetail];
+    return (name as string) || '';
+  };
+  const getDetailDistrictGroup = (detail: ReservationDetail | null, role: 'primary' | 'helper') => {
+    if (!detail) return '';
+    const prefix = role === 'primary' ? 'primary' : 'helper';
+    const district = detail[`${prefix}_district` as keyof ReservationDetail] as string | undefined;
+    const group = detail[`${prefix}_groupnum` as keyof ReservationDetail] as string | undefined;
+    return [district, group].filter(Boolean).join(' ');
+  };
+  const getReservationStatusText = (status?: string) => {
+    switch (status) {
+      case 'pending':
+        return '等待签到';
+      case 'checked_in':
+        return '使用中';
+      case 'checked_out':
+        return '已签出';
+      case 'cancelled':
+        return '已取消';
+      default:
+        return status || '未知';
+    }
+  };
 
   // 计算日历天数
   const calendarDays = useMemo(() => {
@@ -314,6 +399,47 @@ export default function GymScreen() {
     }
     setCurrentMonth(newMonth);
   };
+
+  const handleReservedSlotPress = async (slot: TimeSlot) => {
+    setReservedSlot(slot);
+    setShowReservedDetail(true);
+    if (slot.reservedBy?.reservationId) {
+      setLoadingReservedDetail(true);
+      try {
+        const response = await api.getGymReservationById(slot.reservedBy.reservationId);
+        if (response.success && response.data.reservation) {
+          setReservedDetail(response.data.reservation);
+        } else {
+          setReservedDetail(null);
+        }
+      } catch {
+        setReservedDetail(null);
+      } finally {
+        setLoadingReservedDetail(false);
+      }
+    } else {
+      setReservedDetail(null);
+    }
+  };
+
+  const closeReservedDetail = () => {
+    setShowReservedDetail(false);
+    setReservedSlot(null);
+    setReservedDetail(null);
+  };
+
+  const detailPrimaryName = reservedDetail
+    ? getDetailUserDisplayName(reservedDetail, 'primary')
+    : getReservationUserDisplayName(reservedSlot?.reservedBy?.primary);
+  const detailPrimaryDistrictGroup = reservedDetail
+    ? getDetailDistrictGroup(reservedDetail, 'primary')
+    : getReservationDistrictGroup(reservedSlot?.reservedBy?.primary);
+  const detailHelperName = reservedDetail
+    ? getDetailUserDisplayName(reservedDetail, 'helper')
+    : getReservationUserDisplayName(reservedSlot?.reservedBy?.helper);
+  const detailHelperDistrictGroup = reservedDetail
+    ? getDetailDistrictGroup(reservedDetail, 'helper')
+    : getReservationDistrictGroup(reservedSlot?.reservedBy?.helper);
 
   // 选择时间段并打开预约模态框
   const handleTimeSlotSelect = (slot: TimeSlot) => {
@@ -622,7 +748,7 @@ export default function GymScreen() {
             parseInt(slot.startTime.split(':')[0], 10) * 60 +
             parseInt(slot.startTime.split(':')[1], 10);
           const isPastSlot = isSelectedDateToday && slotMinutes < currentMinutes;
-          const disabled = !slot.isAvailable || slot.isReserved || isPastSlot;
+          const disabled = isPastSlot || (!slot.isAvailable && !slot.isReserved);
           const backgroundColor = isPastSlot
             ? colors.borderLight
             : slot.isReserved
@@ -646,17 +772,19 @@ export default function GymScreen() {
             : colors.textSecondary;
 
           return (
-            <TouchableOpacity
-              key={slot.id}
-              style={[
-                styles.timeSlotGridItem,
-                {
-                  backgroundColor,
-                  borderColor,
-                },
-              ]}
-              onPress={() => handleTimeSlotSelect(slot)}
-              disabled={disabled}>
+              <TouchableOpacity
+                key={slot.id}
+                style={[
+                  styles.timeSlotGridItem,
+                  {
+                    backgroundColor,
+                    borderColor,
+                  },
+                ]}
+                onPress={() =>
+                  slot.isReserved ? handleReservedSlotPress(slot) : handleTimeSlotSelect(slot)
+                }
+                disabled={disabled}>
               <Text
                 style={[
                   styles.timeSlotGridTime,
@@ -677,13 +805,43 @@ export default function GymScreen() {
                   {t('gym.pastTimeSlot') || '已过'}
                 </Text>
               ) : slot.isReserved ? (
-                <Text
-                  style={[
-                    styles.timeSlotGridStatus,
-                    { color: colors.error, fontSize: getFontSizeValue(11) },
-                  ]}>
-                  已约
-                </Text>
+                <>
+                  <Text
+                    style={[
+                      styles.timeSlotGridStatus,
+                      { color: colors.error, fontSize: getFontSizeValue(11) },
+                    ]}>
+                    已约
+                  </Text>
+                  {slot.reservedBy && (
+                    <View style={styles.timeSlotReservedInfo}>
+                      {slot.reservedBy.primary && (
+                        <Text
+                          style={[
+                            styles.timeSlotReservedText,
+                            { color: colors.textSecondary, fontSize: getFontSizeValue(11) },
+                          ]}>
+                          预约人：{getReservationUserDisplayName(slot.reservedBy.primary)}
+                          {getReservationDistrictGroup(slot.reservedBy.primary)
+                            ? ` (${getReservationDistrictGroup(slot.reservedBy.primary)})`
+                            : ''}
+                        </Text>
+                      )}
+                      {slot.reservedBy.helper && (
+                        <Text
+                          style={[
+                            styles.timeSlotReservedText,
+                            { color: colors.textSecondary, fontSize: getFontSizeValue(11) },
+                          ]}>
+                          共同预约人：{getReservationUserDisplayName(slot.reservedBy.helper)}
+                          {getReservationDistrictGroup(slot.reservedBy.helper)
+                            ? ` (${getReservationDistrictGroup(slot.reservedBy.helper)})`
+                            : ''}
+                        </Text>
+                      )}
+                    </View>
+                  )}
+                </>
               ) : (
                 <Text
                   style={[
@@ -1011,6 +1169,94 @@ export default function GymScreen() {
           </View>
         </View>
       </Modal>
+      {/* 已预约详情模态框 */}
+      <Modal
+        visible={showReservedDetail}
+        transparent
+        animationType="fade"
+        onRequestClose={closeReservedDetail}>
+        <TouchableWithoutFeedback onPress={closeReservedDetail}>
+          <View style={styles.modalOverlay}>
+            <TouchableWithoutFeedback>
+              <View style={[styles.reservedModalContent, { backgroundColor: colors.card }]}>
+                <View style={styles.modalHeader}>
+                  <Text
+                    style={[
+                      styles.modalTitle,
+                      { color: colors.text, fontSize: getFontSizeValue(20) },
+                    ]}>
+                    预约详情
+                  </Text>
+                  <TouchableOpacity
+                    onPress={closeReservedDetail}
+                    style={styles.closeButton}>
+                    <Ionicons name="close" size={24} color={colors.text} />
+                  </TouchableOpacity>
+                </View>
+                {reservedSlot && selectedDate && (
+                  <>
+                    <Text
+                      style={[
+                        styles.detailLabel,
+                        { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
+                      ]}>
+                      日期：{formatDate(selectedDate)} · {reservedSlot.startTime} -{' '}
+                      {reservedSlot.endTime}
+                    </Text>
+                    <Text
+                      style={[
+                        styles.detailLabel,
+                        { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
+                      ]}>
+                      状态：{getReservationStatusText(reservedSlot.reservedBy?.status)}
+                    </Text>
+                    {loadingReservedDetail ? (
+                      <ActivityIndicator style={{ paddingVertical: 16 }} color={colors.primary} />
+                    ) : (
+                      <View style={styles.detailSection}>
+                        {detailPrimaryName && (
+                          <View style={styles.detailRow}>
+                            <Text style={[styles.detailRowLabel, { color: colors.text }]}>
+                              预约人
+                            </Text>
+                            <Text
+                              style={[
+                                styles.detailRowValue,
+                                { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
+                              ]}>
+                              {detailPrimaryName}
+                              {detailPrimaryDistrictGroup
+                                ? ` (${detailPrimaryDistrictGroup})`
+                                : ''}
+                            </Text>
+                          </View>
+                        )}
+                        {detailHelperName && (
+                          <View style={styles.detailRow}>
+                            <Text style={[styles.detailRowLabel, { color: colors.text }]}>
+                              共同预约人
+                            </Text>
+                            <Text
+                              style={[
+                                styles.detailRowValue,
+                                { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
+                              ]}>
+                              {detailHelperName}
+                              {detailHelperDistrictGroup
+                                ? ` (${detailHelperDistrictGroup})`
+                                : ''}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                    )}
+                  </>
+                )}
+              </View>
+            </TouchableWithoutFeedback>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -1148,10 +1394,43 @@ const styles = StyleSheet.create({
   timeSlotGridHint: {
     fontSize: 11,
   },
+  timeSlotReservedInfo: {
+    marginTop: 6,
+  },
+  timeSlotReservedText: {
+    lineHeight: 16,
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
+  },
+  reservedModalContent: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    marginHorizontal: 12,
+    maxHeight: '80%',
+  },
+  detailLabel: {
+    marginBottom: 8,
+  },
+  detailSection: {
+    marginTop: 12,
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(255,255,255,0.1)',
+    paddingTop: 12,
+  },
+  detailRow: {
+    marginBottom: 10,
+  },
+  detailRowLabel: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  detailRowValue: {
+    fontSize: 14,
   },
   modalContent: {
     borderTopLeftRadius: 20,

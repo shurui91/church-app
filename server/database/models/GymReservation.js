@@ -39,9 +39,25 @@ export class GymReservation {
     try {
       return await db.get(
         `
-        SELECT r.*, u.namezh AS user_name
+        SELECT
+          r.*,
+          u.namezh AS primary_namezh,
+          u.nametw AS primary_nametw,
+          u.nameen AS primary_nameen,
+          u.name AS primary_name,
+          u.phonenumber AS primary_phonenumber,
+          u.district AS primary_district,
+          u.groupnum AS primary_groupnum,
+          helper.namezh AS helper_namezh,
+          helper.nametw AS helper_nametw,
+          helper.nameen AS helper_nameen,
+          helper.name AS helper_name,
+          helper.phonenumber AS helper_phonenumber,
+          helper.district AS helper_district,
+          helper.groupnum AS helper_groupnum
         FROM gym_reservations r
         LEFT JOIN users u ON r.user_id = u.id
+        LEFT JOIN users helper ON r.helper_user_id = helper.id
         WHERE r.id = ?
       `,
         [id]
@@ -59,9 +75,13 @@ export class GymReservation {
     try {
       return await db.all(
         `
-        SELECT r.*, u.namezh AS user_name
+        SELECT
+          r.*,
+          u.namezh AS user_name,
+          helper.namezh AS helper_name
         FROM gym_reservations r
         LEFT JOIN users u ON r.user_id = u.id
+        LEFT JOIN users helper ON r.helper_user_id = helper.id
         WHERE r.user_id = ? OR r.helper_user_id = ?
         ORDER BY r.date DESC, r.start_time DESC
       `,
@@ -79,7 +99,28 @@ export class GymReservation {
     const db = await getDatabase();
     try {
       return await db.all(
-        `SELECT * FROM gym_reservations WHERE date = ? AND status != 'cancelled'`,
+        `
+        SELECT
+          r.*,
+          u.namezh AS primary_namezh,
+          u.nametw AS primary_nametw,
+          u.nameen AS primary_nameen,
+          u.name AS primary_name,
+          u.phonenumber AS primary_phonenumber,
+          u.district AS primary_district,
+          u.groupnum AS primary_groupnum,
+          helper.namezh AS helper_namezh,
+          helper.nametw AS helper_nametw,
+          helper.nameen AS helper_nameen,
+          helper.name AS helper_name,
+          helper.phonenumber AS helper_phonenumber,
+          helper.district AS helper_district,
+          helper.groupnum AS helper_groupnum
+        FROM gym_reservations r
+        LEFT JOIN users u ON r.user_id = u.id
+        LEFT JOIN users helper ON r.helper_user_id = helper.id
+        WHERE r.date = ? AND r.status != 'cancelled'
+        `,
         [date]
       );
     } finally {

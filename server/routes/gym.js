@@ -94,6 +94,23 @@ router.get('/gym/time-slots/:date', gymMiddleware, async (req, res) => {
     // Fetch existing reservations for this date
     const reservations = await GymReservation.findByDate(date);
 
+    const buildUserInfo = (reservation, role) => {
+      if (!reservation) return null;
+      const userId = role === 'primary' ? reservation.user_id : reservation.helper_user_id;
+      if (!userId) return null;
+
+      return {
+        id: userId,
+        nameZh: reservation[`${role}_namezh`] || undefined,
+        nameTw: reservation[`${role}_nametw`] || undefined,
+        nameEn: reservation[`${role}_nameen`] || undefined,
+        name: reservation[`${role}_name`] || undefined,
+        phoneNumber: reservation[`${role}_phonenumber`] || undefined,
+        district: reservation[`${role}_district`] || undefined,
+        groupNum: reservation[`${role}_groupnum`] || undefined,
+      };
+    };
+
     const slots = [];
     for (let minutes = OPENING_MINUTES; minutes < CLOSING_MINUTES; minutes += SLOT_DURATION) {
       const start = formatTime(minutes);
@@ -113,10 +130,14 @@ router.get('/gym/time-slots/:date', gymMiddleware, async (req, res) => {
         duration: SLOT_DURATION,
         isAvailable: !reservation,
         isReserved: !!reservation,
-        reservedBy: reservation ? {
-          id: reservation.user_id,
-          status: reservation.status
-        } : null
+        reservedBy: reservation
+          ? {
+              reservationId: reservation.id,
+              status: reservation.status,
+              primary: buildUserInfo(reservation, 'primary'),
+              helper: buildUserInfo(reservation, 'helper'),
+            }
+          : null,
       });
     }
 
