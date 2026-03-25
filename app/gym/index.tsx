@@ -35,6 +35,7 @@ interface TimeSlot {
   isAvailable: boolean; // 是否可用
   isReserved: boolean; // 是否已被预约
   reservedBy?: {
+    reservationId?: number;
     status: string;
     primary?: ReservationUserInfo | null;
     helper?: ReservationUserInfo | null;
@@ -805,43 +806,13 @@ export default function GymScreen() {
                   {t('gym.pastTimeSlot') || '已过'}
                 </Text>
               ) : slot.isReserved ? (
-                <>
-                  <Text
-                    style={[
-                      styles.timeSlotGridStatus,
-                      { color: colors.error, fontSize: getFontSizeValue(11) },
-                    ]}>
-                    已约
-                  </Text>
-                  {slot.reservedBy && (
-                    <View style={styles.timeSlotReservedInfo}>
-                      {slot.reservedBy.primary && (
-                        <Text
-                          style={[
-                            styles.timeSlotReservedText,
-                            { color: colors.textSecondary, fontSize: getFontSizeValue(11) },
-                          ]}>
-                          预约人：{getReservationUserDisplayName(slot.reservedBy.primary)}
-                          {getReservationDistrictGroup(slot.reservedBy.primary)
-                            ? ` (${getReservationDistrictGroup(slot.reservedBy.primary)})`
-                            : ''}
-                        </Text>
-                      )}
-                      {slot.reservedBy.helper && (
-                        <Text
-                          style={[
-                            styles.timeSlotReservedText,
-                            { color: colors.textSecondary, fontSize: getFontSizeValue(11) },
-                          ]}>
-                          共同预约人：{getReservationUserDisplayName(slot.reservedBy.helper)}
-                          {getReservationDistrictGroup(slot.reservedBy.helper)
-                            ? ` (${getReservationDistrictGroup(slot.reservedBy.helper)})`
-                            : ''}
-                        </Text>
-                      )}
-                    </View>
-                  )}
-                </>
+                <Text
+                  style={[
+                    styles.timeSlotGridStatus,
+                    { color: colors.error, fontSize: getFontSizeValue(11) },
+                  ]}>
+                  已约
+                </Text>
               ) : (
                 <Text
                   style={[
@@ -1393,12 +1364,6 @@ const styles = StyleSheet.create({
   },
   timeSlotGridHint: {
     fontSize: 11,
-  },
-  timeSlotReservedInfo: {
-    marginTop: 6,
-  },
-  timeSlotReservedText: {
-    lineHeight: 16,
   },
   modalOverlay: {
     flex: 1,
