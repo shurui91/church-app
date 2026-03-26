@@ -348,16 +348,17 @@ router.post('/gym/reservations/:id/check-in', gymMiddleware, async (req, res) =>
       return res.status(403).json({ success: false, message: '只能为自己的预约签到' });
     }
 
-    const now = new Date();
     const slotTime = GymReservation._parseSlotDatetime(reservation.date, reservation.start_time);
     if (!slotTime) {
       return res.status(400).json({ success: false, message: '预约时间解析失败' });
     }
 
-    const windowStart = new Date(slotTime.getTime() - 15 * 60 * 1000);
-    if (now < windowStart) {
-      return res.status(400).json({ success: false, message: '签到时间未到，还需等待' });
-    }
+    // 暂不限制「开始前 15 分钟才能签入」，便于测试签入/签出；恢复时取消下面注释并校验 now >= windowStart
+    // const now = new Date();
+    // const windowStart = new Date(slotTime.getTime() - 15 * 60 * 1000);
+    // if (now < windowStart) {
+    //   return res.status(400).json({ success: false, message: '签到时间未到，还需等待' });
+    // }
 
     const success = await GymReservation.checkIn(reservationId, req.user.id);
     if (!success) {

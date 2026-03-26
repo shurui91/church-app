@@ -259,16 +259,9 @@ export default function MyReservationsScreen() {
     }
   };
 
-  // 检查是否可以签入（预约开始前15分钟）
+  // 暂不限制「开始前 15 分钟才能签入」，便于测试（与后端 gym check-in 一致）
   const canCheckIn = (reservation: Reservation): boolean => {
-    const now = new Date();
-    const reservationDateTime = new Date(
-      `${reservation.date}T${reservation.startTime}:00`
-    );
-    const checkInTime = new Date(reservationDateTime);
-    checkInTime.setMinutes(checkInTime.getMinutes() - 15); // 提前15分钟
-
-    return now >= checkInTime && reservation.status === 'pending';
+    return reservation.status === 'pending';
   };
 
   // 检查是否可以签出（已签入状态）
@@ -459,15 +452,6 @@ export default function MyReservationsScreen() {
                             </TouchableOpacity>
                           )}
                         </View>
-                        {!canCheckIn(reservation) && reservation.status === 'pending' && (
-                          <Text
-                            style={[
-                              styles.hintText,
-                              { color: colors.textSecondary, fontSize: getFontSizeValue(12) },
-                            ]}>
-                            {t('gym.checkInWindowHint')}
-                          </Text>
-                        )}
                       </View>
                     </View>
                   </Animated.View>
