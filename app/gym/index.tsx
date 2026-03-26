@@ -192,7 +192,13 @@ export default function GymScreen() {
   );
   const coUserDisplayName = selectedCoUser
     ? getCoUserTriggerLabel(selectedCoUser)
-    : t('gym.selectCoUser') || 'Choose';
+    : t('gym.chooseCoUserPlaceholder');
+  const canSubmitReservation =
+    !!selectedSlot &&
+    !!selectedDate &&
+    !loadingUsers &&
+    gymUsers.length > 0 &&
+    coUserId != null;
   const getReservationUserDisplayName = (user?: ReservationUserInfo | null) => {
     if (!user) return '';
     const name =
@@ -475,7 +481,7 @@ export default function GymScreen() {
     }
 
     if (!selectedDate) {
-      Alert.alert('提示', '请先选择日期');
+      Alert.alert(t('common.tip'), t('gym.selectDateFirst'));
       return;
     }
 
@@ -501,8 +507,6 @@ export default function GymScreen() {
           console.log('[Gym] gym users response', res);
           if (res.success && res.data.users && res.data.users.length > 0) {
             setGymUsers(res.data.users);
-            const firstId = res.data.users[0].id;
-            setCoUserId(typeof firstId === 'string' ? Number(firstId) : firstId);
           } else {
             setGymUsers([]);
           }
@@ -523,8 +527,8 @@ export default function GymScreen() {
     if (!selectedSlot || !selectedDate) {
       return;
     }
-    if (!coUserId) {
-      Alert.alert('提示', '请选择第二位预约人');
+    if (coUserId == null) {
+      Alert.alert(t('common.tip'), t('gym.selectCoUserRequired'));
       return;
     }
 
@@ -545,7 +549,7 @@ export default function GymScreen() {
       });
       
       if (response.success) {
-        Alert.alert('成功', response.message || '预约已创建');
+        Alert.alert(t('common.success'), response.message || t('gym.reservationCreatedDefault'));
         setShowReservationModal(false);
         // 重新加载时间段与日历红点
         if (selectedDate) {
@@ -564,7 +568,7 @@ export default function GymScreen() {
         throw new Error(response.message || '创建预约失败');
       }
     } catch (error: any) {
-      Alert.alert('错误', error.message || '创建预约失败');
+      Alert.alert(t('common.error'), error.message || t('gym.createReservationFailed'));
     }
   };
 
@@ -887,7 +891,7 @@ export default function GymScreen() {
                   styles.modalTitle,
                   { color: colors.text, fontSize: getFontSizeValue(20) },
                 ]}>
-                创建预约
+                {t('gym.createReservationTitle')}
               </Text>
               <TouchableOpacity
                 onPress={() => setShowReservationModal(false)}
@@ -908,14 +912,14 @@ export default function GymScreen() {
                       styles.modalInfoText,
                       { color: colors.text, fontSize: getFontSizeValue(16) },
                     ]}>
-                    日期：{formatDate(selectedDate)}
+                    {t('gym.modalDateLine', { date: formatDate(selectedDate) })}
                   </Text>
                   <Text
                     style={[
                       styles.modalInfoText,
                       { color: colors.text, fontSize: getFontSizeValue(16) },
                     ]}>
-                    开始时间：{selectedSlot.startTime}
+                    {t('gym.modalStartTimeLine', { time: selectedSlot.startTime })}
                   </Text>
                 </View>
 
@@ -926,7 +930,7 @@ export default function GymScreen() {
                       styles.durationLabel,
                       { color: colors.text, fontSize: getFontSizeValue(16) },
                     ]}>
-                    预约时长
+                    {t('gym.durationSectionTitle')}
                   </Text>
                   <View style={styles.durationOptions}>
                     {durationOptions.map((dur) => {
@@ -971,7 +975,7 @@ export default function GymScreen() {
                                 fontSize: getFontSizeValue(16),
                               },
                             ]}>
-                            {dur}分钟
+                            {t('gym.durationMinutes', { count: dur })}
                           </Text>
                           {!isDisabled && (
                             <Text
@@ -1001,7 +1005,7 @@ export default function GymScreen() {
                       styles.durationLabel,
                       { color: colors.text, fontSize: getFontSizeValue(16) },
                     ]}>
-                    共同预约人（必选）
+                    {t('gym.coUserRequiredLabel')}
                   </Text>
                   {loadingUsers ? (
                     <ActivityIndicator size="small" color={colors.primary} style={{ marginVertical: 12 }} />
@@ -1011,7 +1015,7 @@ export default function GymScreen() {
                         styles.coUserEmpty,
                         { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
                       ]}>
-                      暂无可选用户（需有 super_admin/admin/负责人 角色）
+                      {t('gym.noCoUsersWithRolesHint')}
                     </Text>
                   ) : (
                     <>
@@ -1075,7 +1079,10 @@ export default function GymScreen() {
                                               styles.dropdownItemMeta,
                                               { color: colors.textTertiary },
                                             ]}>
-                                            {[u.district && `大区：${u.district}`, u.groupNum && `小排：${u.groupNum}`]
+                                            {[
+                                              u.district && `${t('gym.districtPrefix')}${u.district}`,
+                                              u.groupNum && `${t('gym.groupPrefix')}${u.groupNum}`,
+                                            ]
                                               .filter(Boolean)
                                               .join(' · ')}
                                           </Text>
@@ -1100,7 +1107,7 @@ export default function GymScreen() {
                       styles.notesLabel,
                       { color: colors.text, fontSize: getFontSizeValue(16) },
                     ]}>
-                    备注（可选）
+                    {t('gym.notesOptionalLabel')}
                   </Text>
                   <TextInput
                     style={[
@@ -1112,7 +1119,7 @@ export default function GymScreen() {
                         fontSize: getFontSizeValue(16),
                       },
                     ]}
-                    placeholder="请输入备注信息"
+                    placeholder={t('gym.notesPlaceholder')}
                     placeholderTextColor={colors.textTertiary}
                     value={notes}
                     onChangeText={setNotes}
@@ -1128,14 +1135,14 @@ export default function GymScreen() {
                       styles.personLabel,
                       { color: colors.text, fontSize: getFontSizeValue(14) },
                     ]}>
-                    {t('gym.firstAppointmentPersonLabel') || '预约人'}
+                    {t('gym.firstAppointmentPersonLabel')}
                   </Text>
                   <Text
                     style={[
                       styles.personValue,
                       { color: colors.textSecondary, fontSize: getFontSizeValue(16) },
                     ]}>
-                    {user?.nameZh || user?.nameEn || user?.name || user?.phoneNumber || '当前用户'}
+                    {user?.nameZh || user?.nameEn || user?.name || user?.phoneNumber || t('gym.currentUserFallback')}
                   </Text>
                   {(user?.district || user?.groupNum) && (
                     <View style={styles.personMeta}>
@@ -1145,7 +1152,8 @@ export default function GymScreen() {
                             styles.personMetaText,
                             { color: colors.textTertiary, fontSize: getFontSizeValue(12) },
                           ]}>
-                          大区：{user.district}
+                          {t('gym.districtPrefix')}
+                          {user.district}
                         </Text>
                       )}
                       {user?.groupNum && (
@@ -1154,7 +1162,8 @@ export default function GymScreen() {
                             styles.personMetaText,
                             { color: colors.textTertiary, fontSize: getFontSizeValue(12) },
                           ]}>
-                          小排：{user.groupNum}
+                          {t('gym.groupPrefix')}
+                          {user.groupNum}
                         </Text>
                       )}
                     </View>
@@ -1165,15 +1174,19 @@ export default function GymScreen() {
                 <TouchableOpacity
                   style={[
                     styles.confirmButton,
-                    { backgroundColor: colors.primary },
+                    {
+                      backgroundColor: colors.primary,
+                      opacity: canSubmitReservation ? 1 : 0.45,
+                    },
                   ]}
-                  onPress={handleCreateReservation}>
+                  onPress={handleCreateReservation}
+                  disabled={!canSubmitReservation}>
                   <Text
                     style={[
                       styles.confirmButtonText,
                       { fontSize: getFontSizeValue(18) },
                     ]}>
-                    确认预约
+                    {t('gym.confirmReservation')}
                   </Text>
                 </TouchableOpacity>
               </>

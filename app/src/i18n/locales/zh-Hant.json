@@ -15,8 +15,26 @@
     "myReservations": "我的預約",
     "firstAppointmentPersonLabel": "預約人",
     "secondAppointmentPersonLabel": "第二預約人",
-    "noAvailableAdmins": "暫無可選用戶"
-    ,"pastTimeSlot":"已過"
+    "noAvailableAdmins": "暫無可選用戶",
+    "pastTimeSlot": "已過",
+    "chooseCoUserPlaceholder": "請從下列選擇",
+    "selectCoUserRequired": "請選擇共同預約人",
+    "createReservationTitle": "建立預約",
+    "modalDateLine": "日期：{{date}}",
+    "modalStartTimeLine": "開始時間：{{time}}",
+    "durationSectionTitle": "預約時長",
+    "durationMinutes": "{{count}} 分鐘",
+    "coUserRequiredLabel": "共同預約人（必選）",
+    "noCoUsersWithRolesHint": "暫無可選用戶（需有 super_admin / admin / 負責人 角色）",
+    "notesOptionalLabel": "備註（可選）",
+    "notesPlaceholder": "請輸入備註資訊",
+    "currentUserFallback": "目前使用者",
+    "districtPrefix": "大區：",
+    "groupPrefix": "小排：",
+    "confirmReservation": "確認預約",
+    "selectDateFirst": "請先選擇日期",
+    "reservationCreatedDefault": "預約已建立",
+    "createReservationFailed": "建立預約失敗"
   },
   "meeting": {
     "pageTitle": "聚會",
@@ -94,6 +112,7 @@
   },
   "common": {
     "tip": "提示",
+    "error": "錯誤",
     "clear": "清空",
     "cancel": "取消",
     "ok": "確定",

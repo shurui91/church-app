@@ -12,11 +12,29 @@
   },
   "gym": {
     "title": "体育馆",
-    "myReservations": "我的预约"
-    ,"firstAppointmentPersonLabel":"预约人"
-    ,"secondAppointmentPersonLabel":"第二预约人"
-    ,"noAvailableAdmins":"暂无可选用户"
-    ,"pastTimeSlot":"已过"
+    "myReservations": "我的预约",
+    "firstAppointmentPersonLabel": "预约人",
+    "secondAppointmentPersonLabel": "第二预约人",
+    "noAvailableAdmins": "暂无可选用户",
+    "pastTimeSlot": "已过",
+    "chooseCoUserPlaceholder": "请从下列选择",
+    "selectCoUserRequired": "请选择共同预约人",
+    "createReservationTitle": "创建预约",
+    "modalDateLine": "日期：{{date}}",
+    "modalStartTimeLine": "开始时间：{{time}}",
+    "durationSectionTitle": "预约时长",
+    "durationMinutes": "{{count}} 分钟",
+    "coUserRequiredLabel": "共同预约人（必选）",
+    "noCoUsersWithRolesHint": "暂无可选用户（需有 super_admin / admin / 负责人 角色）",
+    "notesOptionalLabel": "备注（可选）",
+    "notesPlaceholder": "请输入备注信息",
+    "currentUserFallback": "当前用户",
+    "districtPrefix": "大区：",
+    "groupPrefix": "小排：",
+    "confirmReservation": "确认预约",
+    "selectDateFirst": "请先选择日期",
+    "reservationCreatedDefault": "预约已创建",
+    "createReservationFailed": "创建预约失败"
   },
   "meeting": {
     "pageTitle": "聚会",
@@ -94,6 +112,7 @@
   },
   "common": {
     "tip": "提示",
+    "error": "错误",
     "clear": "清空",
     "cancel": "取消",
     "ok": "确定",
