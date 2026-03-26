@@ -93,6 +93,32 @@ export class GymReservation {
   }
 
   /**
+   * Distinct calendar dates in [fromDate, toDate] that have at least one non-cancelled reservation.
+   * @param {string} fromDate YYYY-MM-DD
+   * @param {string} toDate YYYY-MM-DD
+   * @returns {Promise<string[]>}
+   */
+  static async findDatesWithReservationsBetween(fromDate, toDate) {
+    const db = await getDatabase();
+    try {
+      const rows = await db.all(
+        `
+        SELECT DISTINCT date
+        FROM gym_reservations
+        WHERE date >= ?
+          AND date <= ?
+          AND status != 'cancelled'
+        ORDER BY date
+        `,
+        [fromDate, toDate]
+      );
+      return rows.map((r) => r.date).filter(Boolean);
+    } finally {
+      await db.close();
+    }
+  }
+
+  /**
    * Get all reservations on a particular date (excluding cancelled ones).
    */
   static async findByDate(date) {

@@ -46,7 +46,15 @@ app.get(['/api', '/api/'], (req, res) => {
   res.json({
     message: 'Church in Cerritos API',
     status: 'running',
-    endpoints: ['/api/auth', '/api/users', '/api/attendance', '/api/travel', '/api/gym', '/api/crash-logs'],
+    endpoints: [
+      '/api/auth',
+      '/api/users',
+      '/api/attendance',
+      '/api/travel',
+      '/api/gym',
+      '/api/gym/days-with-reservations',
+      '/api/crash-logs',
+    ],
   });
 });
 

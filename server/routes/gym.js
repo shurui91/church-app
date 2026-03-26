@@ -149,6 +149,32 @@ router.get('/gym/time-slots/:date', gymMiddleware, async (req, res) => {
 });
 
 /**
+ * GET /api/gym/days-with-reservations?from=YYYY-MM-DD&to=YYYY-MM-DD
+ * Dates in range that have at least one active (non-cancelled) reservation — for calendar dots.
+ */
+router.get('/gym/days-with-reservations', gymMiddleware, async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    if (!from || !to || typeof from !== 'string' || typeof to !== 'string') {
+      return res.status(400).json({ success: false, message: '缺少 from 或 to 日期' });
+    }
+    const dateRe = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRe.test(from) || !dateRe.test(to)) {
+      return res.status(400).json({ success: false, message: '日期格式应为 YYYY-MM-DD' });
+    }
+    if (from > to) {
+      return res.status(400).json({ success: false, message: 'from 不能晚于 to' });
+    }
+
+    const dates = await GymReservation.findDatesWithReservationsBetween(from, to);
+    res.json({ success: true, data: { dates } });
+  } catch (error) {
+    console.error('[gym GET days-with-reservations]', error);
+    res.status(500).json({ success: false, message: '获取预约日期失败' });
+  }
+});
+
+/**
  * POST /api/gym/reservations
  * Create a new gym reservation (pending confirmation)
  */

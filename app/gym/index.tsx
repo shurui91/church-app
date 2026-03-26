@@ -161,6 +161,8 @@ export default function GymScreen() {
   >([]);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [isCoUserDropdownOpen, setIsCoUserDropdownOpen] = useState(false);
+  /** 当前日历网格日期范围内、已有预约的日期（用于格子上红点） */
+  const [datesWithReservation, setDatesWithReservation] = useState<Set<string>>(() => new Set());
   const getUserDisplayName = (user: {
     nameZh?: string;
     nameTw?: string;
@@ -282,6 +284,30 @@ export default function GymScreen() {
 
     return days;
   }, [currentMonth]);
+
+  // 拉取当前日历网格内「有预约」的日期，用于格子上红点
+  useEffect(() => {
+    let cancelled = false;
+    if (calendarDays.length === 0) return;
+    const from = calendarDays[0].dateString;
+    const to = calendarDays[calendarDays.length - 1].dateString;
+    api
+      .getGymDaysWithReservations(from, to)
+      .then((res) => {
+        if (cancelled) return;
+        if (res.success && res.data?.dates) {
+          setDatesWithReservation(new Set(res.data.dates));
+        } else {
+          setDatesWithReservation(new Set());
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setDatesWithReservation(new Set());
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [calendarDays]);
 
   // 检查日期是否可选（今天起30天内）
   const isDateSelectable = (date: Date): boolean => {
@@ -521,9 +547,18 @@ export default function GymScreen() {
       if (response.success) {
         Alert.alert('成功', response.message || '预约已创建');
         setShowReservationModal(false);
-        // 重新加载时间段
+        // 重新加载时间段与日历红点
         if (selectedDate) {
           loadTimeSlots(selectedDate);
+          const from = calendarDays[0]?.dateString;
+          const to = calendarDays[calendarDays.length - 1]?.dateString;
+          if (from && to) {
+            api.getGymDaysWithReservations(from, to).then((r) => {
+              if (r.success && r.data?.dates) {
+                setDatesWithReservation(new Set(r.data.dates));
+              }
+            });
+          }
         }
       } else {
         throw new Error(response.message || '创建预约失败');
@@ -670,6 +705,8 @@ export default function GymScreen() {
                 formatDate(selectedDate) === day.dateString;
               const isToday =
                 formatDate(new Date()) === day.dateString;
+              const hasReservationMark =
+                datesWithReservation.has(day.dateString);
 
               return (
                 <TouchableOpacity
@@ -688,22 +725,27 @@ export default function GymScreen() {
                   ]}
                   onPress={() => handleDateSelect(day.date)}
                   disabled={!isSelectable}>
-                  <Text
-                    style={[
-                      styles.dateText,
-                      {
-                        color: !day.isCurrentMonth
-                          ? colors.textTertiary
-                          : !isSelectable
-                          ? colors.textTertiary
-                          : isSelected
-                          ? '#fff'
-                          : colors.text,
-                        fontSize: getFontSizeValue(16),
-                      },
-                    ]}>
-                    {day.date.getDate()}
-                  </Text>
+                  <View style={styles.dateCellInner}>
+                    <Text
+                      style={[
+                        styles.dateText,
+                        {
+                          color: !day.isCurrentMonth
+                            ? colors.textTertiary
+                            : !isSelectable
+                            ? colors.textTertiary
+                            : isSelected
+                            ? '#fff'
+                            : colors.text,
+                          fontSize: getFontSizeValue(16),
+                        },
+                      ]}>
+                      {day.date.getDate()}
+                    </Text>
+                    {hasReservationMark ? (
+                      <View style={[styles.reservationDot, { backgroundColor: '#E53935' }]} />
+                    ) : null}
+                  </View>
                 </TouchableOpacity>
               );
             })}
@@ -1301,6 +1343,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 8,
     marginTop: 2,
+  },
+  dateCellInner: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reservationDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginTop: 3,
   },
   dateCellOtherMonth: {
     opacity: 0.3,

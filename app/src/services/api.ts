@@ -129,6 +129,63 @@ async function parseResponse<T>(response: Response): Promise<T> {
   }
 }
 
+/** 闭区间 [from, to] 的 YYYY-MM-DD 列表（用于健身房日历范围） */
+function enumerateDateStringsInclusive(from: string, to: string): string[] {
+  const result: string[] = [];
+  const [fy, fm, fd] = from.split('-').map(Number);
+  const end = new Date(to + 'T12:00:00');
+  const cur = new Date(fy, fm - 1, fd);
+  while (cur <= end) {
+    const y = cur.getFullYear();
+    const m = String(cur.getMonth() + 1).padStart(2, '0');
+    const day = String(cur.getDate()).padStart(2, '0');
+    result.push(`${y}-${m}-${day}`);
+    cur.setDate(cur.getDate() + 1);
+  }
+  return result;
+}
+
+/**
+ * 当 GET /api/gym/days-with-reservations 尚未部署（404）时，按天请求已有接口推断「有预约」的日期。
+ * 部署新接口后可改为单次请求，减轻负载。
+ */
+async function getGymDaysWithReservationsViaTimeSlots(
+  from: string,
+  to: string
+): Promise<{ success: boolean; data: { dates: string[] } }> {
+  const dateList = enumerateDateStringsInclusive(from, to);
+  const dates: string[] = [];
+  const BATCH = 6;
+  for (let i = 0; i < dateList.length; i += BATCH) {
+    const chunk = dateList.slice(i, i + BATCH);
+    const results = await Promise.all(
+      chunk.map(async (dateStr) => {
+        try {
+          const response = await apiRequest(`/api/gym/time-slots/${dateStr}`);
+          const data = await parseResponse<{
+            success: boolean;
+            data: { timeSlots: { isReserved?: boolean }[] };
+          }>(response);
+          if (
+            data.success &&
+            data.data.timeSlots &&
+            data.data.timeSlots.some((s) => s.isReserved)
+          ) {
+            return dateStr;
+          }
+        } catch {
+          // 单日失败忽略
+        }
+        return null;
+      })
+    );
+    for (const r of results) {
+      if (r) dates.push(r);
+    }
+  }
+  return { success: true, data: { dates } };
+}
+
 /**
  * API Client
  */
@@ -544,6 +601,28 @@ export const api = {
           success: true,
           data: { timeSlots: [] },
         };
+      }
+      throw error;
+    }
+  },
+
+  /**
+   * Dates in [from, to] (YYYY-MM-DD) that have at least one non-cancelled reservation (calendar markers).
+   */
+  async getGymDaysWithReservations(from: string, to: string) {
+    try {
+      const q = new URLSearchParams({ from, to });
+      const response = await apiRequest(`/api/gym/days-with-reservations?${q.toString()}`);
+      return parseResponse<{
+        success: boolean;
+        data: { dates: string[] };
+      }>(response);
+    } catch (error: any) {
+      if (error.status === 404 || error.message?.includes('404')) {
+        console.warn(
+          '[gym] days-with-reservations 未部署(404)，回退为按日请求 time-slots 以标记日历红点'
+        );
+        return getGymDaysWithReservationsViaTimeSlots(from, to);
       }
       throw error;
     }
