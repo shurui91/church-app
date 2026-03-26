@@ -1,5 +1,5 @@
 // app/gym/my-reservations.tsx
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View,
   Text,
@@ -13,9 +13,9 @@ import {
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { useThemeColors } from '../src/hooks/useThemeColors';
 import { useFontSize } from '../src/context/FontSizeContext';
-import { useAuth } from '../src/context/AuthContext';
 import BackButton from '../components/BackButton';
 import { api } from '../src/services/api';
 import { Ionicons } from '@expo/vector-icons';
@@ -42,14 +42,6 @@ interface Reservation {
 const toLocalDate = (dateString: string): Date => {
   const [year, month, day] = dateString.split('-').map((value) => Number(value));
   return new Date(year, month - 1, day);
-};
-
-const formatDateDisplay = (dateString: string): string => {
-  const date = toLocalDate(dateString);
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-  const weekDay = ['日', '一', '二', '三', '四', '五', '六'][date.getDay()];
-  return `${month}月${day}日 星期${weekDay}`;
 };
 
 // 日期格式化（用于API，YYYY-MM-DD）
@@ -101,8 +93,28 @@ const sortReservationsChronologically = (list: Reservation[]): Reservation[] => 
 export default function MyReservationsScreen() {
   const router = useRouter();
   const colors = useThemeColors();
+  const { t, i18n } = useTranslation();
   const { getFontSizeValue } = useFontSize();
-  const { user } = useAuth();
+
+  const formatDateDisplay = useCallback(
+    (dateString: string): string => {
+      const date = toLocalDate(dateString);
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const weekDays = [
+        t('gym.weekdaySun'),
+        t('gym.weekdayMon'),
+        t('gym.weekdayTue'),
+        t('gym.weekdayWed'),
+        t('gym.weekdayThu'),
+        t('gym.weekdayFri'),
+        t('gym.weekdaySat'),
+      ];
+      const weekday = weekDays[date.getDay()];
+      return t('gym.dateDisplayWeekday', { month, day, weekday });
+    },
+    [t]
+  );
 
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(true);
@@ -151,13 +163,13 @@ export default function MyReservationsScreen() {
     try {
       const response = await api.checkInGymReservation(reservation.id);
       if (response.success) {
-        Alert.alert('成功', response.message || '签入成功');
+        Alert.alert(t('common.success'), response.message || t('gym.checkInSuccess'));
         loadReservations();
       } else {
-        throw new Error(response.message || '签入失败');
+        throw new Error(response.message || t('gym.checkInFailed'));
       }
     } catch (error: any) {
-      Alert.alert('错误', error.message || '签入失败');
+      Alert.alert(t('common.error'), error.message || t('gym.checkInFailed'));
     }
   };
 
@@ -166,39 +178,42 @@ export default function MyReservationsScreen() {
     try {
       const response = await api.checkOutGymReservation(reservation.id);
       if (response.success) {
-        Alert.alert('成功', response.message || '签出成功');
+        Alert.alert(t('common.success'), response.message || t('gym.checkOutSuccess'));
         loadReservations();
       } else {
-        throw new Error(response.message || '签出失败');
+        throw new Error(response.message || t('gym.checkOutFailed'));
       }
     } catch (error: any) {
-      Alert.alert('错误', error.message || '签出失败');
+      Alert.alert(t('common.error'), error.message || t('gym.checkOutFailed'));
     }
   };
 
   // 取消预约
   const handleCancel = async (reservation: Reservation) => {
-      Alert.alert(
-      '确认取消',
-      `确定要取消 ${formatDateDisplay(reservation.date)} ${reservation.startTime}-${reservation.endTime} 的预约吗？`,
+    Alert.alert(
+      t('gym.cancelConfirmTitle'),
+      t('gym.cancelConfirmMessage', {
+        dateDisplay: formatDateDisplay(reservation.date),
+        timeRange: `${reservation.startTime}-${reservation.endTime}`,
+      }),
       [
-        { text: '取消', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: '确认',
+          text: t('common.confirm'),
           style: 'destructive',
           onPress: async () => {
             try {
               const response = await api.cancelGymReservation(reservation.id);
               if (response.success) {
-                Alert.alert('成功', response.message || '预约已取消');
+                Alert.alert(t('common.success'), response.message || t('gym.reservationCancelledDefault'));
                 loadReservations();
               } else {
-                throw new Error(response.message || '取消预约失败');
+                throw new Error(response.message || t('gym.cancelReservationFailed'));
               }
             } catch (error: any) {
               // 如果是404错误（API未实现），模拟成功取消
               if (error.status === 404 || error.message?.includes('暂未开放')) {
-                Alert.alert('成功', '预约已取消（演示模式）');
+                Alert.alert(t('common.success'), t('gym.cancelledDemoMode'));
                 // 更新本地状态
                 setReservations((prev) =>
                   prev.map((r) =>
@@ -208,7 +223,7 @@ export default function MyReservationsScreen() {
                   )
                 );
               } else {
-                Alert.alert('错误', error.message || '取消预约失败');
+                Alert.alert(t('common.error'), error.message || t('gym.cancelReservationFailed'));
               }
             }
           },
@@ -229,19 +244,18 @@ export default function MyReservationsScreen() {
 
   const isPastDate = (dateString: string) => formatDate(toLocalDate(dateString)) < todayKey;
 
-  // 获取状态文本和颜色
   const getStatusInfo = (status: string) => {
     switch (status) {
       case 'pending':
-        return { text: '待签到', color: colors.primary };
+        return { text: t('gym.myReservationsStatusPending'), color: colors.primary };
       case 'checked_in':
-        return { text: '使用中', color: colors.success || '#4CAF50' };
+        return { text: t('gym.statusCheckedIn'), color: colors.success || '#4CAF50' };
       case 'checked_out':
-        return { text: '已签出', color: colors.textSecondary };
+        return { text: t('gym.statusCheckedOut'), color: colors.textSecondary };
       case 'cancelled':
-        return { text: '已取消', color: colors.error };
+        return { text: t('gym.statusCancelled'), color: colors.error };
       default:
-        return { text: '未知', color: colors.textSecondary };
+        return { text: t('gym.statusUnknown'), color: colors.textSecondary };
     }
   };
 
@@ -268,7 +282,7 @@ export default function MyReservationsScreen() {
       style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
-          title: '我的预约',
+          title: t('gym.myReservations'),
           headerShown: true,
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
@@ -309,7 +323,7 @@ export default function MyReservationsScreen() {
                   styles.sectionTitle,
                   { color: colors.text, fontSize: getFontSizeValue(20) },
                 ]}>
-                未来预约
+                {t('gym.myReservationsUpcoming')}
               </Text>
               {upcomingReservations.map((reservation) => {
                 const statusInfo = getStatusInfo(reservation.status);
@@ -371,7 +385,10 @@ export default function MyReservationsScreen() {
                             styles.checkInTime,
                             { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
                           ]}>
-                          签入时间：{new Date(reservation.checkInAt).toLocaleString('zh-CN')}
+                          {t('gym.checkInTimeLabel')}
+                          {new Date(reservation.checkInAt).toLocaleString(
+                            i18n.language === 'zh-Hant' ? 'zh-TW' : 'zh-CN'
+                          )}
                         </Text>
                       )}
 
@@ -395,7 +412,7 @@ export default function MyReservationsScreen() {
                                 styles.actionButtonText,
                                 { fontSize: getFontSizeValue(16) },
                               ]}>
-                              签入
+                              {t('gym.checkInButton')}
                             </Text>
                           </TouchableOpacity>
 
@@ -417,7 +434,7 @@ export default function MyReservationsScreen() {
                                   styles.actionButtonText,
                                   { color: colors.error, fontSize: getFontSizeValue(16) },
                                 ]}>
-                                取消
+                                {t('gym.cancelReservationButton')}
                               </Text>
                             </TouchableOpacity>
                           )}
@@ -437,7 +454,7 @@ export default function MyReservationsScreen() {
                                   styles.actionButtonText,
                                   { fontSize: getFontSizeValue(16) },
                                 ]}>
-                                签出
+                                {t('gym.checkOutButton')}
                               </Text>
                             </TouchableOpacity>
                           )}
@@ -448,7 +465,7 @@ export default function MyReservationsScreen() {
                               styles.hintText,
                               { color: colors.textSecondary, fontSize: getFontSizeValue(12) },
                             ]}>
-                            需在预约开始前15分钟才能签到
+                            {t('gym.checkInWindowHint')}
                           </Text>
                         )}
                       </View>
@@ -468,14 +485,14 @@ export default function MyReservationsScreen() {
                   styles.emptyText,
                   { color: colors.textSecondary, fontSize: getFontSizeValue(18) },
                 ]}>
-                您当前没有未来的预约
+                {t('gym.emptyNoUpcoming')}
               </Text>
               <Text
                 style={[
                   styles.emptySubText,
                   { color: colors.textTertiary, fontSize: getFontSizeValue(14) },
                 ]}>
-                可以点击下方「去预约」按钮前往体育馆预约页面。
+                {t('gym.emptyHintGoBook')}
               </Text>
               <TouchableOpacity
                 style={[
@@ -488,7 +505,7 @@ export default function MyReservationsScreen() {
                     styles.createButtonText,
                     { fontSize: getFontSizeValue(16) },
                   ]}>
-                  去预约
+                  {t('gym.goBookButton')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -598,16 +615,9 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   largeButton: {
-    minHeight: 56,
-    width: '100%',
-    borderRadius: 14,
-  },
-  actionArea: {
-    width: '100%',
-  },
-  largeButton: {
     minHeight: 54,
     width: '100%',
+    borderRadius: 14,
   },
   emptyContainer: {
     alignItems: 'center',
