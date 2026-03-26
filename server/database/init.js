@@ -178,24 +178,35 @@ async function addColumnIfNotExists(db, tableName, columnName, columnDefinition)
 /**
  * Helper function to create index if column exists (PostgreSQL)
  */
+/**
+ * PostgreSQL: CREATE INDEX 必须用与建表时一致的标识符。
+ * 驼峰 "userId" 若写成未加引号的 userid，会解析成另一列并报错 column "userid" does not exist。
+ */
+function quotePgColumnForIndex(columnNameFromSchema) {
+  const c = String(columnNameFromSchema);
+  if (/^[a-z_][a-z0-9_]*$/.test(c)) {
+    return c;
+  }
+  return `"${c.replace(/"/g, '""')}"`;
+}
+
 async function createIndexIfColumnExists(db, indexName, tableName, columnName) {
   try {
-    // Extract column name without quotes for checking
     const columnNameForCheck = columnName.replace(/"/g, '').toLowerCase();
-    
-    // Check if column exists (PostgreSQL stores table_name and column_name in lowercase in information_schema)
+
     const result = await db.get(
-      `SELECT column_name 
-       FROM information_schema.columns 
-       WHERE LOWER(table_name) = LOWER($1) AND LOWER(column_name) = LOWER($2)`,
+      `SELECT column_name
+       FROM information_schema.columns
+       WHERE table_schema = 'public'
+         AND LOWER(table_name) = LOWER($1)
+         AND LOWER(column_name) = LOWER($2)`,
       [tableName, columnNameForCheck]
     );
-    
-    if (result) {
-      // Column exists, create index using lowercase column name
-      // PostgreSQL stores field names in lowercase, so use lowercase in index creation
+
+    if (result && result.column_name) {
+      const colRef = quotePgColumnForIndex(result.column_name);
       await db.run(
-        `CREATE INDEX IF NOT EXISTS ${indexName} ON ${tableName}(${columnNameForCheck})`,
+        `CREATE INDEX IF NOT EXISTS ${indexName} ON ${tableName}(${colRef})`,
         []
       );
     } else {
