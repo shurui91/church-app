@@ -435,11 +435,11 @@ export async function initDatabase() {
       }
     }
 
-    // Create gym_reservations table
+    // Create gym_reservations table（主预约人 user_id，共同预约人 helper_user_id；与生产库一致，无 primary_user_id）
     await db.run(`
       CREATE TABLE IF NOT EXISTS gym_reservations (
         id SERIAL PRIMARY KEY,
-        primary_user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
         helper_user_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
         date TEXT NOT NULL,
         start_time TEXT NOT NULL,
@@ -454,7 +454,7 @@ export async function initDatabase() {
         updated_at TEXT NOT NULL
       )
     `, []);
-    await createIndexIfColumnExists(db, 'idx_gym_reservations_primary_user', 'gym_reservations', 'primary_user_id');
+    await createIndexIfColumnExists(db, 'idx_gym_reservations_user_id', 'gym_reservations', 'user_id');
     await createIndexIfColumnExists(db, 'idx_gym_reservations_helper_user', 'gym_reservations', 'helper_user_id');
     await createIndexIfColumnExists(db, 'idx_gym_reservations_status', 'gym_reservations', 'status');
     await createIndexIfColumnExists(db, 'idx_gym_reservations_date', 'gym_reservations', 'date');
@@ -474,14 +474,6 @@ export async function initDatabase() {
     `, []);
     await addColumnIfNotExists(db, 'gym_reservations', 'helper_user_id', 'INTEGER REFERENCES users(id) ON DELETE SET NULL');
     await addColumnIfNotExists(db, 'gym_reservations', 'user_id', 'INTEGER REFERENCES users(id) ON DELETE CASCADE');
-    try {
-      await db.run(
-        `UPDATE gym_reservations SET user_id = primary_user_id WHERE user_id IS NULL AND primary_user_id IS NOT NULL`,
-        []
-      );
-    } catch (e) {
-      if (!e.message?.includes('primary_user_id')) console.error('gym user_id migration:', e.message);
-    }
 
     // Create crash_logs table
     await db.run(`
