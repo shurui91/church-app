@@ -174,7 +174,7 @@ export default function GymScreen() {
     nameZh?: string;
     nameTw?: string;
     nameEn?: string;
-  }) => getUserDisplayName(user) || `用户 ${user.id}`;
+  }) => getUserDisplayName(user) || t('gym.userFallback', { id: user.id });
   const getCoUserTriggerLabel = (user: {
     id: number;
     district?: string;
@@ -207,7 +207,7 @@ export default function GymScreen() {
       user.name ||
       user.nameEn ||
       user.phoneNumber;
-    return name || `用户 ${user.id}`;
+    return name || t('gym.userFallback', { id: user?.id ?? '' });
   };
   const getReservationDistrictGroup = (user?: ReservationUserInfo | null) => {
     if (!user) return '';
@@ -234,17 +234,30 @@ export default function GymScreen() {
   const getReservationStatusText = (status?: string) => {
     switch (status) {
       case 'pending':
-        return '等待签到';
+        return t('gym.statusPending');
       case 'checked_in':
-        return '使用中';
+        return t('gym.statusCheckedIn');
       case 'checked_out':
-        return '已签出';
+        return t('gym.statusCheckedOut');
       case 'cancelled':
-        return '已取消';
+        return t('gym.statusCancelled');
       default:
-        return status || '未知';
+        return status || t('gym.statusUnknown');
     }
   };
+
+  const weekDayLabels = useMemo(
+    () => [
+      t('gym.weekdaySun'),
+      t('gym.weekdayMon'),
+      t('gym.weekdayTue'),
+      t('gym.weekdayWed'),
+      t('gym.weekdayThu'),
+      t('gym.weekdayFri'),
+      t('gym.weekdaySat'),
+    ],
+    [t]
+  );
 
   // 计算日历天数
   const calendarDays = useMemo(() => {
@@ -565,7 +578,7 @@ export default function GymScreen() {
           }
         }
       } else {
-        throw new Error(response.message || '创建预约失败');
+        throw new Error(response.message || t('gym.createReservationFailed'));
       }
     } catch (error: any) {
       Alert.alert(t('common.error'), error.message || t('gym.createReservationFailed'));
@@ -595,10 +608,8 @@ export default function GymScreen() {
   const currentMinutes = currentTimestamp.getHours() * 60 + currentTimestamp.getMinutes();
   const isSelectedDateToday = selectedDate ? formatDate(selectedDate) === todayKey : false;
 
-  // 获取月份名称
-  const getMonthName = (date: Date): string => {
-    return `${date.getFullYear()}年${date.getMonth() + 1}月`;
-  };
+  const getMonthName = (date: Date): string =>
+    t('gym.monthYearLabel', { year: date.getFullYear(), month: date.getMonth() + 1 });
 
   return (
     <SafeAreaView
@@ -606,7 +617,7 @@ export default function GymScreen() {
       style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
-          title: t('gym.title') || '体育馆',
+          title: t('gym.title'),
           headerShown: true,
           headerStyle: { backgroundColor: colors.card },
           headerTintColor: colors.text,
@@ -640,7 +651,7 @@ export default function GymScreen() {
                 styles.gymName,
                 { color: colors.text, fontSize: getFontSizeValue(22) },
               ]}>
-              体育馆
+              {t('gym.title')}
             </Text>
           </View>
           <Text
@@ -648,7 +659,7 @@ export default function GymScreen() {
               styles.gymDescription,
               { color: colors.textSecondary, fontSize: getFontSizeValue(16) },
             ]}>
-            开放时间：7:00 - 21:00
+            {t('gym.openingHours')}
           </Text>
         </View>
 
@@ -687,7 +698,7 @@ export default function GymScreen() {
 
           {/* 星期标题 */}
           <View style={styles.weekDaysRow}>
-            {['日', '一', '二', '三', '四', '五', '六'].map((day, index) => (
+            {weekDayLabels.map((day, index) => (
               <View key={index} style={styles.weekDayCell}>
                 <Text
                   style={[
@@ -765,14 +776,14 @@ export default function GymScreen() {
                   styles.timeSlotsTitle,
                   { color: colors.text, fontSize: getFontSizeValue(20) },
                 ]}>
-                {formatDate(selectedDate)} 可用开始时间
+                {t('gym.timeSlotsTitle', { date: formatDate(selectedDate) })}
               </Text>
               <Text
                 style={[
                   styles.timeSlotsHint,
                   { color: colors.textSecondary, fontSize: getFontSizeValue(13) },
                 ]}>
-                选择开始时间后，可选择1小时或2小时
+                {t('gym.timeSlotsHint')}
               </Text>
             </View>
 
@@ -786,7 +797,7 @@ export default function GymScreen() {
                   styles.emptyText,
                   { color: colors.textSecondary, fontSize: getFontSizeValue(16) },
                 ]}>
-                该日期没有可用时间段
+                {t('gym.noSlotsThisDay')}
               </Text>
             ) : (
               <View style={styles.timeSlotsGrid}>
@@ -849,7 +860,7 @@ export default function GymScreen() {
                     styles.timeSlotGridHint,
                     { color: colors.textTertiary, fontSize: getFontSizeValue(11) },
                   ]}>
-                  {t('gym.pastTimeSlot') || '已过'}
+                  {t('gym.pastTimeSlot')}
                 </Text>
               ) : slot.isReserved ? (
                 <Text
@@ -857,7 +868,7 @@ export default function GymScreen() {
                     styles.timeSlotGridStatus,
                     { color: colors.error, fontSize: getFontSizeValue(11) },
                   ]}>
-                  已约
+                  {t('gym.slotReserved')}
                 </Text>
               ) : (
                 <Text
@@ -865,7 +876,7 @@ export default function GymScreen() {
                     styles.timeSlotGridHint,
                     { color: colors.textTertiary, fontSize: getFontSizeValue(11) },
                   ]}>
-                  可选
+                  {t('gym.slotAvailable')}
                 </Text>
               )}
             </TouchableOpacity>
@@ -1211,7 +1222,7 @@ export default function GymScreen() {
                       styles.modalTitle,
                       { color: colors.text, fontSize: getFontSizeValue(20) },
                     ]}>
-                    预约详情
+                    {t('gym.reservationDetailTitle')}
                   </Text>
                   <TouchableOpacity
                     onPress={closeReservedDetail}
@@ -1226,15 +1237,20 @@ export default function GymScreen() {
                         styles.detailLabel,
                         { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
                       ]}>
-                      日期：{formatDate(selectedDate)} · {reservedSlot.startTime} -{' '}
-                      {reservedSlot.endTime}
+                      {t('gym.detailDateTimeLine', {
+                        date: formatDate(selectedDate),
+                        start: reservedSlot.startTime,
+                        end: reservedSlot.endTime,
+                      })}
                     </Text>
                     <Text
                       style={[
                         styles.detailLabel,
                         { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
                       ]}>
-                      状态：{getReservationStatusText(reservedSlot.reservedBy?.status)}
+                      {t('gym.reservationStatusLine', {
+                        status: getReservationStatusText(reservedSlot.reservedBy?.status),
+                      })}
                     </Text>
                     {loadingReservedDetail ? (
                       <ActivityIndicator style={{ paddingVertical: 16 }} color={colors.primary} />
@@ -1243,7 +1259,7 @@ export default function GymScreen() {
                         {detailPrimaryName && (
                           <View style={styles.detailRow}>
                             <Text style={[styles.detailRowLabel, { color: colors.text }]}>
-                              预约人
+                              {t('gym.firstAppointmentPersonLabel')}
                             </Text>
                             <Text
                               style={[
@@ -1260,7 +1276,7 @@ export default function GymScreen() {
                         {detailHelperName && (
                           <View style={styles.detailRow}>
                             <Text style={[styles.detailRowLabel, { color: colors.text }]}>
-                              共同预约人
+                              {t('gym.coUserLabel')}
                             </Text>
                             <Text
                               style={[
