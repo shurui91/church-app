@@ -34,6 +34,8 @@ interface TimeSlot {
   duration: number; // 时长（分钟），如 60
   isAvailable: boolean; // 是否可用
   isReserved: boolean; // 是否已被预约
+  /** 闭馆日：全天不开放预约，与「已约」区分 */
+  blackout?: boolean;
   reservedBy?: {
     reservationId?: number;
     status: string;
@@ -118,16 +120,20 @@ function normalizeTo60MinSlots(apiSlots: TimeSlot[]): TimeSlot[] {
       const sEnd = sStart + (s.duration ?? 30);
       return sStart < slotEnd && sEnd > slotStart;
     });
-    const isReserved = overlapping.some((s) => s.isReserved);
-    const reservedBy = overlapping.find((s) => s.reservedBy)?.reservedBy;
+    const blackout = overlapping.some((s) => s.blackout);
+    const isReserved = !blackout && overlapping.some((s) => s.isReserved);
+    const reservedBy = blackout
+      ? undefined
+      : overlapping.find((s) => s.reservedBy)?.reservedBy;
 
     result.push({
       id: minutes,
       startTime: startStr,
       endTime: endStr,
       duration: SLOT_DURATION,
-      isAvailable: !isReserved,
+      isAvailable: blackout ? false : !isReserved,
       isReserved,
+      blackout: !!blackout,
       reservedBy,
     });
   }
@@ -356,6 +362,7 @@ export default function GymScreen() {
         const rawSlots = response.data.timeSlots.map((slot) => ({
           ...slot,
           isReserved: !!slot.isReserved,
+          blackout: !!slot.blackout,
           reservedBy: slot.reservedBy,
         }));
         const slots60 = normalizeTo60MinSlots(rawSlots);
@@ -489,7 +496,7 @@ export default function GymScreen() {
 
   // 选择时间段并打开预约模态框
   const handleTimeSlotSelect = (slot: TimeSlot) => {
-    if (!slot.isAvailable || slot.isReserved) {
+    if (!slot.isAvailable || slot.isReserved || slot.blackout) {
       return;
     }
 
@@ -807,7 +814,10 @@ export default function GymScreen() {
             parseInt(slot.startTime.split(':')[1], 10);
           const isPastSlot = isSelectedDateToday && slotMinutes < currentMinutes;
           const disabled = isPastSlot || (!slot.isAvailable && !slot.isReserved);
+          const isBlackout = !isPastSlot && !!slot.blackout;
           const backgroundColor = isPastSlot
+            ? colors.borderLight
+            : isBlackout
             ? colors.borderLight
             : slot.isReserved
             ? colors.error + '15'
@@ -816,6 +826,8 @@ export default function GymScreen() {
             : colors.borderLight;
           const borderColor = isPastSlot
             ? colors.borderLight
+            : isBlackout
+            ? colors.textSecondary
             : slot.isReserved
             ? colors.error
             : slot.isAvailable
@@ -823,6 +835,8 @@ export default function GymScreen() {
             : colors.borderLight;
           const textColor = isPastSlot
             ? colors.textTertiary
+            : isBlackout
+            ? colors.textSecondary
             : slot.isReserved
             ? colors.error
             : slot.isAvailable
@@ -861,6 +875,14 @@ export default function GymScreen() {
                     { color: colors.textTertiary, fontSize: getFontSizeValue(11) },
                   ]}>
                   {t('gym.pastTimeSlot')}
+                </Text>
+              ) : isBlackout ? (
+                <Text
+                  style={[
+                    styles.timeSlotGridHint,
+                    { color: colors.textSecondary, fontSize: getFontSizeValue(11) },
+                  ]}>
+                  {t('gym.slotBlackout')}
                 </Text>
               ) : slot.isReserved ? (
                 <Text

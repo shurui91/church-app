@@ -164,12 +164,12 @@ async function getGymDaysWithReservationsViaTimeSlots(
           const response = await apiRequest(`/api/gym/time-slots/${dateStr}`);
           const data = await parseResponse<{
             success: boolean;
-            data: { timeSlots: { isReserved?: boolean }[] };
+            data: { timeSlots: { isReserved?: boolean; blackout?: boolean }[] };
           }>(response);
           if (
             data.success &&
             data.data.timeSlots &&
-            data.data.timeSlots.some((s) => s.isReserved)
+            data.data.timeSlots.some((s) => s.isReserved || s.blackout)
           ) {
             return dateStr;
           }
@@ -566,6 +566,7 @@ export const api = {
         duration: number;
         isAvailable: boolean;
         isReserved: boolean;
+        blackout?: boolean;
         reservedBy?: {
           reservationId?: number;
           status: string;

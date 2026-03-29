@@ -486,6 +486,17 @@ export async function initDatabase() {
     await addColumnIfNotExists(db, 'gym_reservations', 'helper_user_id', 'INTEGER REFERENCES users(id) ON DELETE SET NULL');
     await addColumnIfNotExists(db, 'gym_reservations', 'user_id', 'INTEGER REFERENCES users(id) ON DELETE CASCADE');
 
+    await db.run(
+      `
+      CREATE TABLE IF NOT EXISTS gym_blackout_dates (
+        blackout_date TEXT PRIMARY KEY,
+        created_at TEXT NOT NULL
+      )
+    `,
+      []
+    );
+    console.log('gym_blackout_dates table created or already exists');
+
     // Create crash_logs table
     await db.run(`
       CREATE TABLE IF NOT EXISTS crash_logs (

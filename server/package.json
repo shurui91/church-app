@@ -9,6 +9,7 @@
     "dev": "node --watch index.js",
     "kill-port": "./scripts/kill-port.sh 3000",
     "dev:clean": "./scripts/kill-port.sh 3000 && npm run dev",
+    "gym:block-days": "node scripts/seed-gym-blackout-dates.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

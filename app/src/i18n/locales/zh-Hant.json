@@ -48,6 +48,7 @@
     "timeSlotsHint": "選擇開始時間後，可選擇1小時或2小時",
     "noSlotsThisDay": "該日期沒有可用時段",
     "slotReserved": "已約",
+    "slotBlackout": "不開放",
     "slotAvailable": "可選",
     "statusPending": "等待簽到",
     "statusCheckedIn": "使用中",

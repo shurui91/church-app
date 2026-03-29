@@ -1,5 +1,6 @@
 import express from 'express';
 import { GymReservation } from '../database/models/GymReservation.js';
+import { GymBlackout } from '../database/models/GymBlackout.js';
 import { User } from '../database/models/User.js';
 import { authenticate } from '../middleware/auth.js';
 import { getDatabase } from '../database/db.js';
@@ -91,6 +92,26 @@ router.get('/gym/time-slots/:date', gymMiddleware, async (req, res) => {
       return res.status(400).json({ success: false, message: '缺少日期' });
     }
 
+    const isBlackout = await GymBlackout.isBlackoutDate(date);
+    if (isBlackout) {
+      const slots = [];
+      for (let minutes = OPENING_MINUTES; minutes < CLOSING_MINUTES; minutes += SLOT_DURATION) {
+        const start = formatTime(minutes);
+        const end = formatTime(minutes + SLOT_DURATION);
+        slots.push({
+          id: minutes,
+          startTime: start,
+          endTime: end,
+          duration: SLOT_DURATION,
+          isAvailable: false,
+          isReserved: false,
+          blackout: true,
+          reservedBy: null,
+        });
+      }
+      return res.json({ success: true, data: { timeSlots: slots } });
+    }
+
     // Fetch existing reservations for this date
     const reservations = await GymReservation.findByDate(date);
 
@@ -130,6 +151,7 @@ router.get('/gym/time-slots/:date', gymMiddleware, async (req, res) => {
         duration: SLOT_DURATION,
         isAvailable: !reservation,
         isReserved: !!reservation,
+        blackout: false,
         reservedBy: reservation
           ? {
               reservationId: reservation.id,
@@ -166,8 +188,10 @@ router.get('/gym/days-with-reservations', gymMiddleware, async (req, res) => {
       return res.status(400).json({ success: false, message: 'from 不能晚于 to' });
     }
 
-    const dates = await GymReservation.findDatesWithReservationsBetween(from, to);
-    res.json({ success: true, data: { dates } });
+    const reservationDates = await GymReservation.findDatesWithReservationsBetween(from, to);
+    const blackoutDates = await GymBlackout.findBetween(from, to);
+    const merged = [...new Set([...reservationDates, ...blackoutDates])].sort();
+    res.json({ success: true, data: { dates: merged } });
   } catch (error) {
     console.error('[gym GET days-with-reservations]', error);
     res.status(500).json({ success: false, message: '获取预约日期失败' });
@@ -218,6 +242,10 @@ router.post('/gym/reservations', gymMiddleware, async (req, res) => {
 
     if (endTotalMinutes >= MINUTES_PER_DAY) {
       return res.status(400).json({ success: false, message: '结束时间超出每日范围' });
+    }
+
+    if (await GymBlackout.isBlackoutDate(date)) {
+      return res.status(400).json({ success: false, message: '该日期体育馆不开放预约' });
     }
 
     if (await GymReservation.hasReservationOnDate(req.user.id, date)) {
