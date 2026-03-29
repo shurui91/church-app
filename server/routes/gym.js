@@ -44,7 +44,7 @@ const ensureGymUser = async (req, res, next) => {
   next();
 };
 const gymMiddleware = [...gymAuthMiddleware, ensureGymUser];
-const OPENING_MINUTES = 7 * 60;
+const OPENING_MINUTES = 8 * 60;
 const CLOSING_MINUTES = 22 * 60;
 const SLOT_DURATION = 60; // 以60分钟为一个 slot
 
@@ -237,7 +237,7 @@ router.post('/gym/reservations', gymMiddleware, async (req, res) => {
     const endTotalMinutes = startTotalMinutes + duration;
 
     if (startTotalMinutes < OPENING_MINUTES || endTotalMinutes > CLOSING_MINUTES) {
-      return res.status(400).json({ success: false, message: '预约必须在 7:00 - 22:00 范围内' });
+      return res.status(400).json({ success: false, message: '预约必须在 8:00 - 22:00 范围内' });
     }
 
     if (endTotalMinutes >= MINUTES_PER_DAY) {

@@ -27,6 +27,7 @@
     "coUserRequiredLabel": "共同預約人（必選）",
     "noCoUsersWithRolesHint": "暫無可選用戶（需有 super_admin / admin / 負責人 角色）",
     "notesOptionalLabel": "備註（可選）",
+    "notesLabel": "備註",
     "notesPlaceholder": "請輸入備註資訊",
     "currentUserFallback": "目前使用者",
     "districtPrefix": "大區：",
@@ -35,7 +36,9 @@
     "selectDateFirst": "請先選擇日期",
     "reservationCreatedDefault": "預約已建立",
     "createReservationFailed": "建立預約失敗",
-    "openingHours": "開放時間：7:00 - 21:00",
+    "openingHours": "開放時間：8:00 - 22:00",
+    "fixedScheduleTitle": "體育館固定活動",
+    "fixedScheduleBody": "每週打掃：週一上午8點到12點\n乒乓球：週六上午10點到12點，週日晚6點到8點\n羽毛球：週三晚7點到9點，週六下午3點到5點\n青少年：週六下午5點到7點\n夏季訓練：7月4日國慶日當週，以及之前的一週和之後的一週\n冬季訓練：12月25日當週，以及之前的一週和之後的一週",
     "monthYearLabel": "{{year}}年{{month}}月",
     "weekdaySun": "日",
     "weekdayMon": "一",
@@ -62,6 +65,12 @@
     "userFallback": "使用者 {{id}}",
     "dateDisplayWeekday": "{{month}}月{{day}}日 星期{{weekday}}",
     "myReservationsUpcoming": "未來預約",
+    "myReservationsHistory": "歷史預約",
+    "myRolePrimary": "我是主預約人",
+    "myRoleHelper": "我是共同預約人",
+    "tapCardForDetail": "點按卡片可查看完整資訊",
+    "checkOutTimeLabel": "簽出時間：",
+    "detailClose": "關閉",
     "checkInButton": "簽入",
     "checkOutButton": "簽出",
     "cancelReservationButton": "取消",
@@ -141,7 +150,7 @@
     "bible_one_year": "讀經一年一遍",
     "life_study": "生命讀經",
     "witness_lee": "李常受文集",
-	"hymns": "詩歌"
+    "hymns": "詩歌"
   },
   "bible": {
     "daily_reading": "📖 每日讀經",
@@ -153,7 +162,7 @@
   },
   "titles": {
     "bible_one_year": "讀經一年一遍",
-	"lee": "李常受文集"
+    "lee": "李常受文集"
   },
   "common": {
     "tip": "提示",

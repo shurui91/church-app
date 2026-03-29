@@ -24,7 +24,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 // 时间段类型（以60分钟为一个 slot）
 const SLOT_DURATION = 60;
-const OPENING_MINUTES = 7 * 60;
+const OPENING_MINUTES = 8 * 60;
 const CLOSING_MINUTES = 22 * 60;
 
 interface TimeSlot {
@@ -97,7 +97,7 @@ const getFirstDayOfMonth = (date: Date): number => {
   return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
 };
 
-// 将 API 返回的 slots 标准化为 60 分钟间隔（7:00, 8:00, ... 21:00）
+// 将 API 返回的 slots 标准化为 60 分钟间隔（8:00, 9:00, ... 21:00）
 function normalizeTo60MinSlots(apiSlots: TimeSlot[]): TimeSlot[] {
   const parseMinutes = (time: string) => {
     const [h, m] = time.split(':').map(Number);
@@ -667,6 +667,31 @@ export default function GymScreen() {
               { color: colors.textSecondary, fontSize: getFontSizeValue(16) },
             ]}>
             {t('gym.openingHours')}
+          </Text>
+        </View>
+
+        {/* 固定活动说明（场馆信息与日历之间） */}
+        <View style={[styles.fixedScheduleCard, { backgroundColor: colors.card, borderColor: colors.borderLight }]}>
+          <View style={styles.fixedScheduleHeader}>
+            <Ionicons name="information-circle-outline" size={22} color={colors.primary} />
+            <Text
+              style={[
+                styles.fixedScheduleTitle,
+                { color: colors.text, fontSize: getFontSizeValue(17) },
+              ]}>
+              {t('gym.fixedScheduleTitle')}
+            </Text>
+          </View>
+          <Text
+            style={[
+              styles.fixedScheduleBody,
+              {
+                color: colors.textSecondary,
+                fontSize: getFontSizeValue(14),
+                lineHeight: Math.round(getFontSizeValue(14) * 1.55),
+              },
+            ]}>
+            {t('gym.fixedScheduleBody')}
           </Text>
         </View>
 
@@ -1351,6 +1376,25 @@ const styles = StyleSheet.create({
   gymDescription: {
     fontSize: 16,
     marginTop: 4,
+  },
+  fixedScheduleCard: {
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+  },
+  fixedScheduleHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 10,
+  },
+  fixedScheduleTitle: {
+    fontWeight: '600',
+    flex: 1,
+  },
+  fixedScheduleBody: {
+    marginTop: 0,
   },
   calendarCard: {
     padding: 16,

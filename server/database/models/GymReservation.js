@@ -119,6 +119,26 @@ export class GymReservation {
   }
 
   /**
+   * 删除指定日期上的全部预约（任意状态），用于闭馆前清理占位数据。
+   * @param {string[]} dates YYYY-MM-DD
+   * @returns {Promise<number>} 删除行数
+   */
+  static async deleteAllForDates(dates) {
+    if (!dates?.length) return 0;
+    const db = await getDatabase();
+    try {
+      const placeholders = dates.map(() => '?').join(', ');
+      const result = await db.run(
+        `DELETE FROM gym_reservations WHERE date IN (${placeholders})`,
+        dates
+      );
+      return result.changes ?? 0;
+    } finally {
+      await db.close();
+    }
+  }
+
+  /**
    * Get all reservations on a particular date (excluding cancelled ones).
    */
   static async findByDate(date) {
