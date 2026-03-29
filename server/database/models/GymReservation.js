@@ -278,7 +278,12 @@ export class GymReservation {
         [id]
       );
 
-      if (updated.primary_checked_in_at && updated.helper_checked_in_at) {
+      const duoComplete =
+        updated.primary_checked_in_at && updated.helper_checked_in_at;
+      const soloComplete =
+        !reservation.helper_user_id && updated.primary_checked_in_at;
+
+      if (duoComplete || soloComplete) {
         await db.run(
           `
           UPDATE gym_reservations
@@ -342,7 +347,12 @@ export class GymReservation {
         [id]
       );
 
-      if (updated.primary_checked_out_at && updated.helper_checked_out_at) {
+      const duoComplete =
+        updated.primary_checked_out_at && updated.helper_checked_out_at;
+      const soloComplete =
+        !reservation.helper_user_id && updated.primary_checked_out_at;
+
+      if (duoComplete || soloComplete) {
         await db.run(
           `
           UPDATE gym_reservations

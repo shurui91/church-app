@@ -384,6 +384,20 @@ export default function MyReservationsScreen() {
     return Number(!!primary) + Number(!!helper);
   };
 
+  /** 双人须两人均已签入；单人（无第二预约人）仅主预约人签入即可 */
+  const allPartiesHaveCheckedIn = (
+    reservation: Reservation,
+    detailOverride?: ReservationDetailPayload | null
+  ): boolean => {
+    const helperId = reservation.helperUserId ?? detailOverride?.helper_user_id ?? null;
+    const primaryIn = detailOverride?.primary_checked_in_at ?? reservation.primary_checked_in_at;
+    const helperIn = detailOverride?.helper_checked_in_at ?? reservation.helper_checked_in_at;
+    if (helperId == null) {
+      return !!primaryIn;
+    }
+    return !!(primaryIn && helperIn);
+  };
+
   const openCheckPrompt = (reservation: Reservation, type: 'checkIn' | 'checkOut') => {
     setCheckPrompt({ type, reservation });
     setCheckAnswers({ clean: 'yes', equipment: 'yes' });
@@ -443,8 +457,13 @@ export default function MyReservationsScreen() {
     return reservation.status === 'pending';
   };
 
-  const canCheckOut = (reservation: Reservation): boolean => {
-    return reservation.status === 'checked_in';
+  /** 仅当预约已进入「使用中」且（双人）均已签入后才显示签出 */
+  const canCheckOut = (
+    reservation: Reservation,
+    detailOverride?: ReservationDetailPayload | null
+  ): boolean => {
+    if (reservation.status !== 'checked_in') return false;
+    return allPartiesHaveCheckedIn(reservation, detailOverride);
   };
 
   const detailSource = detailFull;
@@ -902,17 +921,17 @@ export default function MyReservationsScreen() {
                         </Text>
                       </TouchableOpacity>
                     )}
-                    {canCheckOut(selectedForDetail) && (
+                    {canCheckOut(selectedForDetail, detailFull) && (
                       <TouchableOpacity
                         style={[
                           styles.modalActionBtn,
                           {
                             backgroundColor: colors.success || '#4CAF50',
-                            opacity: canCheckOut(selectedForDetail) ? 1 : 0.4,
+                            opacity: canCheckOut(selectedForDetail, detailFull) ? 1 : 0.4,
                           },
                         ]}
                         onPress={() => openCheckPrompt(selectedForDetail, 'checkOut')}
-                        disabled={!canCheckOut(selectedForDetail)}>
+                        disabled={!canCheckOut(selectedForDetail, detailFull)}>
                         <Text style={[styles.modalActionBtnText, { fontSize: getFontSizeValue(16) }]}>
                           {t('gym.checkOutButton')}
                         </Text>
