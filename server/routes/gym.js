@@ -370,8 +370,10 @@ router.post('/gym/reservations/:id/check-in', gymMiddleware, async (req, res) =>
       return res.status(404).json({ success: false, message: '预约不存在' });
     }
 
-    const isPrimary = reservation.user_id === req.user.id;
-    const isHelper = reservation.helper_user_id === req.user.id;
+    const uid = Number(req.user.id);
+    const isPrimary = Number(reservation.user_id) === uid;
+    const isHelper =
+      reservation.helper_user_id != null && Number(reservation.helper_user_id) === uid;
     if (!isPrimary && !isHelper) {
       return res.status(403).json({ success: false, message: '只能为自己的预约签到' });
     }
@@ -394,7 +396,13 @@ router.post('/gym/reservations/:id/check-in', gymMiddleware, async (req, res) =>
     }
 
     const updated = await GymReservation.findById(reservationId);
-    res.json({ success: true, message: '签到成功', data: { reservation: updated } });
+    const bothIn =
+      updated?.primary_checked_in_at && updated?.helper_checked_in_at;
+    res.json({
+      success: true,
+      message: bothIn ? '签到成功' : '已记录你的签到，等待另一人',
+      data: { reservation: updated },
+    });
   } catch (error) {
     console.error('[gym POST check-in]', error);
     res.status(500).json({ success: false, message: '签入失败' });
@@ -412,8 +420,10 @@ router.post('/gym/reservations/:id/check-out', gymMiddleware, async (req, res) =
       return res.status(404).json({ success: false, message: '预约不存在' });
     }
 
-    const isPrimary = reservation.user_id === req.user.id;
-    const isHelper = reservation.helper_user_id === req.user.id;
+    const uid = Number(req.user.id);
+    const isPrimary = Number(reservation.user_id) === uid;
+    const isHelper =
+      reservation.helper_user_id != null && Number(reservation.helper_user_id) === uid;
     if (!isPrimary && !isHelper) {
       return res.status(403).json({ success: false, message: '只能为自己的预约签出' });
     }
@@ -428,7 +438,13 @@ router.post('/gym/reservations/:id/check-out', gymMiddleware, async (req, res) =
     }
 
     const updated = await GymReservation.findById(reservationId);
-    res.json({ success: true, message: '签出成功', data: { reservation: updated } });
+    const bothOut =
+      updated?.primary_checked_out_at && updated?.helper_checked_out_at;
+    res.json({
+      success: true,
+      message: bothOut ? '签出成功' : '已记录你的签出，等待另一人',
+      data: { reservation: updated },
+    });
   } catch (error) {
     console.error('[gym POST check-out]', error);
     res.status(500).json({ success: false, message: '签出失败' });

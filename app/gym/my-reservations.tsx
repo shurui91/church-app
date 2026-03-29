@@ -42,6 +42,8 @@ interface Reservation {
   notes?: string | null;
   userNameZh?: string | null;
   helperNameZh?: string | null;
+  primary_checked_in_at?: string | null;
+  helper_checked_in_at?: string | null;
 }
 
 /** GET /api/gym/reservations/:id 返回结构（蛇形字段） */
@@ -72,6 +74,10 @@ interface ReservationDetailPayload {
   helper_phonenumber?: string;
   helper_district?: string;
   helper_groupnum?: string;
+  primary_checked_in_at?: string | null;
+  helper_checked_in_at?: string | null;
+  primary_checked_out_at?: string | null;
+  helper_checked_out_at?: string | null;
 }
 
 const toLocalDate = (dateString: string): Date => {
@@ -109,6 +115,8 @@ const normalizeReservation = (raw: any): Reservation => ({
   notes: raw.notes,
   userNameZh: raw.user_name ?? null,
   helperNameZh: raw.helper_name ?? null,
+  primary_checked_in_at: raw.primary_checked_in_at,
+  helper_checked_in_at: raw.helper_checked_in_at,
 });
 
 const sortReservationsChronologically = (list: Reservation[]): Reservation[] => {
@@ -193,6 +201,14 @@ export default function MyReservationsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const fadeAnim = useRef(new Animated.Value(0)).current;
+  const [checkPrompt, setCheckPrompt] = useState<{
+    type: 'checkIn' | 'checkOut' | null;
+    reservation: Reservation | null;
+  }>({ type: null, reservation: null });
+  const [checkAnswers, setCheckAnswers] = useState<{ clean: 'yes' | 'no'; equipment: 'yes' | 'no' }>({
+    clean: 'yes',
+    equipment: 'yes',
+  });
 
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [selectedForDetail, setSelectedForDetail] = useState<Reservation | null>(null);
@@ -269,11 +285,26 @@ export default function MyReservationsScreen() {
     loadReservations();
   };
 
+  const mergeReservationFromApi = (raw: any) => {
+    const merged = normalizeReservation(raw);
+    setReservations((prev) =>
+      sortReservationsChronologically(prev.map((r) => (r.id === merged.id ? merged : r)))
+    );
+    setSelectedForDetail((sel) => (sel?.id === merged.id ? merged : sel));
+    setDetailFull((d) => {
+      if (!d || d.id !== merged.id) return d;
+      return { ...d, ...raw } as ReservationDetailPayload;
+    });
+  };
+
   const handleCheckIn = async (reservation: Reservation) => {
     try {
       const response = await api.checkInGymReservation(reservation.id);
       if (response.success) {
         Alert.alert(t('common.success'), response.message || t('gym.checkInSuccess'));
+        if (response.data?.reservation) {
+          mergeReservationFromApi(response.data.reservation);
+        }
         await loadReservations();
         await refetchDetailIfOpen(reservation.id);
       } else {
@@ -289,6 +320,9 @@ export default function MyReservationsScreen() {
       const response = await api.checkOutGymReservation(reservation.id);
       if (response.success) {
         Alert.alert(t('common.success'), response.message || t('gym.checkOutSuccess'));
+        if (response.data?.reservation) {
+          mergeReservationFromApi(response.data.reservation);
+        }
         await loadReservations();
         await refetchDetailIfOpen(reservation.id);
       } else {
@@ -338,6 +372,35 @@ export default function MyReservationsScreen() {
         },
       ]
     );
+  };
+
+  /** 详情接口（蛇形字段）优先，避免弹窗内仍用打开时的列表快照导致「已签到」不更新 */
+  const getSignedInCount = (
+    reservation: Reservation,
+    detailOverride?: ReservationDetailPayload | null
+  ) => {
+    const primary = detailOverride?.primary_checked_in_at ?? reservation.primary_checked_in_at;
+    const helper = detailOverride?.helper_checked_in_at ?? reservation.helper_checked_in_at;
+    return Number(!!primary) + Number(!!helper);
+  };
+
+  const openCheckPrompt = (reservation: Reservation, type: 'checkIn' | 'checkOut') => {
+    setCheckPrompt({ type, reservation });
+    setCheckAnswers({ clean: 'yes', equipment: 'yes' });
+  };
+  const closeCheckPrompt = () => {
+    setCheckPrompt({ type: null, reservation: null });
+  };
+  const confirmCheckPrompt = async () => {
+    if (!checkPrompt.type || !checkPrompt.reservation) return;
+    const { type, reservation } = checkPrompt;
+    closeCheckPrompt();
+    console.log('[Gym] check prompt answers', { type, answers: checkAnswers });
+    if (type === 'checkIn') {
+      await handleCheckIn(reservation);
+    } else {
+      await handleCheckOut(reservation);
+    }
   };
 
   useEffect(() => {
@@ -483,6 +546,16 @@ export default function MyReservationsScreen() {
                 </Text>
                 <Text
                   style={[
+                    styles.signedInCountText,
+                    { color: colors.textSecondary, fontSize: getFontSizeValue(12) },
+                  ]}>
+                  {t('gym.signedInCount', {
+                    count: getSignedInCount(reservation),
+                    defaultValue: `${getSignedInCount(reservation)} signed in`,
+                  })}
+                </Text>
+                <Text
+                  style={[
                     styles.tapHint,
                     { color: colors.textTertiary, fontSize: getFontSizeValue(11), marginTop: 6 },
                   ]}>
@@ -531,7 +604,7 @@ export default function MyReservationsScreen() {
                         : 0.4,
                   },
                 ]}
-                onPress={() => handleCheckIn(reservation)}
+                onPress={() => openCheckPrompt(reservation, 'checkIn')}
                 disabled={historyLocksSignInCancel || !canCheckIn(reservation)}>
                 <Ionicons name="checkmark-circle" size={24} color="#fff" />
                 <Text style={[styles.actionButtonText, { fontSize: getFontSizeValue(16) }]}>
@@ -575,7 +648,7 @@ export default function MyReservationsScreen() {
                       opacity: canCheckOut(reservation) ? 1 : 0.4,
                     },
                   ]}
-                  onPress={() => handleCheckOut(reservation)}
+                  onPress={() => openCheckPrompt(reservation, 'checkOut')}
                   disabled={!canCheckOut(reservation)}>
                   <Ionicons name="log-out" size={20} color="#fff" />
                   <Text style={[styles.actionButtonText, { fontSize: getFontSizeValue(16) }]}>
@@ -738,6 +811,16 @@ export default function MyReservationsScreen() {
                         {t('gym.reservationStatusLine', { status: statusInfoDetail.text })}
                       </Text>
                     )}
+                  <Text
+                    style={[
+                      styles.detailLine,
+                      { color: colors.textSecondary, fontSize: getFontSizeValue(12), marginTop: 6 },
+                    ]}>
+                    {t('gym.signedInCount', {
+                      count: getSignedInCount(selectedForDetail, detailFull),
+                      defaultValue: `${getSignedInCount(selectedForDetail, detailFull)} signed in`,
+                    })}
+                  </Text>
                   </>
                 )}
 
@@ -794,7 +877,7 @@ export default function MyReservationsScreen() {
                             opacity: detailHistoryLocksSignInCancel ? 0.38 : 1,
                           },
                         ]}
-                        onPress={() => handleCheckIn(selectedForDetail)}
+                        onPress={() => openCheckPrompt(selectedForDetail, 'checkIn')}
                         disabled={detailHistoryLocksSignInCancel}>
                         <Text style={[styles.modalActionBtnText, { fontSize: getFontSizeValue(16) }]}>
                           {t('gym.checkInButton')}
@@ -828,7 +911,7 @@ export default function MyReservationsScreen() {
                             opacity: canCheckOut(selectedForDetail) ? 1 : 0.4,
                           },
                         ]}
-                        onPress={() => handleCheckOut(selectedForDetail)}
+                        onPress={() => openCheckPrompt(selectedForDetail, 'checkOut')}
                         disabled={!canCheckOut(selectedForDetail)}>
                         <Text style={[styles.modalActionBtnText, { fontSize: getFontSizeValue(16) }]}>
                           {t('gym.checkOutButton')}
@@ -839,6 +922,151 @@ export default function MyReservationsScreen() {
                 )}
               </ScrollView>
             )}
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={!!checkPrompt.type}
+        transparent
+        animationType="fade"
+        onRequestClose={closeCheckPrompt}>
+        <View style={styles.modalOverlay}>
+          <Pressable style={styles.modalBackdrop} onPress={closeCheckPrompt} />
+          <View style={[styles.checkModalSheet, { backgroundColor: colors.card }]}>
+            <Text
+              style={[
+                styles.checkModalTitle,
+                { color: colors.text, fontSize: getFontSizeValue(18) },
+              ]}>
+              {checkPrompt.type === 'checkIn' ? t('gym.checkInButton') : t('gym.checkOutButton')}
+            </Text>
+            <Text
+              style={[
+                styles.checkModalSubtitle,
+                { color: colors.textSecondary, fontSize: getFontSizeValue(14) },
+              ]}>
+              {t(
+                'gym.checkPromptSubtitle',
+                'Please confirm the following items:'
+              )}
+            </Text>
+            <View style={styles.checkQuestion}>
+              <Text
+                style={[
+                  styles.checkQuestionLabel,
+                  { color: colors.text, fontSize: getFontSizeValue(14) },
+                ]}>
+                {t(
+                  'gym.cleanQuestion',
+                  'Is the gym cleaned?'
+                )}
+              </Text>
+              <View style={styles.checkOptionRow}>
+                {['yes', 'no'].map((value) => (
+                  <TouchableOpacity
+                    key={value}
+                    style={[
+                      styles.checkOption,
+                      {
+                        borderColor:
+                          checkAnswers.clean === value ? colors.primary : colors.borderLight,
+                        backgroundColor:
+                          checkAnswers.clean === value ? colors.primary + '20' : 'transparent',
+                      },
+                      checkAnswers.clean === value && styles.checkOptionActive,
+                    ]}
+                    onPress={() =>
+                      setCheckAnswers((prev) => ({
+                        ...prev,
+                        clean: value as 'yes' | 'no',
+                      }))
+                    }>
+                    <Text
+                      style={[
+                        styles.checkOptionText,
+                        {
+                          color:
+                            checkAnswers.clean === value ? colors.primary : colors.textSecondary,
+                          fontSize: getFontSizeValue(13),
+                        },
+                      ]}>
+                      {t(
+                        value === 'yes' ? 'gym.answerYes' : 'gym.answerNo',
+                        value === 'yes' ? 'Yes' : 'No'
+                      )}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+            <View style={styles.checkQuestion}>
+              <Text
+                style={[
+                  styles.checkQuestionLabel,
+                  { color: colors.text, fontSize: getFontSizeValue(14) },
+                ]}>
+                {t(
+                  'gym.equipmentQuestion',
+                  'Are there any equipment left out?'
+                )}
+              </Text>
+              <View style={styles.checkOptionRow}>
+                {['yes', 'no'].map((value) => (
+                  <TouchableOpacity
+                    key={value}
+                    style={[
+                      styles.checkOption,
+                      {
+                        borderColor:
+                          checkAnswers.equipment === value ? colors.primary : colors.borderLight,
+                        backgroundColor:
+                          checkAnswers.equipment === value ? colors.primary + '20' : 'transparent',
+                      },
+                      checkAnswers.equipment === value && styles.checkOptionActive,
+                    ]}
+                    onPress={() =>
+                      setCheckAnswers((prev) => ({
+                        ...prev,
+                        equipment: value as 'yes' | 'no',
+                      }))
+                    }>
+                    <Text
+                      style={[
+                        styles.checkOptionText,
+                        {
+                          color:
+                            checkAnswers.equipment === value
+                              ? colors.primary
+                              : colors.textSecondary,
+                          fontSize: getFontSizeValue(13),
+                        },
+                      ]}>
+                      {t(
+                        value === 'yes' ? 'gym.answerYes' : 'gym.answerNo',
+                        value === 'yes' ? 'Yes' : 'No'
+                      )}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+            <View style={styles.checkModalActions}>
+              <TouchableOpacity
+                style={[styles.checkModalButton, { backgroundColor: colors.borderLight }]}
+                onPress={closeCheckPrompt}>
+                <Text style={{ color: colors.textSecondary, fontSize: getFontSizeValue(14) }}>
+                  {t('common.cancel')}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.checkModalButton, { backgroundColor: colors.primary }]}
+                onPress={confirmCheckPrompt}>
+                <Text style={{ color: '#fff', fontSize: getFontSizeValue(14) }}>
+                  {t('common.confirm')}
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
@@ -908,6 +1136,9 @@ const styles = StyleSheet.create({
   },
   tapHint: {
     fontSize: 11,
+  },
+  signedInCountText: {
+    marginTop: 4,
   },
   statusBadge: {
     paddingHorizontal: 12,
@@ -993,6 +1224,50 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 28,
     maxHeight: '88%',
+  },
+  checkModalSheet: {
+    borderRadius: 20,
+    padding: 20,
+    marginHorizontal: 16,
+  },
+  checkModalTitle: {
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  checkModalSubtitle: {
+    marginBottom: 12,
+  },
+  checkQuestion: {
+    marginBottom: 16,
+  },
+  checkQuestionLabel: {
+    fontWeight: '600',
+    marginBottom: 6,
+  },
+  checkOptionRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  checkOption: {
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    borderWidth: 1,
+  },
+  checkOptionActive: {},
+  checkOptionText: {
+    fontWeight: '600',
+  },
+  checkModalActions: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  checkModalButton: {
+    flex: 1,
+    paddingVertical: 12,
+    borderRadius: 10,
+    alignItems: 'center',
   },
   modalGrabber: {
     width: 40,

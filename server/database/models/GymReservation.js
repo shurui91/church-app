@@ -1,5 +1,11 @@
 import { getDatabase } from '../db.js';
 
+/** 统一比较用户 id（PostgreSQL / JWT 可能为 number 或 string） */
+function sameUserId(a, b) {
+  if (a == null || b == null) return false;
+  return Number(a) === Number(b);
+}
+
 export class GymReservation {
   /**
    * Create a new reservation for two users (primary + co-user).
@@ -19,9 +25,15 @@ export class GymReservation {
            notes,
            status,
            user_name,
+           check_in_at,
+           check_out_at,
+           primary_checked_in_at,
+           helper_checked_in_at,
+           primary_checked_out_at,
+           helper_checked_out_at,
            created_at,
            updated_at
-         ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, ?, ?)
+         ) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?, NULL, NULL, NULL, NULL, NULL, NULL, ?, ?)
          RETURNING id`,
         [userId, coUserId || null, date, startTime, endTime, duration, notes || null, userName || null, now, now]
       );
@@ -227,20 +239,59 @@ export class GymReservation {
   static async checkIn(id, userId) {
     const db = await getDatabase();
     try {
+      const reservation = await db.get(
+        `
+        SELECT user_id, helper_user_id, primary_checked_in_at, helper_checked_in_at, status
+        FROM gym_reservations
+        WHERE id = ?
+      `,
+        [id]
+      );
+      if (!reservation) return false;
+
       const now = new Date().toISOString();
-      const result = await db.run(
+      let targetColumn = null;
+      if (sameUserId(reservation.user_id, userId)) {
+        targetColumn = 'primary_checked_in_at';
+      } else if (sameUserId(reservation.helper_user_id, userId)) {
+        targetColumn = 'helper_checked_in_at';
+      }
+      if (!targetColumn) return false;
+      if (reservation[targetColumn]) return false;
+
+      await db.run(
         `
         UPDATE gym_reservations
-        SET status = 'checked_in',
-            check_in_at = ?,
+        SET ${targetColumn} = ?,
             updated_at = ?
         WHERE id = ?
-          AND (user_id = ? OR helper_user_id = ?)
-          AND status = 'pending'
       `,
-        [now, now, id, userId, userId]
+        [now, now, id]
       );
-      return result.changes > 0;
+
+      const updated = await db.get(
+        `
+        SELECT primary_checked_in_at, helper_checked_in_at
+        FROM gym_reservations
+        WHERE id = ?
+      `,
+        [id]
+      );
+
+      if (updated.primary_checked_in_at && updated.helper_checked_in_at) {
+        await db.run(
+          `
+          UPDATE gym_reservations
+          SET status = 'checked_in',
+              check_in_at = ?,
+              updated_at = ?
+          WHERE id = ?
+        `,
+          [now, now, id]
+        );
+      }
+
+      return true;
     } finally {
       await db.close();
     }
@@ -252,20 +303,59 @@ export class GymReservation {
   static async checkOut(id, userId) {
     const db = await getDatabase();
     try {
+      const reservation = await db.get(
+        `
+        SELECT user_id, helper_user_id, primary_checked_out_at, helper_checked_out_at, status
+        FROM gym_reservations
+        WHERE id = ?
+      `,
+        [id]
+      );
+      if (!reservation || reservation.status !== 'checked_in') return false;
+
       const now = new Date().toISOString();
-      const result = await db.run(
+      let targetColumn = null;
+      if (sameUserId(reservation.user_id, userId)) {
+        targetColumn = 'primary_checked_out_at';
+      } else if (sameUserId(reservation.helper_user_id, userId)) {
+        targetColumn = 'helper_checked_out_at';
+      }
+      if (!targetColumn) return false;
+      if (reservation[targetColumn]) return false;
+
+      await db.run(
         `
         UPDATE gym_reservations
-        SET status = 'checked_out',
-            check_out_at = ?,
+        SET ${targetColumn} = ?,
             updated_at = ?
         WHERE id = ?
-          AND (user_id = ? OR helper_user_id = ?)
-          AND status = 'checked_in'
       `,
-        [now, now, id, userId, userId]
+        [now, now, id]
       );
-      return result.changes > 0;
+
+      const updated = await db.get(
+        `
+        SELECT primary_checked_out_at, helper_checked_out_at
+        FROM gym_reservations
+        WHERE id = ?
+      `,
+        [id]
+      );
+
+      if (updated.primary_checked_out_at && updated.helper_checked_out_at) {
+        await db.run(
+          `
+          UPDATE gym_reservations
+          SET status = 'checked_out',
+              check_out_at = ?,
+              updated_at = ?
+          WHERE id = ?
+        `,
+          [now, now, id]
+        );
+      }
+
+      return true;
     } finally {
       await db.close();
     }

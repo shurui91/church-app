@@ -11,6 +11,7 @@ import {
   Modal,
   TextInput,
   TouchableWithoutFeedback,
+  Pressable,
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -85,6 +86,12 @@ const formatDate = (date: Date): string => {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+};
+
+const WAIVER_TEXT = {
+  en: `By signing this form, you waive and release all claims against the gymnasium, its owners, the Church in Cerritos and its members for any injury, loss, or damage sustained while on the premises, whether caused by negligence or otherwise to the fullest extent permitted by law. By using this gym, you assume full responsibility for any and all risks, damages, or injuries that may occur to you while using the gymnasium facilities, equipment, or engaging in any gym-related activities.\n\nOnly registered and authorized users are allowed access.\nGuests are only allowed with prior approval and must follow all gym rules.\nAll hosts must be 18 years or older and can invite up to 5 other guests or previously authorized groups and must always be present while their guest(s) are on the premises.\nA host can ask their guest(s) at any time for any reason.\nDo not use the gym if you have infectious disease(s), feel unwell, or prohibited by a physician.\nAppropriate athletic clothing and footwear must be worn at all times, and offensive/inappropriate attire is prohibited.\nAlways respect other users and staff; disruptive behavior, including loud noises, abusive language, or harassment, will not be tolerated.\nUse equipment only for its intended purpose and following posted instructions and return equipment to their designated areas after use.\nNo participants should adjust the basketball system and height. If the basketball system is out of alignment, do not use it, and contact Ken at 562-632-2777.\nNo food or drink (except water in closed containers) is allowed in the gym area and keep the gym clean and tidy; pick up and dispose of trash appropriately.\nRespect schedules, time limits, and game rules as determined by gym staff.\nChildren under the age of 18 are not allowed in the gym without adult supervision.\nThe 2nd level track level is off limit to non-staff personnel.\nThe gymnasium is not responsible for lost or stolen items.\nThe facility must be used respectfully; no loitering or inappropriate behavior is allowed.\nViolations of these rules may result in warning, suspension, or termination of gym privileges, and repeat offenses or serious violations may lead to permanent expulsion from the gym.`,
+  zh: `签署本表格即表示：在法律允许的最大范围内，您就于场馆内遭受的任何伤害、损失或损害，放弃并对体育馆、其所有者、喜瑞都教会及其会友提出的一切索赔，无论该等情形是否因过失或其他原因所致。使用本体育馆即表示：您就使用体育馆设施、设备或参与任何与体育馆相关活动时可能发生在您身上的任何风险、损害或伤害，承担全部责任。\n\n仅限已登记且经授权的人员进入使用。\n访客须经事先批准方可进入，并须遵守全部体育馆规则。\n所有接待人须年满 18 周岁，最多可邀请 5 名其他访客或事先批准的团体；访客在场馆内期间，接待人须始终在场。\n接待人可随时以任何理由要求访客离开。\n若患有传染病、感到身体不适，或经医师禁止运动，请勿使用体育馆。\n须始终穿着合适的运动服装与鞋履；禁止穿着冒犯性或不恰当的服装。\n尊重其他使用者与工作人员；扰乱秩序的行为（包括大声喧哗、辱骂或骚扰）不予容忍。\n仅按器材既定用途使用，并遵守张贴说明；使用后请将器材放回指定区域。\n任何人不得调整篮球架系统与高度。若篮球架失准或错位，请勿使用，并请联系 Ken：562-632-2777。\n体育馆区域内禁止饮食（密封容器装的水除外）；请保持场馆整洁，并妥善清理与丢弃垃圾。\n遵守体育馆工作人员制定的时间安排、时限与游戏规则。\n未满 18 岁者不得在无人陪同的情况下进入体育馆。\n二楼跑道层非工作人员禁止进入。\n体育馆对遗失或被盗物品不承担责任。\n须文明使用场馆；禁止游荡或不当行为。\n违反本规则可能导致警告、暂停或终止体育馆使用权限；屡犯或严重违规者可能被永久禁止使用体育馆。`,
+  'zh-Hant': `簽署本表格即表示：在法律允許的最大範圍內，您就於場館內遭受的任何傷害、損失或損害，放棄並對體育館、其所有者、喜瑞都教會及其會友提出的一切索賠，無論該等情形是否因過失或其他原因所致。使用本體育館即表示：您就使用體育館設施、設備或參與任何與體育館相關活動時可能發生在您身上的任何風險、損害或傷害，承擔全部責任。\n\n僅限已登記且經授權的人員進入使用。\n訪客須經事先批准方可進入，並須遵守全部體育館規則。\n所有接待人須年滿 18 歲，最多可邀請 5 名其他訪客或事先核准的團體；訪客在場館內期間，接待人須始終在場。\n接待人可隨時以任何理由要求訪客離開。\n若患有傳染病、感到身體不適，或經醫師禁止運動，請勿使用體育館。\n須始終穿著合適的運動服裝與鞋履；禁止穿著冒犯性或不恰當的服裝。\n尊重其他使用者與工作人員；擾亂秩序之行為（包括大聲喧嘩、辱罵或騷擾）不予容忍。\n僅按器材既定用途使用，並遵守張貼說明；使用後請將器材放回指定區域。\n任何人不得調整籃球架系統與高度。若籃球架失準或錯位，請勿使用，並請聯絡 Ken：562-632-2777。\n體育館區域內禁止飲食（密封容器裝的水除外）；請保持場館整潔，並妥善清理與丟棄垃圾。\n遵守體育館工作人員制定之時間安排、時限與遊戲規則。\n未滿 18 歲者不得在無人陪同的情況下進入體育館。\n二樓跑道層非工作人員禁止進入。\n體育館對遺失或被竊物品不承擔責任。\n須文明使用場館；禁止遊蕩或不當行為。\n違反本規則可能導致警告、暫停或終止體育館使用權限；屢犯或嚴重違規者可能被永久禁止使用體育館。`,
 };
 
 // 获取月份的天数
@@ -169,6 +176,7 @@ export default function GymScreen() {
   const [isCoUserDropdownOpen, setIsCoUserDropdownOpen] = useState(false);
   /** 当前日历网格日期范围内、已有预约的日期（用于格子上红点） */
   const [datesWithReservation, setDatesWithReservation] = useState<Set<string>>(() => new Set());
+  const [showWaiverModal, setShowWaiverModal] = useState(false);
   const getUserDisplayName = (user: {
     nameZh?: string;
     nameTw?: string;
@@ -205,6 +213,17 @@ export default function GymScreen() {
     !loadingUsers &&
     gymUsers.length > 0 &&
     coUserId != null;
+  const waiverLanguage =
+    i18n.language === 'zh-Hant'
+      ? 'zh-Hant'
+      : i18n.language.startsWith('zh')
+      ? 'zh'
+      : 'en';
+  const waiverParagraphs = (WAIVER_TEXT[waiverLanguage] ?? WAIVER_TEXT.en)
+    .split('\n')
+    .filter(Boolean);
+  const openWaiverModal = () => setShowWaiverModal(true);
+  const closeWaiverModal = () => setShowWaiverModal(false);
   const getReservationUserDisplayName = (user?: ReservationUserInfo | null) => {
     if (!user) return '';
     const name =
@@ -693,6 +712,30 @@ export default function GymScreen() {
             ]}>
             {t('gym.fixedScheduleBody')}
           </Text>
+        </View>
+
+        <View style={[styles.waiverCard, { backgroundColor: colors.card, borderColor: colors.borderLight }]}>
+          <TouchableOpacity activeOpacity={0.8} onPress={openWaiverModal}>
+            <View style={styles.waiverRow}>
+              <Ionicons name="document-text-outline" size={22} color={colors.primary} />
+              <Text
+                style={[
+                  styles.waiverLink,
+                  { color: colors.text, fontSize: getFontSizeValue(16) },
+                ]}>
+                {t('gym.waiverLinkLabel')}
+              </Text>
+            </View>
+            <Text
+              numberOfLines={2}
+              ellipsizeMode="tail"
+              style={[
+                styles.waiverHint,
+                { color: colors.textSecondary, fontSize: getFontSizeValue(13) },
+              ]}>
+              {t('gym.waiverModalTitle')}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* 日历选择器 */}
@@ -1346,6 +1389,55 @@ export default function GymScreen() {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+
+      <Modal
+        visible={showWaiverModal}
+        transparent
+        animationType="slide"
+        onRequestClose={closeWaiverModal}>
+        <View style={styles.modalOverlay}>
+          <Pressable style={styles.modalBackdrop} onPress={closeWaiverModal} />
+          <View style={[styles.modalSheet, { backgroundColor: colors.card, maxHeight: '80%' }]}>
+            <View style={[styles.modalHeader, { borderBottomWidth: 0, paddingVertical: 10 }]}>
+              <Text
+                style={[
+                  styles.modalTitle,
+                  { color: colors.text, fontSize: getFontSizeValue(18) },
+                ]}>
+                {t('gym.waiverModalTitle')}
+              </Text>
+              <TouchableOpacity onPress={closeWaiverModal} style={styles.closeButton}>
+                <Text
+                  style={[
+                    styles.waiverModalClose,
+                    { color: colors.primary, fontSize: getFontSizeValue(14) },
+                  ]}>
+                  {t('gym.waiverModalClose')}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView
+              style={styles.waiverModalContent}
+              showsVerticalScrollIndicator={false}
+              contentContainerStyle={{ paddingBottom: 20 }}>
+              {waiverParagraphs.map((paragraph, index) => (
+                <Text
+                  key={`${paragraph}-${index}`}
+                  style={[
+                    styles.waiverParagraph,
+                    {
+                      color: colors.textSecondary,
+                      fontSize: getFontSizeValue(14),
+                      marginTop: index === 0 ? 0 : 14,
+                    },
+                  ]}>
+                  {paragraph}
+                </Text>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -1395,6 +1487,23 @@ const styles = StyleSheet.create({
   },
   fixedScheduleBody: {
     marginTop: 0,
+  },
+  waiverCard: {
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 8,
+    borderWidth: 1,
+  },
+  waiverRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  waiverLink: {
+    fontWeight: '600',
+  },
+  waiverHint: {
+    marginTop: 6,
   },
   calendarCard: {
     padding: 16,
@@ -1517,6 +1626,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
     justifyContent: 'flex-end',
   },
+  modalBackdrop: {
+    ...StyleSheet.absoluteFillObject,
+  },
+  modalSheet: {
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 20,
+    marginHorizontal: 12,
+  },
   reservedModalContent: {
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
@@ -1601,6 +1719,15 @@ const styles = StyleSheet.create({
   },
   modalScroll: {
     flexGrow: 1,
+  },
+  waiverModalContent: {
+    flexGrow: 1,
+  },
+  waiverParagraph: {
+    lineHeight: 22,
+  },
+  waiverModalClose: {
+    fontWeight: '600',
   },
   coUserSection: {
     marginBottom: 20,

@@ -497,6 +497,31 @@ export async function initDatabase() {
     );
     console.log('gym_blackout_dates table created or already exists');
 
+    await db.run(`
+      ALTER TABLE gym_reservations
+      ADD COLUMN IF NOT EXISTS check_in_at TEXT
+    `, []);
+    await db.run(`
+      ALTER TABLE gym_reservations
+      ADD COLUMN IF NOT EXISTS check_out_at TEXT
+    `, []);
+    await db.run(`
+      ALTER TABLE gym_reservations
+      ADD COLUMN IF NOT EXISTS primary_checked_in_at TEXT
+    `, []);
+    await db.run(`
+      ALTER TABLE gym_reservations
+      ADD COLUMN IF NOT EXISTS helper_checked_in_at TEXT
+    `, []);
+    await db.run(`
+      ALTER TABLE gym_reservations
+      ADD COLUMN IF NOT EXISTS primary_checked_out_at TEXT
+    `, []);
+    await db.run(`
+      ALTER TABLE gym_reservations
+      ADD COLUMN IF NOT EXISTS helper_checked_out_at TEXT
+    `, []);
+
     // Create crash_logs table
     await db.run(`
       CREATE TABLE IF NOT EXISTS crash_logs (
