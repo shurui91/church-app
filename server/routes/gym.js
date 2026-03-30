@@ -214,6 +214,21 @@ router.post('/gym/reservations', gymMiddleware, async (req, res) => {
       return res.status(400).json({ success: false, message: '时长只能是60分钟或120分钟' });
     }
 
+    const dateStr = String(date);
+    const ymdRe = /^\d{4}-\d{2}-\d{2}$/;
+    if (!ymdRe.test(dateStr)) {
+      return res.status(400).json({ success: false, message: '日期格式错误' });
+    }
+    const [resY, resM, resD] = dateStr.split('-').map((n) => parseInt(n, 10));
+    const reservationDay = new Date(resY, resM - 1, resD);
+    reservationDay.setHours(0, 0, 0, 0);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const diffDays = Math.floor((reservationDay.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays < 31 || diffDays > 180) {
+      return res.status(400).json({ success: false, message: '仅可预约未来第31天到第180天' });
+    }
+
     const coUserIdNum = coUserId ? parseInt(String(coUserId), 10) : null;
     if (!coUserIdNum || Number.isNaN(coUserIdNum)) {
       return res.status(400).json({ success: false, message: '请选择第二位预约人' });

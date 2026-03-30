@@ -88,6 +88,15 @@ const formatDate = (date: Date): string => {
   return `${year}-${month}-${day}`;
 };
 
+const startOfDay = (date: Date): Date => {
+  const d = new Date(date);
+  d.setHours(0, 0, 0, 0);
+  return d;
+};
+
+const BOOKING_WINDOW_MIN_DAYS = 31;
+const BOOKING_WINDOW_MAX_DAYS = 180;
+
 const WAIVER_TEXT = {
   en: `By signing this form, you waive and release all claims against the gymnasium, its owners, the Church in Cerritos and its members for any injury, loss, or damage sustained while on the premises, whether caused by negligence or otherwise to the fullest extent permitted by law. By using this gym, you assume full responsibility for any and all risks, damages, or injuries that may occur to you while using the gymnasium facilities, equipment, or engaging in any gym-related activities.\n\nOnly registered and authorized users are allowed access.\nGuests are only allowed with prior approval and must follow all gym rules.\nAll hosts must be 18 years or older and can invite up to 5 other guests or previously authorized groups and must always be present while their guest(s) are on the premises.\nA host can ask their guest(s) at any time for any reason.\nDo not use the gym if you have infectious disease(s), feel unwell, or prohibited by a physician.\nAppropriate athletic clothing and footwear must be worn at all times, and offensive/inappropriate attire is prohibited.\nAlways respect other users and staff; disruptive behavior, including loud noises, abusive language, or harassment, will not be tolerated.\nUse equipment only for its intended purpose and following posted instructions and return equipment to their designated areas after use.\nNo participants should adjust the basketball system and height. If the basketball system is out of alignment, do not use it, and contact Ken at 562-632-2777.\nNo food or drink (except water in closed containers) is allowed in the gym area and keep the gym clean and tidy; pick up and dispose of trash appropriately.\nRespect schedules, time limits, and game rules as determined by gym staff.\nChildren under the age of 18 are not allowed in the gym without adult supervision.\nThe 2nd level track level is off limit to non-staff personnel.\nThe gymnasium is not responsible for lost or stolen items.\nThe facility must be used respectfully; no loitering or inappropriate behavior is allowed.\nViolations of these rules may result in warning, suspension, or termination of gym privileges, and repeat offenses or serious violations may lead to permanent expulsion from the gym.`,
   zh: `签署本表格即表示：在法律允许的最大范围内，您就于场馆内遭受的任何伤害、损失或损害，放弃并对体育馆、其所有者、喜瑞都教会及其会友提出的一切索赔，无论该等情形是否因过失或其他原因所致。使用本体育馆即表示：您就使用体育馆设施、设备或参与任何与体育馆相关活动时可能发生在您身上的任何风险、损害或伤害，承担全部责任。\n\n仅限已登记且经授权的人员进入使用。\n访客须经事先批准方可进入，并须遵守全部体育馆规则。\n所有接待人须年满 18 周岁，最多可邀请 5 名其他访客或事先批准的团体；访客在场馆内期间，接待人须始终在场。\n接待人可随时以任何理由要求访客离开。\n若患有传染病、感到身体不适，或经医师禁止运动，请勿使用体育馆。\n须始终穿着合适的运动服装与鞋履；禁止穿着冒犯性或不恰当的服装。\n尊重其他使用者与工作人员；扰乱秩序的行为（包括大声喧哗、辱骂或骚扰）不予容忍。\n仅按器材既定用途使用，并遵守张贴说明；使用后请将器材放回指定区域。\n任何人不得调整篮球架系统与高度。若篮球架失准或错位，请勿使用，并请联系 Ken：562-632-2777。\n体育馆区域内禁止饮食（密封容器装的水除外）；请保持场馆整洁，并妥善清理与丢弃垃圾。\n遵守体育馆工作人员制定的时间安排、时限与游戏规则。\n未满 18 岁者不得在无人陪同的情况下进入体育馆。\n二楼跑道层非工作人员禁止进入。\n体育馆对遗失或被盗物品不承担责任。\n须文明使用场馆；禁止游荡或不当行为。\n违反本规则可能导致警告、暂停或终止体育馆使用权限；屡犯或严重违规者可能被永久禁止使用体育馆。`,
@@ -177,6 +186,8 @@ export default function GymScreen() {
   /** 当前日历网格日期范围内、已有预约的日期（用于格子上红点） */
   const [datesWithReservation, setDatesWithReservation] = useState<Set<string>>(() => new Set());
   const [showWaiverModal, setShowWaiverModal] = useState(false);
+  /** 固定活动说明默认收起，节省纵向空间 */
+  const [fixedScheduleExpanded, setFixedScheduleExpanded] = useState(false);
   const getUserDisplayName = (user: {
     nameZh?: string;
     nameTw?: string;
@@ -353,26 +364,17 @@ export default function GymScreen() {
     };
   }, [calendarDays]);
 
-  // 检查日期是否可选（今天起30天内）
+  /** 仅「未来第 31 天到第 180 天」范围可预约；其他日期仍可浏览 */
   const isDateSelectable = (date: Date): boolean => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const maxDate = new Date(today);
-    maxDate.setDate(maxDate.getDate() + 30); // 最多提前30天
-
-    const checkDate = new Date(date);
-    checkDate.setHours(0, 0, 0, 0);
-
-    return checkDate >= today && checkDate <= maxDate;
+    const today = startOfDay(new Date());
+    const check = startOfDay(date);
+    const diffMillis = check.getTime() - today.getTime();
+    const diffDays = Math.floor(diffMillis / (1000 * 60 * 60 * 24));
+    return diffDays >= BOOKING_WINDOW_MIN_DAYS && diffDays <= BOOKING_WINDOW_MAX_DAYS;
   };
 
   // 加载时间段
   const loadTimeSlots = useCallback(async (date: Date) => {
-    if (!isDateSelectable(date)) {
-      setTimeSlots([]);
-      return;
-    }
-
     setLoadingSlots(true);
     try {
       const dateString = formatDate(date);
@@ -431,16 +433,13 @@ export default function GymScreen() {
     }
   }, []);
 
-  // 选择日期
+  // 选择日期（任意日期均可查看占用；仅六个月内可预约）
   const handleDateSelect = (date: Date) => {
-    if (!isDateSelectable(date)) {
-      return;
-    }
     setSelectedDate(date);
     loadTimeSlots(date);
   };
 
-  // 能否切换到上个月（仅当不在当月时，因过去日期不可预约）
+  // 能否切换到上个月（可浏览历史月份）
   const canGoPrevMonth = (): boolean => {
     const today = new Date();
     return (
@@ -449,14 +448,12 @@ export default function GymScreen() {
     );
   };
 
-  // 能否切换到下个月（不能超过今天+30天）
+  /** 日历可向后翻约 2 年，便于查看远期占用（预约仍限六个月内） */
   const canGoNextMonth = (): boolean => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const maxDate = new Date(today);
-    maxDate.setDate(maxDate.getDate() + 30);
     const nextMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1);
-    return nextMonth <= maxDate;
+    const viewLimit = new Date();
+    viewLimit.setFullYear(viewLimit.getFullYear() + 2);
+    return nextMonth <= viewLimit;
   };
 
   // 切换月份
@@ -523,6 +520,10 @@ export default function GymScreen() {
       Alert.alert(t('common.tip'), t('gym.selectDateFirst'));
       return;
     }
+    if (!isDateSelectable(selectedDate)) {
+      Alert.alert(t('common.tip'), t('gym.bookingWindowHint'));
+      return;
+    }
 
     console.log('[Gym] Time slot tapped', { slot, selectedDate });
     console.log('[Gym] before opening modal, showReservationModal=', showReservationModal);
@@ -564,6 +565,10 @@ export default function GymScreen() {
   // 创建预约
   const handleCreateReservation = async () => {
     if (!selectedSlot || !selectedDate) {
+      return;
+    }
+    if (!isDateSelectable(selectedDate)) {
+      Alert.alert(t('common.tip'), t('gym.bookingWindowHint'));
       return;
     }
     if (coUserId == null) {
@@ -633,13 +638,14 @@ export default function GymScreen() {
   const todayKey = formatDate(currentTimestamp);
   const currentMinutes = currentTimestamp.getHours() * 60 + currentTimestamp.getMinutes();
   const isSelectedDateToday = selectedDate ? formatDate(selectedDate) === todayKey : false;
+  const isPastDaySelected = selectedDate ? formatDate(selectedDate) < todayKey : false;
 
   const getMonthName = (date: Date): string =>
     t('gym.monthYearLabel', { year: date.getFullYear(), month: date.getMonth() + 1 });
 
   return (
     <SafeAreaView
-      edges={['top']}
+      edges={['left', 'right', 'bottom']}
       style={[styles.container, { backgroundColor: colors.background }]}>
       <Stack.Screen
         options={{
@@ -664,7 +670,7 @@ export default function GymScreen() {
           styles.scrollContent,
           {
             paddingBottom: 65,
-            paddingTop: 20,
+            paddingTop: 8,
           },
         ]}
         showsVerticalScrollIndicator={false}>
@@ -689,29 +695,51 @@ export default function GymScreen() {
           </Text>
         </View>
 
-        {/* 固定活动说明（场馆信息与日历之间） */}
+        {/* 固定活动说明（可展开，默认收起） */}
         <View style={[styles.fixedScheduleCard, { backgroundColor: colors.card, borderColor: colors.borderLight }]}>
-          <View style={styles.fixedScheduleHeader}>
-            <Ionicons name="information-circle-outline" size={22} color={colors.primary} />
+          <TouchableOpacity
+            activeOpacity={0.75}
+            onPress={() => setFixedScheduleExpanded((v) => !v)}
+            accessibilityRole="button"
+            accessibilityState={{ expanded: fixedScheduleExpanded }}
+            accessibilityLabel={
+              fixedScheduleExpanded
+                ? t('gym.fixedScheduleCollapse')
+                : t('gym.fixedScheduleExpand')
+            }>
+            <View
+              style={[
+                styles.fixedScheduleHeader,
+                { marginBottom: fixedScheduleExpanded ? 10 : 0 },
+              ]}>
+              <Ionicons name="information-circle-outline" size={22} color={colors.primary} />
+              <Text
+                style={[
+                  styles.fixedScheduleTitle,
+                  { color: colors.text, fontSize: getFontSizeValue(17) },
+                ]}>
+                {t('gym.fixedScheduleTitle')}
+              </Text>
+              <Ionicons
+                name={fixedScheduleExpanded ? 'chevron-up' : 'chevron-down'}
+                size={22}
+                color={colors.textSecondary}
+              />
+            </View>
+          </TouchableOpacity>
+          {fixedScheduleExpanded ? (
             <Text
               style={[
-                styles.fixedScheduleTitle,
-                { color: colors.text, fontSize: getFontSizeValue(17) },
+                styles.fixedScheduleBody,
+                {
+                  color: colors.textSecondary,
+                  fontSize: getFontSizeValue(14),
+                  lineHeight: Math.round(getFontSizeValue(14) * 1.55),
+                },
               ]}>
-              {t('gym.fixedScheduleTitle')}
+              {t('gym.fixedScheduleBody')}
             </Text>
-          </View>
-          <Text
-            style={[
-              styles.fixedScheduleBody,
-              {
-                color: colors.textSecondary,
-                fontSize: getFontSizeValue(14),
-                lineHeight: Math.round(getFontSizeValue(14) * 1.55),
-              },
-            ]}>
-            {t('gym.fixedScheduleBody')}
-          </Text>
+          ) : null}
         </View>
 
         <View style={[styles.waiverCard, { backgroundColor: colors.card, borderColor: colors.borderLight }]}>
@@ -786,10 +814,33 @@ export default function GymScreen() {
             ))}
           </View>
 
+          <View style={styles.calendarLegendRow}>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: colors.textTertiary }]} />
+              <Text
+                style={[
+                  styles.legendLabel,
+                  { color: colors.textSecondary, fontSize: getFontSizeValue(12) },
+                ]}>
+                {t('gym.calendarLegendPast')}
+              </Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: colors.primary }]} />
+              <Text
+                style={[
+                  styles.legendLabel,
+                  { color: colors.textSecondary, fontSize: getFontSizeValue(12) },
+                ]}>
+                {t('gym.calendarLegendFuture')}
+              </Text>
+            </View>
+          </View>
+
           {/* 日期网格 */}
           <View style={styles.calendarGrid}>
             {calendarDays.map((day, index) => {
-              const isSelectable = isDateSelectable(day.date);
+              const isBookable = isDateSelectable(day.date);
               const isSelected =
                 selectedDate &&
                 formatDate(selectedDate) === day.dateString;
@@ -797,6 +848,10 @@ export default function GymScreen() {
                 formatDate(new Date()) === day.dateString;
               const hasReservationMark =
                 datesWithReservation.has(day.dateString);
+              const dotIsPastDay = day.dateString < todayKey;
+              const reservationDotColor =
+                hasReservationMark &&
+                (dotIsPastDay ? colors.textTertiary : colors.primary);
 
               return (
                 <TouchableOpacity
@@ -804,7 +859,7 @@ export default function GymScreen() {
                   style={[
                     styles.dateCell,
                     !day.isCurrentMonth && styles.dateCellOtherMonth,
-                    !isSelectable && styles.dateCellDisabled,
+                    !isBookable && day.isCurrentMonth && styles.dateCellViewOnly,
                     isSelected && {
                       backgroundColor: colors.primary,
                     },
@@ -814,7 +869,7 @@ export default function GymScreen() {
                     },
                   ]}
                   onPress={() => handleDateSelect(day.date)}
-                  disabled={!isSelectable}>
+                  activeOpacity={0.75}>
                   <View style={styles.dateCellInner}>
                     <Text
                       style={[
@@ -822,8 +877,8 @@ export default function GymScreen() {
                         {
                           color: !day.isCurrentMonth
                             ? colors.textTertiary
-                            : !isSelectable
-                            ? colors.textTertiary
+                            : !isBookable
+                            ? colors.textSecondary
                             : isSelected
                             ? '#fff'
                             : colors.text,
@@ -832,8 +887,8 @@ export default function GymScreen() {
                       ]}>
                       {day.date.getDate()}
                     </Text>
-                    {hasReservationMark ? (
-                      <View style={[styles.reservationDot, { backgroundColor: '#E53935' }]} />
+                    {reservationDotColor ? (
+                      <View style={[styles.reservationDot, { backgroundColor: reservationDotColor }]} />
                     ) : null}
                   </View>
                 </TouchableOpacity>
@@ -860,6 +915,19 @@ export default function GymScreen() {
                 ]}>
                 {t('gym.timeSlotsHint')}
               </Text>
+              {selectedDate && !isDateSelectable(selectedDate) ? (
+                <Text
+                  style={[
+                    styles.bookingWindowHint,
+                    {
+                      color: colors.primary,
+                      fontSize: getFontSizeValue(13),
+                      backgroundColor: colors.primary + '14',
+                    },
+                  ]}>
+                  {t('gym.bookingWindowHint')}
+                </Text>
+              ) : null}
             </View>
 
             {loadingSlots ? (
@@ -880,8 +948,11 @@ export default function GymScreen() {
           const slotMinutes =
             parseInt(slot.startTime.split(':')[0], 10) * 60 +
             parseInt(slot.startTime.split(':')[1], 10);
-          const isPastSlot = isSelectedDateToday && slotMinutes < currentMinutes;
-          const disabled = isPastSlot || (!slot.isAvailable && !slot.isReserved);
+          const isPastSlot =
+            isPastDaySelected ||
+            (isSelectedDateToday && slotMinutes < currentMinutes);
+          const slotPressDisabled =
+            isPastSlot && !slot.isReserved && !slot.blackout;
           const isBlackout = !isPastSlot && !!slot.blackout;
           const backgroundColor = isPastSlot
             ? colors.borderLight
@@ -924,7 +995,7 @@ export default function GymScreen() {
                 onPress={() =>
                   slot.isReserved ? handleReservedSlotPress(slot) : handleTimeSlotSelect(slot)
                 }
-                disabled={disabled}>
+                disabled={slotPressDisabled}>
               <Text
                 style={[
                   styles.timeSlotGridTime,
@@ -937,13 +1008,31 @@ export default function GymScreen() {
                 {slot.startTime}
               </Text>
               {isPastSlot ? (
-                <Text
-                  style={[
-                    styles.timeSlotGridHint,
-                    { color: colors.textTertiary, fontSize: getFontSizeValue(11) },
-                  ]}>
-                  {t('gym.pastTimeSlot')}
-                </Text>
+                slot.blackout ? (
+                  <Text
+                    style={[
+                      styles.timeSlotGridHint,
+                      { color: colors.textSecondary, fontSize: getFontSizeValue(11) },
+                    ]}>
+                    {t('gym.slotBlackout')}
+                  </Text>
+                ) : slot.isReserved ? (
+                  <Text
+                    style={[
+                      styles.timeSlotGridStatus,
+                      { color: colors.textTertiary, fontSize: getFontSizeValue(11) },
+                    ]}>
+                    {t('gym.slotEnded')}
+                  </Text>
+                ) : (
+                  <Text
+                    style={[
+                      styles.timeSlotGridHint,
+                      { color: colors.textTertiary, fontSize: getFontSizeValue(11) },
+                    ]}>
+                    {t('gym.pastTimeSlot')}
+                  </Text>
+                )
               ) : isBlackout ? (
                 <Text
                   style={[
@@ -958,7 +1047,7 @@ export default function GymScreen() {
                     styles.timeSlotGridStatus,
                     { color: colors.error, fontSize: getFontSizeValue(11) },
                   ]}>
-                  {t('gym.slotReserved')}
+                  {t('gym.slotUpcoming')}
                 </Text>
               ) : (
                 <Text
@@ -1479,7 +1568,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    marginBottom: 10,
   },
   fixedScheduleTitle: {
     fontWeight: '600',
@@ -1536,6 +1624,28 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
+  calendarLegendRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
+    gap: 16,
+    marginBottom: 10,
+    paddingHorizontal: 4,
+  },
+  legendItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  legendDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  legendLabel: {
+    fontSize: 12,
+  },
   calendarGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -1561,8 +1671,9 @@ const styles = StyleSheet.create({
   dateCellOtherMonth: {
     opacity: 0.3,
   },
-  dateCellDisabled: {
-    opacity: 0.3,
+  /** 当前月内、可查看但不在可预约窗口内的日期 */
+  dateCellViewOnly: {
+    opacity: 0.72,
   },
   dateText: {
     fontSize: 16,
@@ -1580,6 +1691,13 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: '600',
     marginBottom: 6,
+  },
+  bookingWindowHint: {
+    marginTop: 10,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    overflow: 'hidden',
   },
   timeSlotsHint: {
     fontSize: 13,
