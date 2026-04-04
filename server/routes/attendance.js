@@ -90,10 +90,6 @@ router.get(
  */
 router.post('/', authenticate, authorizeAttendance, async (req, res) => {
   try {
-    // Log the entire request body first to debug
-    console.error('[attendance POST] Full request body:', JSON.stringify(req.body));
-    console.error('[attendance POST] Request body keys:', Object.keys(req.body || {}));
-    
     const {
       id,
       date,
@@ -106,12 +102,7 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
     } = req.body;
     const user = req.user;
     
-    console.error('[attendance POST] Extracted id:', id, 'type:', typeof id, 'value:', id);
     
-    // Only log when id is provided (for debugging updates)
-    if (id !== undefined && id !== null && id !== '') {
-      console.log('[attendance POST] UPDATE request - id:', id, 'type:', typeof id);
-    }
 
     // Validate input
     if (!date) {
@@ -234,20 +225,17 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
       // Validate that parsedId is a valid positive number
       if (!isNaN(parsedId) && parsedId > 0 && Number.isInteger(parsedId)) {
         recordId = parsedId;
-        console.error('[attendance POST] UPDATE MODE - id:', recordId, 'original:', id, 'type:', typeof id);
       } else {
-        console.error('[attendance POST] ERROR: Invalid id format:', id, 'parsed to:', parsedId);
         return res.status(400).json({
           success: false,
           message: '无效的记录ID',
         });
       }
     } else {
-      console.error('[attendance POST] CREATE MODE - id was:', id, 'type:', typeof id, 'isUndefined:', id === undefined, 'isNull:', id === null);
+      // Creating new record
     }
 
     // Create or update attendance record
-    console.error('[attendance POST] Calling createOrUpdate with recordId:', recordId, 'type:', typeof recordId);
     const attendance = await Attendance.createOrUpdate(
       date,
       meetingType,
@@ -260,12 +248,7 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
       notes || null,
       recordId
     );
-    console.error('[attendance POST] createOrUpdate returned id:', attendance?.id, 'requested:', recordId);
-    
-    // Only log when updating (for debugging)
-    if (recordId) {
-      console.log('[attendance POST] Updated record id:', attendance?.id, '(requested:', recordId, ')');
-    }
+    // Note: returning inserted/updated attendance
 
     res.json({
       success: true,
