@@ -331,6 +331,57 @@ export class User {
   }
 
   /**
+   * Update multiple user columns at once (admin only)
+   * @param {number} id
+   * @param {Object} updates
+   */
+  static async updateById(id, updates) {
+    if (!updates || typeof updates !== 'object') return null;
+    const db = await getDatabase();
+    const now = getCurrentTimestamp();
+    const allowedFields = [
+      'phonenumber',
+      'name',
+      'namezh',
+      'nametw',
+      'nameen',
+      'role',
+      'district',
+      'groupnum',
+      'email',
+      'status',
+      'gender',
+      'birthdate',
+      'joindate',
+      'preferredlanguage',
+      'notes',
+    ];
+
+    const setClauses = [];
+    const params = [];
+    for (const field of allowedFields) {
+      if (Object.prototype.hasOwnProperty.call(updates, field)) {
+        setClauses.push(`${field} = ?`);
+        params.push(updates[field]);
+      }
+    }
+
+    if (setClauses.length === 0) {
+      await db.close();
+      return await this.findById(id);
+    }
+
+    params.push(now, id);
+    const sql = `UPDATE users SET ${setClauses.join(', ')}, updatedat = ? WHERE id = ?`;
+    try {
+      await db.run(sql, params);
+      return await this.findById(id);
+    } finally {
+      await db.close();
+    }
+  }
+
+  /**
    * Update user last login time
    * @param {number} id - User ID
    * @returns {Promise<Object|null>} Updated user object or null if not found

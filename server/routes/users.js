@@ -58,6 +58,69 @@ router.get('/', authenticate, authorize('admin', 'super_admin', 'responsible_one
 });
 
 /**
+ * POST /api/users
+ * Create a new user (admin only)
+ */
+router.post('/', authenticate, authorize('admin', 'super_admin'), async (req, res) => {
+  try {
+    const {
+      phoneNumber,
+      name,
+      nameZh,
+      nameTw,
+      nameEn,
+      role,
+      district,
+      groupNum,
+      email,
+      status,
+      gender,
+      birthdate,
+      joinDate,
+      preferredLanguage,
+      notes,
+    } = req.body;
+
+    if (!phoneNumber) {
+      return res.status(400).json({ success: false, message: '请输入手机号' });
+    }
+
+    if (role === 'super_admin' && req.user.role !== 'super_admin') {
+      return res.status(403).json({ success: false, message: '只有超级管理员可以创建超级管理员' });
+    }
+
+    const created = await User.create(
+      phoneNumber,
+      role || 'member',
+      name || null,
+      nameZh || null,
+      nameEn || null,
+      district || null,
+      groupNum || null,
+      email || null,
+      status || 'active',
+      gender || null,
+      birthdate || null,
+      joinDate || null,
+      preferredLanguage || 'zh',
+      notes || null,
+      nameTw || null
+    );
+
+    res.json({
+      success: true,
+      message: '用户创建成功',
+      data: {
+        user: sanitizeUserPayload(created),
+      },
+    });
+  } catch (error) {
+    console.error('[users POST create]', error);
+    res.status(500).json({ success: false, message: '创建用户失败' });
+  }
+});
+
+/**
  * GET /api/users/admins
  * Get all users with administrative roles (accessible by any authenticated user)
  * Used for selecting "Second Booker" in gym reservations
@@ -135,6 +198,89 @@ router.get('/:id', authenticate, authorize('admin', 'super_admin'), async (req, 
       success: false,
       message: '获取用户信息失败',
     });
+  }
+});
+
+/**
+ * PUT /api/users/:id
+ * Update user (admin only)
+ */
+router.put('/:id', authenticate, authorize('admin', 'super_admin'), async (req, res) => {
+  try {
+    const userId = parseInt(req.params.id, 10);
+    const currentUser = req.user;
+
+    if (isNaN(userId)) {
+      return res.status(400).json({ success: false, message: '无效的用户ID' });
+    }
+
+    const targetUser = await User.findById(userId);
+    if (!targetUser) {
+      return res.status(404).json({ success: false, message: '用户不存在' });
+    }
+
+    const allowedFields = {
+      phoneNumber: 'phonenumber',
+      name: 'name',
+      nameZh: 'namezh',
+      nameTw: 'nametw',
+      nameEn: 'nameen',
+      role: 'role',
+      district: 'district',
+      groupNum: 'groupnum',
+      email: 'email',
+      status: 'status',
+      gender: 'gender',
+      birthdate: 'birthdate',
+      joinDate: 'joindate',
+      preferredLanguage: 'preferredlanguage',
+      notes: 'notes',
+    };
+
+    const updates = {};
+    const allowedValues = Object.values(allowedFields);
+    for (const [key, value] of Object.entries(req.body || {})) {
+      if (value === undefined) continue;
+      const lowerKey = key.toString().toLowerCase();
+      const mapKey =
+        allowedFields[key] ||
+        allowedFields[Object.keys(allowedFields).find((k) => k.toLowerCase() === lowerKey)];
+      const normalizedKey = mapKey || (allowedValues.includes(lowerKey) ? lowerKey : null);
+      if (normalizedKey) {
+        updates[normalizedKey] = value;
+      }
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return res.status(400).json({ success: false, message: '没有要更新的字段' });
+    }
+
+    if (updates.role) {
+      if (updates.role === 'super_admin' || targetUser.role === 'super_admin') {
+        if (currentUser.role !== 'super_admin') {
+          return res.status(403).json({ success: false, message: '只有超级管理员可以调整超级管理员权限' });
+        }
+      }
+      if (userId === currentUser.id) {
+        return res.status(400).json({ success: false, message: '不能修改自己的角色' });
+      }
+    }
+
+    const updated = await User.updateById(userId, updates);
+    if (!updated) {
+      return res.status(500).json({ success: false, message: '更新用户失败' });
+    }
+
+    res.json({
+      success: true,
+      message: '用户更新成功',
+      data: {
+        user: sanitizeUserPayload(updated),
+      },
+    });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ success: false, message: '更新用户失败' });
   }
 });
 

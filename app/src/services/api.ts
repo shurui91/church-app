@@ -303,6 +303,37 @@ export const api = {
   },
 
   /**
+   * Create user (admin only)
+   */
+  async createUser(data: {
+    phoneNumber: string;
+    name?: string;
+    nameZh?: string;
+    nameTw?: string;
+    nameEn?: string;
+    role?: string;
+    district?: string;
+    groupNum?: string;
+    email?: string;
+    status?: string;
+    gender?: string;
+    birthdate?: string;
+    joinDate?: string;
+    preferredLanguage?: string;
+    notes?: string;
+  }) {
+    const response = await apiRequest('/api/users', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+    return parseResponse<{
+      success: boolean;
+      message: string;
+      data: { user: any };
+    }>(response);
+  },
+
+  /**
    * Update user role (admin only)
    */
   async updateUserRole(userId: number, role: string) {
@@ -464,6 +495,37 @@ export const api = {
       method: 'DELETE',
     });
     return parseResponse(response);
+  },
+
+  /**
+   * Update user (admin only)
+   */
+  async updateUser(userId: number, data: {
+    phoneNumber?: string;
+    name?: string;
+    nameZh?: string;
+    nameTw?: string;
+    nameEn?: string;
+    role?: string;
+    district?: string;
+    groupNum?: string;
+    email?: string;
+    status?: string;
+    gender?: string;
+    birthdate?: string;
+    joinDate?: string;
+    preferredLanguage?: string;
+    notes?: string;
+  }) {
+    const response = await apiRequest(`/api/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+    return parseResponse<{
+      success: boolean;
+      message: string;
+      data: { user: any };
+    }>(response);
   },
 
   /**
