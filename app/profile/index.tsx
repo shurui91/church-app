@@ -274,7 +274,7 @@ export default function ProfileScreen() {
 
         {/* 菜单 */}
         <View style={[styles.menuContainer, { backgroundColor: colors.card }]}>
-          {/* 弟兄功能 - 可展开/折叠的菜单组 */}
+          {/* 全部功能 - 可展开/折叠的菜单组 */}
           {['super_admin', 'admin', 'responsible_one', 'usher'].includes(user?.role || '') && (
             <>
               <TouchableOpacity
@@ -286,7 +286,7 @@ export default function ProfileScreen() {
                 <View style={styles.menuLeft}>
                   <Ionicons name='people-outline' size={24} color={colors.text} />
                   <Text style={[styles.menuText, { color: colors.text }]}>
-                    弟兄功能
+                    {t('profile.allFeatures') || '全部功能'}
                   </Text>
                 </View>
                 <Ionicons
@@ -296,7 +296,7 @@ export default function ProfileScreen() {
                 />
               </TouchableOpacity>
 
-              {/* 弟兄功能子菜单 - 展开时显示 */}
+              {/* 全部功能子菜单 - 展开时显示 */}
               {brotherFeaturesExpanded && (
                 <View style={styles.subMenuContainer}>
                   {/* 人数汇报 - 所有角色可见，只有 member 不可见 */}
@@ -426,7 +426,7 @@ function MenuItem({
   );
 }
 
-// 子菜单项组件（用于弟兄功能下的子菜单）
+// 子菜单项组件（用于全部功能下的子菜单）
 function SubMenuItem({
   icon,
   title,
