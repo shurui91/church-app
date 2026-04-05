@@ -47,7 +47,7 @@
     ],
     "experiments": {
       "typedRoutes": true,
-      "baseUrl": "/admin"
+      "baseUrl": "/admin-xt7f9z"
     },
     "extra": {
       "router": {},

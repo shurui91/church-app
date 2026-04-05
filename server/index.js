@@ -23,6 +23,8 @@ const PORT = process.env.PORT || 3000;
 
 /** Expo Web 静态导出目录（见根目录 package.json 脚本 `export:web:admin`） */
 const ADMIN_WEB_DIR = path.join(__dirname, 'public', 'admin');
+/** 难猜的管理路径前缀 */
+const ADMIN_BASE_PATH = '/admin-xt7f9z';
 
 // Initialize database on startup
 initDatabase()
@@ -78,13 +80,13 @@ app.use('/api', gymRoutes);
 // Admin Web：先尝试静态文件，其余回退到 index.html（Expo Router SPA）
 // 构建：在项目根目录运行 `npm run export:web:admin`（输出到 server/public/admin）
 app.use(
-  '/admin',
+  ADMIN_BASE_PATH,
   express.static(ADMIN_WEB_DIR, {
     index: false,
     fallthrough: true,
   })
 );
-app.use('/admin', (req, res, next) => {
+app.use(ADMIN_BASE_PATH, (req, res, next) => {
   if (req.method !== 'GET' && req.method !== 'HEAD') {
     return next();
   }
