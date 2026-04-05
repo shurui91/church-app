@@ -46,7 +46,8 @@
       "expo-asset"
     ],
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "baseUrl": "/admin"
     },
     "extra": {
       "router": {},

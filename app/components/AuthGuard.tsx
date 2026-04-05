@@ -3,6 +3,7 @@ import { useRouter, usePathname } from 'expo-router';
 import { useAuth } from '../src/context/AuthContext';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { useThemeColors } from '../src/hooks/useThemeColors';
+import { getPostAuthHomeRoute } from '../src/utils/postAuthRoute';
 
 /**
  * Routes that don't require authentication
@@ -65,8 +66,8 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           // 使用 ref 获取最新值，确保检查的是当前状态
           // 如果用户在登出过程中，isAuthenticated 可能已经变为 false
           if (isAuthenticatedRef.current && pathnameRef.current === '/login') {
-            console.log('[AuthGuard] Redirecting to /meeting (user still authenticated on login page)');
-            router.replace('/meeting');
+            console.log('[AuthGuard] Redirecting to home (user still authenticated on login page)');
+            router.replace(getPostAuthHomeRoute());
           } else {
             console.log('[AuthGuard] Not redirecting - user may have logged out or navigated away');
           }

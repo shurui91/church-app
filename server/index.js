@@ -1,6 +1,8 @@
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { initDatabase } from './database/init.js';
 import attendanceRoutes from './routes/attendance.js';
 import authRoutes from './routes/auth.js';
@@ -10,11 +12,17 @@ import travelRoutes from './routes/travel.js';
 import userRoutes from './routes/users.js';
 import gymRoutes from './routes/gym.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Load environment variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+/** Expo Web 静态导出目录（见根目录 package.json 脚本 `export:web:admin`） */
+const ADMIN_WEB_DIR = path.join(__dirname, 'public', 'admin');
 
 // Initialize database on startup
 initDatabase()
@@ -67,11 +75,33 @@ app.use('/api/crash-logs', crashLogRoutes);
 app.use('/api', debugRoutes); // Temporary debug route
 app.use('/api', gymRoutes);
 
+// Admin Web：先尝试静态文件，其余回退到 index.html（Expo Router SPA）
+// 构建：在项目根目录运行 `npm run export:web:admin`（输出到 server/public/admin）
+app.use(
+  '/admin',
+  express.static(ADMIN_WEB_DIR, {
+    index: false,
+    fallthrough: true,
+  })
+);
+app.use('/admin', (req, res, next) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    return next();
+  }
+  const indexHtml = path.join(ADMIN_WEB_DIR, 'index.html');
+  res.sendFile(indexHtml, (err) => {
+    if (err) {
+      next();
+    }
+  });
+});
+
 // Start server
 const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`API endpoints available at http://localhost:${PORT}/api`);
+  console.log(`Admin Web (after export): http://localhost:${PORT}/admin`);
 });
 
 // Handle server errors

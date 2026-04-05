@@ -20,6 +20,7 @@ import { useFontSize } from './src/context/FontSizeContext';
 import { useTranslation } from 'react-i18next';
 import { setAppLanguage } from './src/i18n';
 import { api } from './src/services/api';
+import { getPostAuthHomeRoute } from './src/utils/postAuthRoute';
 import { Ionicons } from '@expo/vector-icons';
 
 const SCROLL_CONTENT_BASE_PADDING = 100;
@@ -61,8 +62,8 @@ export default function LoginScreen() {
         console.log('[Login] Timeout callback - isAuthenticatedRef.current:', isAuthenticatedRef.current);
         // 使用 ref 获取最新值，确保检查的是当前状态
         if (isAuthenticatedRef.current) {
-          console.log('[Login] Still authenticated, redirecting to /meeting');
-          router.replace('/meeting');
+          console.log('[Login] Still authenticated, redirecting to home');
+          router.replace(getPostAuthHomeRoute());
         } else {
           console.log('[Login] User logged out, not redirecting');
         }
@@ -277,7 +278,7 @@ export default function LoginScreen() {
 
     if (result.success) {
       // Navigation will happen automatically via useEffect when isAuthenticated changes
-      router.replace('/meeting');
+      router.replace(getPostAuthHomeRoute());
     } else {
       setError(result.message || t('login.loginFailed') || '登录失败');
     }

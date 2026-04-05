@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { View, Image, StyleSheet, Dimensions, Animated } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import { useAuth } from './src/context/AuthContext';
+import { getPostAuthHomeRoute } from './src/utils/postAuthRoute';
 
 export default function SplashScreen() {
   const router = useRouter();
@@ -20,9 +21,9 @@ export default function SplashScreen() {
         duration: 500,
         useNativeDriver: true,
       }).start(() => {
-        // 动画完成后根据认证状态跳转
+        // 动画完成后根据认证状态跳转（Web 挂在 /admin 时进管理页，否则进聚会页）
         if (isAuthenticated) {
-          router.replace('/meeting');
+          router.replace(getPostAuthHomeRoute());
         } else {
           router.replace('/login');
         }
