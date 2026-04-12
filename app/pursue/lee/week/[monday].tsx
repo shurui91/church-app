@@ -13,33 +13,13 @@ import { useThemeColors } from '../../../src/hooks/useThemeColors';
 import { useFontSize } from '../../../src/context/FontSizeContext';
 import { useTranslation } from 'react-i18next';
 import BackButton from '@/app/components/BackButton';
-import { LEE_ARCHIVE_URL } from '../../../src/config/dataSources';
+import {
+  LEE_ARCHIVE_URL,
+  getBackupValidDates,
+} from '../../../src/config/dataSources';
 
-// 缓存键（v2: 更新为从 R2 读取，清除旧缓存，与 day/[date].tsx 保持一致）
-const CACHE_KEY = 'lee_archive_cache_v2';
-const CACHE_TIMESTAMP_KEY = 'lee_archive_cache_timestamp_v2';
-// 注意：现在优先从远程获取，失败后再使用缓存，不再检查缓存过期时间
-
-interface Article {
-  id: string;
-  title: string;
-  reading_date: string;
-  last_available_day: string;
-  year: string;
-  volume: number;
-  topic: string;
-  chapter: number;
-  content: string;
-}
-
-interface LeeArchive {
-  meta: {
-    version: string;
-    last_updated: string;
-    total_articles: number;
-  };
-  articles: Article[];
-}
+const VALID_DATES_CACHE_KEY = 'lee_archive_valid_dates';
+const VALID_DATES_CACHE_TIMESTAMP_KEY = 'lee_archive_valid_dates_timestamp';
 
 function parseYMD(ymd: string) {
   const [y, m, d] = ymd.split('-').map(Number);
@@ -98,23 +78,35 @@ export default function WeekPage() {
           
           const archive: LeeArchive = await response.json();
           
-          // 保存到缓存
-          await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(archive));
-          await AsyncStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
-          
           // 提取有效日期
           const dates = new Set(archive.articles.map((a) => a.reading_date));
           setValidDates(dates);
+          await AsyncStorage.setItem(
+            VALID_DATES_CACHE_KEY,
+            JSON.stringify(Array.from(dates))
+          );
+          await AsyncStorage.setItem(
+            VALID_DATES_CACHE_TIMESTAMP_KEY,
+            Date.now().toString()
+          );
+ 
           setLoading(false);
           return;
         } catch (networkErr: any) {
           console.warn('从远程获取数据失败，尝试使用缓存:', networkErr.message);
+
+          const embeddedDates = getBackupValidDates();
+          if (embeddedDates.size > 0) {
+            setValidDates(embeddedDates);
+            setLoading(false);
+            return;
+          }
           
           // 远程获取失败，尝试使用缓存（无论是否过期）
-          const cachedData = await AsyncStorage.getItem(CACHE_KEY);
+          const cachedData = await AsyncStorage.getItem(VALID_DATES_CACHE_KEY);
           if (cachedData) {
-            const archive: LeeArchive = JSON.parse(cachedData);
-            const dates = new Set(archive.articles.map((a) => a.reading_date));
+            const cachedDates: string[] = JSON.parse(cachedData);
+            const dates = new Set(cachedDates);
             setValidDates(dates);
             setLoading(false);
             return;

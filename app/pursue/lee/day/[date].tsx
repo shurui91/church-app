@@ -15,12 +15,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemeColors } from '../../../src/hooks/useThemeColors';
 import { useFontSize } from '../../../src/context/FontSizeContext';
 import BackButton from '@/app/components/BackButton';
-import { LEE_ARCHIVE_URL } from '../../../src/config/dataSources';
+import {
+  Article,
+  LeeArchive,
+  LEE_ARCHIVE_URL,
+  getBackupArticle,
+} from '../../../src/config/dataSources';
 
 // 缓存键（v2: 更新为从 R2 读取，清除旧缓存）
-const CACHE_KEY = 'lee_archive_cache_v2';
-const CACHE_TIMESTAMP_KEY = 'lee_archive_cache_timestamp_v2';
 const CACHE_DURATION = 24 * 60 * 60 * 1000; // 24小时缓存
+const ARTICLE_CACHE_KEY_PREFIX = 'lee_archive_article_cache_';
+const ARTICLE_CACHE_TIMESTAMP_PREFIX = 'lee_archive_article_cache_timestamp_';
+
+const getArticleCacheKey = (date: string) => `${ARTICLE_CACHE_KEY_PREFIX}${date}`;
+const getArticleCacheTimestampKey = (date: string) => `${ARTICLE_CACHE_TIMESTAMP_PREFIX}${date}`;
 
 // ✅ 去除 HTML 标签与常见实体
 function stripHTML(html: string) {
@@ -53,27 +61,6 @@ function getLineHeight(fontSize: number) {
   return fontSize * 1.8;
 }
 
-interface Article {
-  id: string;
-  title: string;
-  reading_date: string;
-  last_available_day: string;
-  year: string;
-  volume: number;
-  topic: string;
-  chapter: number;
-  content: string;
-}
-
-interface LeeArchive {
-  meta: {
-    version: string;
-    last_updated: string;
-    total_articles: number;
-  };
-  articles: Article[];
-}
-
 export default function LeeDayPage() {
   const { date: dateParam } = useLocalSearchParams();
   // ✅ 处理路由参数可能是数组的情况
@@ -101,29 +88,27 @@ export default function LeeDayPage() {
         return;
       }
 
+      const articleCacheKey = getArticleCacheKey(date);
+      const articleCacheTimestampKey = getArticleCacheTimestampKey(date);
+
       try {
         setLoading(true);
         setError(null);
 
         // 先检查缓存
-        const cachedData = await AsyncStorage.getItem(CACHE_KEY);
-        const cacheTimestamp = await AsyncStorage.getItem(CACHE_TIMESTAMP_KEY);
-        
-        if (cachedData && cacheTimestamp) {
+        const cachedArticleData = await AsyncStorage.getItem(articleCacheKey);
+        const cacheTimestamp = await AsyncStorage.getItem(articleCacheTimestampKey);
+
+        if (cachedArticleData && cacheTimestamp) {
           const timestamp = parseInt(cacheTimestamp, 10);
           const now = Date.now();
-          
+
           // 如果缓存未过期，使用缓存
           if (now - timestamp < CACHE_DURATION) {
-            const archive: LeeArchive = JSON.parse(cachedData);
-            const foundArticle = archive.articles.find(
-              (a) => a.reading_date === date
-            );
-            if (foundArticle) {
-              setArticle(foundArticle);
-              setLoading(false);
-              return;
-            }
+            const cachedArticle: Article = JSON.parse(cachedArticleData);
+            setArticle(cachedArticle);
+            setLoading(false);
+            return;
           }
         }
 
@@ -135,10 +120,6 @@ export default function LeeDayPage() {
         
         const archive: LeeArchive = await response.json();
         
-        // 保存到缓存
-        await AsyncStorage.setItem(CACHE_KEY, JSON.stringify(archive));
-        await AsyncStorage.setItem(CACHE_TIMESTAMP_KEY, Date.now().toString());
-        
         // 查找对应日期的文章（确保日期格式一致）
         const foundArticle = archive.articles.find(
           (a) => a.reading_date === date
@@ -146,6 +127,8 @@ export default function LeeDayPage() {
         
         if (foundArticle) {
           setArticle(foundArticle);
+          await AsyncStorage.setItem(articleCacheKey, JSON.stringify(foundArticle));
+          await AsyncStorage.setItem(articleCacheTimestampKey, Date.now().toString());
         } else {
           // ✅ 调试信息：列出所有可用日期
           const availableDates = archive.articles.map(a => a.reading_date).sort();
@@ -155,21 +138,21 @@ export default function LeeDayPage() {
         }
       } catch (err: any) {
         console.error('加载李常受文集失败:', err);
-        setError(err.message || '加载失败，请检查网络连接');
-        
+
+        const embeddedArticle = getBackupArticle(date);
+        if (embeddedArticle) {
+          setArticle(embeddedArticle);
+          return;
+        }
+
         // 如果网络失败，尝试使用缓存（即使过期）
         try {
-          const cachedData = await AsyncStorage.getItem(CACHE_KEY);
-          if (cachedData) {
-            const archive: LeeArchive = JSON.parse(cachedData);
-            const foundArticle = archive.articles.find(
-              (a) => a.reading_date === date
-            );
-            if (foundArticle) {
-              setArticle(foundArticle);
-              setError('使用缓存数据（可能不是最新版本）');
-              return;
-            }
+          const fallbackArticleData = await AsyncStorage.getItem(articleCacheKey);
+          if (fallbackArticleData) {
+            const cachedArticle: Article = JSON.parse(fallbackArticleData);
+            setArticle(cachedArticle);
+            setError('使用缓存数据（可能不是最新版本）');
+            return;
           }
         } catch (cacheErr) {
           console.error('读取缓存失败:', cacheErr);
@@ -280,6 +263,9 @@ export default function LeeDayPage() {
       useNativeDriver: false,
     }).start();
     setScrollPercent(percent);
+
+    const articleCacheKey = getArticleCacheKey(date);
+    const articleCacheTimestampKey = getArticleCacheTimestampKey(date);
 
     try {
       if (storageKey) {
