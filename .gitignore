@@ -25,6 +25,9 @@ expo-env.d.ts
 npm-debug.*
 yarn-debug.*
 yarn-error.*
+*.sqlite
+*.sqlite3
+*.db
 
 # macOS
 .DS_Store
