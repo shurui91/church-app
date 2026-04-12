@@ -144,7 +144,7 @@
 ```env
 NODE_ENV=production
 PORT=3000
-DB_PATH=/path/to/database.sqlite  # 或使用远程数据库
+DATABASE_URL=postgresql://...     # Railway/Postgres 连接串
 JWT_SECRET=your-secret-key-here  # 必须更改！
 ```
 
@@ -165,7 +165,7 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:3000';
 ## 生产环境注意事项
 
 1. **更改 JWT_SECRET**：必须使用强随机字符串
-2. **数据库备份**：SQLite 需要定期备份
+2. **数据库备份**：PostgreSQL 需要常规备份策略
 3. **HTTPS**：确保使用 HTTPS（ngrok 和大多数平台自动提供）
 4. **CORS 配置**：确保后端 CORS 允许你的 iOS app 访问
 5. **移除开发模式验证码**：生产环境不要使用 `123456` 固定验证码
@@ -212,4 +212,3 @@ npx expo run:ios --device
 3. ✅ 部署到线上服务器
 4. ✅ 构建 iOS 测试版本
 5. ✅ 分发给测试用户
-
