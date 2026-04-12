@@ -57,7 +57,7 @@ export class CrashLog {
    * @returns {Promise<Object>} Created crash log object
    */
   static async create(logData) {
-    const db = getDatabase();
+    const db = await getDatabase();
     const timestamp = getCurrentTimestamp();
     
     const {
@@ -102,11 +102,16 @@ export class CrashLog {
         ]
       );
 
-      const logId = result.rows[0].id;
+      const logId = result.lastID;
+      if (!logId) {
+        throw new Error('Failed to get inserted crash log ID');
+      }
       return await this.findById(logId);
     } catch (error) {
       console.error('[CrashLog.create] Error creating crash log:', error);
       throw error;
+    } finally {
+      await db.close();
     }
   }
 
@@ -116,7 +121,7 @@ export class CrashLog {
    * @returns {Promise<Object|null>} Crash log object or null
    */
   static async findById(id) {
-    const db = getDatabase();
+    const db = await getDatabase();
     
     try {
       const result = await db.get(
@@ -129,6 +134,8 @@ export class CrashLog {
     } catch (error) {
       console.error('[CrashLog.findById] Error finding crash log:', error);
       throw error;
+    } finally {
+      await db.close();
     }
   }
 
@@ -143,7 +150,7 @@ export class CrashLog {
    * @returns {Promise<Array>} Array of crash log objects
    */
   static async findAll(options = {}) {
-    const db = getDatabase();
+    const db = await getDatabase();
     const {
       userId = null,
       limit = 100,
@@ -183,6 +190,8 @@ export class CrashLog {
     } catch (error) {
       console.error('[CrashLog.findAll] Error finding crash logs:', error);
       throw error;
+    } finally {
+      await db.close();
     }
   }
 
@@ -193,7 +202,7 @@ export class CrashLog {
    * @returns {Promise<number>} Count of crash logs
    */
   static async count(options = {}) {
-    const db = getDatabase();
+    const db = await getDatabase();
     const { userId = null } = options;
 
     try {
@@ -210,6 +219,8 @@ export class CrashLog {
     } catch (error) {
       console.error('[CrashLog.count] Error counting crash logs:', error);
       throw error;
+    } finally {
+      await db.close();
     }
   }
 
@@ -219,7 +230,7 @@ export class CrashLog {
    * @returns {Promise<boolean>} True if deleted, false otherwise
    */
   static async deleteById(id) {
-    const db = getDatabase();
+    const db = await getDatabase();
     
     try {
       const result = await db.run(
@@ -227,11 +238,12 @@ export class CrashLog {
         [id]
       );
 
-      return result.rowCount > 0;
+      return result.changes > 0;
     } catch (error) {
       console.error('[CrashLog.deleteById] Error deleting crash log:', error);
       throw error;
+    } finally {
+      await db.close();
     }
   }
 }
-
