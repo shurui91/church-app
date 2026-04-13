@@ -145,6 +145,20 @@ router.post('/send-code', async (req, res) => {
 
     // Twilio Verify：验证码由 Twilio 生成与校验，不写本地 verification_codes
     if (isTwilioVerifyConfigured()) {
+      const skipRealVerifySms =
+        process.env.NODE_ENV !== 'production' &&
+        process.env.ALLOW_DEV_VERIFY_BYPASS === 'true';
+
+      if (skipRealVerifySms) {
+        console.log(
+          '[send-code] ALLOW_DEV_VERIFY_BYPASS: skip Twilio Verify SMS; use fixed code 123456 on verify'
+        );
+        return res.json({
+          success: true,
+          message: '验证码已发送（开发模式）',
+        });
+      }
+
       const verifyResult = await startTwilioVerification(normalizedPhone);
       if (!verifyResult.success) {
         return res.status(500).json({
@@ -211,20 +225,36 @@ router.post('/verify-code', async (req, res) => {
     const DEV_MODE_CODE = '123456';
     const ALLOW_DEV_CODE = process.env.ALLOW_DEV_CODE !== 'false';
     const isDevMode = process.env.NODE_ENV !== 'production' || ALLOW_DEV_CODE;
+    /** 已启用 Twilio Verify 时，本地/模拟器仍可用 123456 登录（需显式开启，生产环境无效） */
+    const allowVerifyDevBypass =
+      process.env.NODE_ENV !== 'production' &&
+      process.env.ALLOW_DEV_VERIFY_BYPASS === 'true' &&
+      String(code).trim() === DEV_MODE_CODE;
 
     console.log(
       `[verify-code] login attempt for ${normalizedPhone} | verify=${isTwilioVerifyConfigured() ? 'twilio' : 'local'} | dev bypass: ${isDevMode ? 'yes' : 'no'}`
     );
 
     if (isTwilioVerifyConfigured()) {
-      const twilioResult = await verifyTwilioCode(normalizedPhone, code);
-      if (!twilioResult.valid) {
-        return res.status(400).json({
-          success: false,
-          message: twilioResult.message || '验证码错误或已过期',
-        });
+      if (allowVerifyDevBypass) {
+        console.log('[verify-code] ALLOW_DEV_VERIFY_BYPASS: skip Twilio check with fixed code (local only)');
+        const userExists = await User.exists(normalizedPhone);
+        if (!userExists) {
+          return res.status(403).json({
+            success: false,
+            message: '该手机号未在邀请列表中',
+          });
+        }
+      } else {
+        const twilioResult = await verifyTwilioCode(normalizedPhone, code);
+        if (!twilioResult.valid) {
+          return res.status(400).json({
+            success: false,
+            message: twilioResult.message || '验证码错误或已过期',
+          });
+        }
       }
-    } else if (isDevMode && code === DEV_MODE_CODE) {
+    } else if (isDevMode && String(code).trim() === DEV_MODE_CODE) {
       console.log('[verify-code] using dev mode bypass code (local DB flow only)');
       const userExists = await User.exists(normalizedPhone);
       if (!userExists) {
