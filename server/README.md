@@ -16,7 +16,7 @@ cp .env.example .env
 
 3. Update `.env` file with your configuration:
    - Set `JWT_SECRET` to a random secure string
-   - Configure Twilio credentials for SMS service
+   - Configure Twilio: **`TWILIO_VERIFY_SERVICE_SID`** (recommended) for [Twilio Verify](https://www.twilio.com/docs/verify/api), plus `TWILIO_ACCOUNT_SID` / `TWILIO_AUTH_TOKEN`. Only if Verify is not used, set `TWILIO_PHONE_NUMBER` for the legacy Messages + local code flow.
    - Adjust `PORT` if needed
 
 4. Start the server:
@@ -44,5 +44,7 @@ npm start
 - `JWT_EXPIRES_IN` - JWT token expiration time
 - `TWILIO_ACCOUNT_SID` - Twilio account SID
 - `TWILIO_AUTH_TOKEN` - Twilio auth token
-- `TWILIO_PHONE_NUMBER` - Twilio phone number
-- `DB_PATH` - SQLite database file path
+- `TWILIO_VERIFY_SERVICE_SID` - Twilio Verify Service SID (use Verify for login when set)
+- `TWILIO_PHONE_NUMBER` - Sender number (legacy Messages flow only; optional if using Verify)
+- `SMS_REQUIRE_PROVIDER` - When `true`, require real SMS config even in development
+- `DB_PATH` - SQLite database file path (legacy; production often uses PostgreSQL via `DATABASE_URL`)

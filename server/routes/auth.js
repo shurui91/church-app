@@ -4,9 +4,12 @@ import { VerificationCode } from '../database/models/VerificationCode.js';
 import { authenticate, generateToken } from '../middleware/auth.js';
 import {
 	generateVerificationCode,
+	isTwilioVerifyConfigured,
 	normalizePhoneNumber,
 	sendVerificationCode,
+	startTwilioVerification,
 	validatePhoneNumber,
+	verifyTwilioCode,
 } from '../services/sms.js';
 import { Session } from '../database/models/Session.js';
 
@@ -131,34 +134,48 @@ router.post('/send-code', async (req, res) => {
       });
     }
 
-    // Check if phone number is in whitelist (user exists in database)
+    // 邀请制：仅 users 表中的号码可收验证码；短信平台（Verify / Messages）不参与鉴权
     const userExists = await User.exists(normalizedPhone);
     if (!userExists) {
-      // Don't reveal that phone number is not in whitelist for security
-      // Just return success message (but don't actually send code)
       return res.status(403).json({
         success: false,
         message: '该手机号未在邀请列表中',
       });
     }
 
-    // Generate verification code
-    const code = generateVerificationCode();
+    // Twilio Verify：验证码由 Twilio 生成与校验，不写本地 verification_codes
+    if (isTwilioVerifyConfigured()) {
+      const verifyResult = await startTwilioVerification(normalizedPhone);
+      if (!verifyResult.success) {
+        return res.status(500).json({
+          success: false,
+          message: verifyResult.message,
+        });
+      }
+      return res.json({
+        success: true,
+        message: verifyResult.message || '验证码已发送',
+      });
+    }
 
-    // Save verification code to database
+    // 未配置 Verify 时回退：Messages API + 本地 verification_codes（便于本地无 Verify 时开发）
+    const code = generateVerificationCode();
     await VerificationCode.create(normalizedPhone, code, 5); // 5 minutes expiry
 
-    // Send SMS (or log in development)
     const smsResult = await sendVerificationCode(normalizedPhone, code);
 
     if (!smsResult.success) {
+      try {
+        await VerificationCode.deleteByPhoneNumber(normalizedPhone);
+      } catch (cleanupErr) {
+        console.error('[send-code] Failed to remove verification code after SMS error:', cleanupErr);
+      }
       return res.status(500).json({
         success: false,
         message: smsResult.message,
       });
     }
 
-    // Return success (don't return the code)
     res.json({
       success: true,
       message: '验证码已发送',
@@ -189,23 +206,26 @@ router.post('/verify-code', async (req, res) => {
       });
     }
 
-    // Normalize phone number
     const normalizedPhone = normalizePhoneNumber(phoneNumber);
 
-    // Development mode: allow fixed verification code (123456)
-    // For testing: use 123456 when NODE_ENV is not production OR when explicitly set to allow dev code
     const DEV_MODE_CODE = '123456';
-    const ALLOW_DEV_CODE = process.env.ALLOW_DEV_CODE !== 'false'; // Default to true unless explicitly set to false
+    const ALLOW_DEV_CODE = process.env.ALLOW_DEV_CODE !== 'false';
     const isDevMode = process.env.NODE_ENV !== 'production' || ALLOW_DEV_CODE;
 
     console.log(
-      `[verify-code] login attempt for ${normalizedPhone} | code length ${code?.length || 0} | dev mode: ${isDevMode ? 'yes' : 'no'}`
+      `[verify-code] login attempt for ${normalizedPhone} | verify=${isTwilioVerifyConfigured() ? 'twilio' : 'local'} | dev bypass: ${isDevMode ? 'yes' : 'no'}`
     );
 
-    // Check if using dev mode fixed code
-    if (isDevMode && code === DEV_MODE_CODE) {
-      console.log('[verify-code] using dev mode bypass code');
-      // Verify that phone number is in whitelist
+    if (isTwilioVerifyConfigured()) {
+      const twilioResult = await verifyTwilioCode(normalizedPhone, code);
+      if (!twilioResult.valid) {
+        return res.status(400).json({
+          success: false,
+          message: twilioResult.message || '验证码错误或已过期',
+        });
+      }
+    } else if (isDevMode && code === DEV_MODE_CODE) {
+      console.log('[verify-code] using dev mode bypass code (local DB flow only)');
       const userExists = await User.exists(normalizedPhone);
       if (!userExists) {
         return res.status(403).json({
@@ -213,12 +233,9 @@ router.post('/verify-code', async (req, res) => {
           message: '该手机号未在邀请列表中',
         });
       }
-      // Dev code is valid, proceed to login
     } else {
-      // Normal verification process
       const verificationResult = await VerificationCode.verify(normalizedPhone, code);
-
-      console.log('[verify-code] verification result', verificationResult);
+      console.log('[verify-code] local verification result', verificationResult);
       if (!verificationResult.valid) {
         return res.status(400).json({
           success: false,

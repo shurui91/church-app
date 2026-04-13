@@ -1,4 +1,5 @@
 import { getCurrentTimestamp, getDatabase } from '../db.js';
+import { normalizePhoneNumber } from '../../services/sms.js';
 
 /**
  * User Model
@@ -43,17 +44,19 @@ export class User {
     const db = await getDatabase();
     const now = getCurrentTimestamp();
 
+    const normalizedPhoneNumber = normalizePhoneNumber(phoneNumber);
+
     try {
       // PostgreSQL stores field names in lowercase, so use lowercase field names
       const result = await db.run(
         `INSERT INTO users (phonenumber, name, namezh, nametw, nameen, role, district, groupnum, email, status, gender, birthdate, joindate, preferredlanguage, notes, createdat, updatedat)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
-        [phoneNumber, name, nameZh, nameTw, nameEn, role, district, groupNum, email, status, gender, birthdate, joinDate, preferredLanguage, notes, now, now]
+        [normalizedPhoneNumber, name, nameZh, nameTw, nameEn, role, district, groupNum, email, status, gender, birthdate, joinDate, preferredLanguage, notes, now, now]
       );
 
       return {
         id: result.lastID,
-        phoneNumber,
+        phoneNumber: normalizedPhoneNumber,
         name,
         nameZh,
         nameTw,
@@ -104,9 +107,10 @@ export class User {
     const db = await getDatabase();
     try {
       // PostgreSQL stores field names in lowercase, so use lowercase field names
+      const normalizedPhone = normalizePhoneNumber(phoneNumber);
       const user = await db.get(
         'SELECT * FROM users WHERE phonenumber = ?',
-        [phoneNumber]
+        [normalizedPhone]
       );
       return this.normalizeUserFields(user);
     } catch (error) {
@@ -360,10 +364,16 @@ export class User {
     const setClauses = [];
     const params = [];
     for (const field of allowedFields) {
-      if (Object.prototype.hasOwnProperty.call(updates, field)) {
-        setClauses.push(`${field} = ?`);
-        params.push(updates[field]);
+      if (!Object.prototype.hasOwnProperty.call(updates, field)) {
+        continue;
       }
+
+      const rawValue = updates[field];
+      const value =
+        field === 'phonenumber' && rawValue ? normalizePhoneNumber(rawValue) : rawValue;
+
+      setClauses.push(`${field} = ?`);
+      params.push(value);
     }
 
     if (setClauses.length === 0) {

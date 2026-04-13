@@ -220,6 +220,42 @@ async function createIndexIfColumnExists(db, indexName, tableName, columnName) {
   }
 }
 
+async function ensurePhoneNumberFormatConstraint(db) {
+  const constraintName = 'chk_users_phonenumber_e164';
+  const columnRef = quotePgColumnForIndex('phoneNumber');
+  const regex = '^\\+[1-9]\\d{1,14}$';
+
+  try {
+    const invalidRow = await db.get(
+      `SELECT 1 FROM users WHERE NOT (${columnRef} ~ '${regex}') LIMIT 1`,
+      []
+    );
+
+    if (invalidRow) {
+      console.warn(
+        `[Database] Skipping ${constraintName} because some phone numbers are not valid E.164. Run normalization script first.`
+      );
+      return;
+    }
+
+    await db.run(
+      `ALTER TABLE users
+       ADD CONSTRAINT ${constraintName}
+       CHECK (${columnRef} ~ '${regex}')`,
+      []
+    );
+    console.log(`[Database] Ensured constraint ${constraintName}`);
+  } catch (err) {
+    if (err.message?.includes('already exists')) {
+      return;
+    }
+    console.error(
+      `[Database] Error ensuring ${constraintName}:`,
+      err.message || err
+    );
+  }
+}
+
 /**
  * Ensure attendance table has unique index for non-full_congregation scopes
  */
@@ -301,6 +337,7 @@ export async function initDatabase() {
     await createIndexIfColumnExists(db, 'idx_users_groupnum', 'users', 'groupnum');
     await createIndexIfColumnExists(db, 'idx_users_email', 'users', 'email');
     await createIndexIfColumnExists(db, 'idx_users_status', 'users', 'status');
+    await ensurePhoneNumberFormatConstraint(db);
 
     // Create verification_codes table
     await db.run(`
