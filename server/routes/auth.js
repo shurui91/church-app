@@ -4,7 +4,9 @@ import { VerificationCode } from '../database/models/VerificationCode.js';
 import { authenticate, generateToken } from '../middleware/auth.js';
 import {
 	generateVerificationCode,
+	isFixedCodeSmsMode,
 	isTwilioVerifyConfigured,
+	MOCK_VERIFICATION_CODE,
 	normalizePhoneNumber,
 	sendVerificationCode,
 	startTwilioVerification,
@@ -143,22 +145,19 @@ router.post('/send-code', async (req, res) => {
       });
     }
 
+    // 固定验证码模式：不调用 Twilio，校验端使用 MOCK_VERIFICATION_CODE（见 verify-code）
+    if (isFixedCodeSmsMode()) {
+      console.log(
+        `[send-code] fixed-code mode: skip real SMS; verify with ${MOCK_VERIFICATION_CODE}`
+      );
+      return res.json({
+        success: true,
+        message: '验证码已发送（开发模式）',
+      });
+    }
+
     // Twilio Verify：验证码由 Twilio 生成与校验，不写本地 verification_codes
     if (isTwilioVerifyConfigured()) {
-      const skipRealVerifySms =
-        process.env.NODE_ENV !== 'production' &&
-        process.env.ALLOW_DEV_VERIFY_BYPASS === 'true';
-
-      if (skipRealVerifySms) {
-        console.log(
-          '[send-code] ALLOW_DEV_VERIFY_BYPASS: skip Twilio Verify SMS; use fixed code 123456 on verify'
-        );
-        return res.json({
-          success: true,
-          message: '验证码已发送（开发模式）',
-        });
-      }
-
       const verifyResult = await startTwilioVerification(normalizedPhone);
       if (!verifyResult.success) {
         return res.status(500).json({
@@ -222,22 +221,24 @@ router.post('/verify-code', async (req, res) => {
 
     const normalizedPhone = normalizePhoneNumber(phoneNumber);
 
-    const DEV_MODE_CODE = '123456';
+    const DEV_MODE_CODE = MOCK_VERIFICATION_CODE;
     const ALLOW_DEV_CODE = process.env.ALLOW_DEV_CODE !== 'false';
     const isDevMode = process.env.NODE_ENV !== 'production' || ALLOW_DEV_CODE;
-    /** 已启用 Twilio Verify 时，本地/模拟器仍可用 123456 登录（需显式开启，生产环境无效） */
-    const allowVerifyDevBypass =
-      process.env.NODE_ENV !== 'production' &&
-      process.env.ALLOW_DEV_VERIFY_BYPASS === 'true' &&
-      String(code).trim() === DEV_MODE_CODE;
+    const codeTrim = String(code).trim();
+    /** 与 isFixedCodeSmsMode 一致；兼容旧 env：ALLOW_DEV_VERIFY_BYPASS + 非生产 + 123456 */
+    const allowFixedCodeLogin =
+      codeTrim === DEV_MODE_CODE &&
+      (isFixedCodeSmsMode() ||
+        (process.env.NODE_ENV !== 'production' &&
+          process.env.ALLOW_DEV_VERIFY_BYPASS === 'true'));
 
     console.log(
-      `[verify-code] login attempt for ${normalizedPhone} | verify=${isTwilioVerifyConfigured() ? 'twilio' : 'local'} | dev bypass: ${isDevMode ? 'yes' : 'no'}`
+      `[verify-code] login attempt for ${normalizedPhone} | verify=${isTwilioVerifyConfigured() ? 'twilio' : 'local'} | dev bypass: ${isDevMode ? 'yes' : 'no'} | fixed-code: ${allowFixedCodeLogin ? 'yes' : 'no'}`
     );
 
     if (isTwilioVerifyConfigured()) {
-      if (allowVerifyDevBypass) {
-        console.log('[verify-code] ALLOW_DEV_VERIFY_BYPASS: skip Twilio check with fixed code (local only)');
+      if (allowFixedCodeLogin) {
+        console.log('[verify-code] fixed code: skip Twilio Verify check (whitelist only)');
         const userExists = await User.exists(normalizedPhone);
         if (!userExists) {
           return res.status(403).json({
@@ -254,8 +255,8 @@ router.post('/verify-code', async (req, res) => {
           });
         }
       }
-    } else if (isDevMode && String(code).trim() === DEV_MODE_CODE) {
-      console.log('[verify-code] using dev mode bypass code (local DB flow only)');
+    } else if (allowFixedCodeLogin || (isDevMode && codeTrim === DEV_MODE_CODE)) {
+      console.log('[verify-code] using fixed / dev bypass code (whitelist)');
       const userExists = await User.exists(normalizedPhone);
       if (!userExists) {
         return res.status(403).json({

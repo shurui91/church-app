@@ -8,6 +8,34 @@ const verifyServiceSid = process.env.TWILIO_VERIFY_SERVICE_SID;
 
 let twilioClient = null;
 
+/** 未接真实短信时使用；与 auth 路由中校验一致 */
+export const MOCK_VERIFICATION_CODE = '123456';
+
+/**
+ * 是否使用固定验证码（不发真实短信、校验走 123456 + 白名单）。
+ * - SMS_USE_FIXED_CODE=true|false 显式开关
+ * - 未设置时：非 production 默认为 mock，production 默认走真实 Twilio（若已配置）
+ * - production 且 SMS_USE_FIXED_CODE=true 时须同时设置 SMS_FIXED_CODE_ALLOWED_IN_PRODUCTION=true，否则不启用 mock（防误配）
+ */
+export function isFixedCodeSmsMode() {
+  const explicit = process.env.SMS_USE_FIXED_CODE;
+  let enabled;
+  if (explicit === 'true') enabled = true;
+  else if (explicit === 'false') enabled = false;
+  else enabled = process.env.NODE_ENV !== 'production';
+
+  if (!enabled) return false;
+  if (process.env.NODE_ENV === 'production' && explicit === 'true') {
+    if (process.env.SMS_FIXED_CODE_ALLOWED_IN_PRODUCTION !== 'true') {
+      console.warn(
+        '[SMS] production 下 SMS_USE_FIXED_CODE=true 需配合 SMS_FIXED_CODE_ALLOWED_IN_PRODUCTION=true，否则不启用固定验证码'
+      );
+      return false;
+    }
+  }
+  return true;
+}
+
 /**
  * Account SID + Auth Token + Verify Service SID → 使用 Twilio Verify（发码/校验由 Twilio 托管，不写本地 verification_codes）
  */
