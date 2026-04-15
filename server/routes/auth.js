@@ -4,8 +4,8 @@ import { VerificationCode } from '../database/models/VerificationCode.js';
 import { authenticate, generateToken } from '../middleware/auth.js';
 import {
 	generateVerificationCode,
-	isFixedCodeSmsMode,
 	isTwilioVerifyConfigured,
+	shouldUseDummyVerification,
 	MOCK_VERIFICATION_CODE,
 	normalizePhoneNumber,
 	sendVerificationCode,
@@ -145,10 +145,10 @@ router.post('/send-code', async (req, res) => {
       });
     }
 
-    // 固定验证码模式：不调用 Twilio，校验端使用 MOCK_VERIFICATION_CODE（见 verify-code）
-    if (isFixedCodeSmsMode()) {
+    // Dummy 验证码：无 Twilio 配置或显式固定码模式，不调用真实短信（见 verify-code）
+    if (shouldUseDummyVerification()) {
       console.log(
-        `[send-code] fixed-code mode: skip real SMS; verify with ${MOCK_VERIFICATION_CODE}`
+        `[send-code] dummy verification: skip real SMS; use ${MOCK_VERIFICATION_CODE}`
       );
       return res.json({
         success: true,
@@ -225,10 +225,10 @@ router.post('/verify-code', async (req, res) => {
     const ALLOW_DEV_CODE = process.env.ALLOW_DEV_CODE !== 'false';
     const isDevMode = process.env.NODE_ENV !== 'production' || ALLOW_DEV_CODE;
     const codeTrim = String(code).trim();
-    /** 与 isFixedCodeSmsMode 一致；兼容旧 env：ALLOW_DEV_VERIFY_BYPASS + 非生产 + 123456 */
+    /** dummy 或未配置短信；兼容 ALLOW_DEV_VERIFY_BYPASS + 非生产 + 已配 Verify 时跳过真校验 */
     const allowFixedCodeLogin =
       codeTrim === DEV_MODE_CODE &&
-      (isFixedCodeSmsMode() ||
+      (shouldUseDummyVerification() ||
         (process.env.NODE_ENV !== 'production' &&
           process.env.ALLOW_DEV_VERIFY_BYPASS === 'true'));
 

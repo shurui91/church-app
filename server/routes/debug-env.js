@@ -8,6 +8,7 @@ import {
   isLoginSmsDeliveryConfigured,
   isSmsProviderConfigured,
   isTwilioVerifyConfigured,
+  shouldUseDummyVerification,
 } from '../services/sms.js';
 
 const router = express.Router();
@@ -20,6 +21,8 @@ router.get('/debug-env', (req, res) => {
     twilioVerifyConfigured: isTwilioVerifyConfigured(),
     smsMessagesConfigured: isSmsProviderConfigured(),
     loginSmsDeliveryConfigured: isLoginSmsDeliveryConfigured(),
+    shouldUseDummyVerification: shouldUseDummyVerification(),
+    SMS_USE_DUMMY: process.env.SMS_USE_DUMMY ?? '(unset)',
     allEnvVars: Object.keys(process.env).filter(key => key.includes('NODE') || key.includes('ENV')),
   });
 });

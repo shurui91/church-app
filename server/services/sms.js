@@ -1,12 +1,27 @@
 import twilio from 'twilio';
 
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
-const phoneNumber = process.env.TWILIO_PHONE_NUMBER;
-/** Twilio Console → Verify → Service SID (以 VA 开头) */
-const verifyServiceSid = process.env.TWILIO_VERIFY_SERVICE_SID;
+/** 运行时读取，避免 dotenv 晚于 sms 模块加载时误判；并忽略 .env.example 占位符 */
+function twilioEnv() {
+  const raw = {
+    accountSid: process.env.TWILIO_ACCOUNT_SID?.trim(),
+    authToken: process.env.TWILIO_AUTH_TOKEN?.trim(),
+    phoneNumber: process.env.TWILIO_PHONE_NUMBER?.trim(),
+    verifyServiceSid: process.env.TWILIO_VERIFY_SERVICE_SID?.trim(),
+  };
+  const isPlaceholder = (v) =>
+    !v ||
+    /your-twilio|changeme|placeholder|example\.com/i.test(v) ||
+    v === 'your-secret-key-here-change-in-production';
+  return {
+    accountSid: isPlaceholder(raw.accountSid) ? '' : raw.accountSid,
+    authToken: isPlaceholder(raw.authToken) ? '' : raw.authToken,
+    phoneNumber: isPlaceholder(raw.phoneNumber) ? '' : raw.phoneNumber,
+    verifyServiceSid: isPlaceholder(raw.verifyServiceSid) ? '' : raw.verifyServiceSid,
+  };
+}
 
 let twilioClient = null;
+let twilioClientCacheKey = '';
 
 /** 未接真实短信时使用；与 auth 路由中校验一致 */
 export const MOCK_VERIFICATION_CODE = '123456';
@@ -40,7 +55,8 @@ export function isFixedCodeSmsMode() {
  * Account SID + Auth Token + Verify Service SID → 使用 Twilio Verify（发码/校验由 Twilio 托管，不写本地 verification_codes）
  */
 export function isTwilioVerifyConfigured() {
-  return !!(accountSid && authToken && verifyServiceSid);
+  const e = twilioEnv();
+  return !!(e.accountSid && e.authToken && e.verifyServiceSid);
 }
 
 /**
@@ -48,7 +64,8 @@ export function isTwilioVerifyConfigured() {
  * 若已配置 Verify，登录应走 Verify，不需要发件号码。
  */
 export function isSmsProviderConfigured() {
-  return !!(accountSid && authToken && phoneNumber);
+  const e = twilioEnv();
+  return !!(e.accountSid && e.authToken && e.phoneNumber);
 }
 
 /**
@@ -56,6 +73,19 @@ export function isSmsProviderConfigured() {
  */
 export function isLoginSmsDeliveryConfigured() {
   return isTwilioVerifyConfigured() || isSmsProviderConfigured();
+}
+
+/**
+ * 发码/校验是否走 dummy（MOCK_VERIFICATION_CODE），不调用真实短信。
+ * - SMS_USE_DUMMY=true：强制 dummy（适合 Railway 等生产环境暂不接短信）
+ * - SMS_USE_DUMMY=false：仅按下面规则
+ * - 显式固定码模式（isFixedCodeSmsMode），或
+ * - 未配置任一可用渠道（Verify / Messages）——无法发真短信，只能 dummy
+ */
+export function shouldUseDummyVerification() {
+  if (process.env.SMS_USE_DUMMY === 'true') return true;
+  if (process.env.SMS_USE_DUMMY === 'false') return false;
+  return isFixedCodeSmsMode() || !isLoginSmsDeliveryConfigured();
 }
 
 /**
@@ -68,11 +98,19 @@ function mustSendRealSms() {
 }
 
 /**
- * Initialize Twilio client
+ * Initialize Twilio client（凭证随当前 process.env）
  */
 function getTwilioClient() {
-  if (!twilioClient && accountSid && authToken) {
+  const { accountSid, authToken } = twilioEnv();
+  const key = `${accountSid}:${authToken}`;
+  if (!accountSid || !authToken) {
+    twilioClient = null;
+    twilioClientCacheKey = '';
+    return null;
+  }
+  if (!twilioClient || twilioClientCacheKey !== key) {
     twilioClient = twilio(accountSid, authToken);
+    twilioClientCacheKey = key;
   }
   return twilioClient;
 }
@@ -90,7 +128,16 @@ export function generateVerificationCode() {
  * @returns {Promise<{ success: boolean; message?: string; sid?: string }>}
  */
 export async function startTwilioVerification(toPhoneNumber) {
+  if (shouldUseDummyVerification()) {
+    console.log(`[Verify] dummy mode: skip API; verify with ${MOCK_VERIFICATION_CODE}`);
+    return {
+      success: true,
+      message: '验证码已发送（开发模式）',
+    };
+  }
+
   const client = getTwilioClient();
+  const { verifyServiceSid } = twilioEnv();
 
   if (!isTwilioVerifyConfigured()) {
     if (mustSendRealSms()) {
@@ -150,6 +197,7 @@ export async function startTwilioVerification(toPhoneNumber) {
  */
 export async function verifyTwilioCode(toPhoneNumber, code) {
   const client = getTwilioClient();
+  const { verifyServiceSid } = twilioEnv();
 
   if (!isTwilioVerifyConfigured()) {
     return {
@@ -201,7 +249,16 @@ export async function verifyTwilioCode(toPhoneNumber, code) {
  * @returns {Promise<{success: boolean, message: string}>}
  */
 export async function sendVerificationCode(toPhoneNumber, code) {
+  if (shouldUseDummyVerification()) {
+    console.log(`[SMS] dummy mode: skip send; use ${MOCK_VERIFICATION_CODE} to verify`);
+    return {
+      success: true,
+      message: '验证码已发送（开发模式）',
+    };
+  }
+
   const client = getTwilioClient();
+  const { phoneNumber } = twilioEnv();
 
   if (!isSmsProviderConfigured()) {
     if (mustSendRealSms()) {
@@ -240,7 +297,7 @@ export async function sendVerificationCode(toPhoneNumber, code) {
   try {
     const message = await client.messages.create({
       body: `您的验证码是：${code}，5分钟内有效。请勿泄露给他人。`,
-      from: phoneNumber,
+      from: phoneNumber ?? '',
       to: toPhoneNumber,
     });
 
