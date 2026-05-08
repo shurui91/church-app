@@ -1,5 +1,5 @@
 // app/gym/index.tsx
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useLayoutEffect } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { Stack, useRouter } from 'expo-router';
+import { useRouter, useNavigation } from 'expo-router';
+import { HeaderButton } from '@react-navigation/elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { useThemeColors } from '../src/hooks/useThemeColors';
@@ -160,6 +161,7 @@ function normalizeTo60MinSlots(apiSlots: TimeSlot[]): TimeSlot[] {
 
 export default function GymScreen() {
   const router = useRouter();
+  const navigation = useNavigation();
   const colors = useThemeColors();
   const { t, i18n } = useTranslation();
   const { getFontSizeValue } = useFontSize();
@@ -645,27 +647,51 @@ export default function GymScreen() {
   const getMonthName = (date: Date): string =>
     t('gym.monthYearLabel', { year: date.getFullYear(), month: date.getMonth() + 1 });
 
+  // 避免每次 state 更新都传入新的 options/headerRight，原生 header 会换掉按钮导致「要点两次才生效」
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      title: t('gym.title'),
+      headerShown: true,
+      headerStyle: { backgroundColor: colors.card },
+      headerTintColor: colors.text,
+      headerBackVisible: false,
+      headerLeft: () => <BackButton />,
+      headerRightContainerStyle:
+        Platform.OS === 'ios'
+          ? ({
+              justifyContent: 'center',
+              alignItems: 'stretch',
+            } as const)
+          : undefined,
+      headerRight: () =>
+        Platform.OS === 'ios' ? (
+          <View style={styles.gymNavHeaderRightIOS} collapsable={false}>
+            <HeaderButton
+              accessibilityLabel={t('gym.myReservations')}
+              onPress={() => router.push('/gym/my-reservations')}
+              style={styles.gymNavHeaderButton}>
+              <View style={styles.gymNavHeaderIconWrap} collapsable={false}>
+                <Ionicons name="list-outline" size={24} color={colors.text} />
+              </View>
+            </HeaderButton>
+          </View>
+        ) : (
+          <HeaderButton
+            accessibilityLabel={t('gym.myReservations')}
+            onPress={() => router.push('/gym/my-reservations')}
+            style={[styles.gymNavHeaderButton, { marginRight: 12 }]}>
+            <View style={styles.gymNavHeaderIconWrap} collapsable={false}>
+              <Ionicons name="list-outline" size={24} color={colors.text} />
+            </View>
+          </HeaderButton>
+        ),
+    });
+  }, [navigation, router, colors.card, colors.text, t]);
+
   return (
     <SafeAreaView
       edges={['left', 'right', 'bottom']}
       style={[styles.container, { backgroundColor: colors.background }]}>
-      <Stack.Screen
-        options={{
-          title: t('gym.title'),
-          headerShown: true,
-          headerStyle: { backgroundColor: colors.card },
-          headerTintColor: colors.text,
-          headerBackVisible: false,
-          headerLeft: () => <BackButton />,
-          headerRight: () => (
-            <TouchableOpacity
-              onPress={() => router.push('/gym/my-reservations')}
-              style={{ marginRight: 16 }}>
-              <Ionicons name="list-outline" size={24} color={colors.text} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[
@@ -1747,6 +1773,28 @@ const styles = StyleSheet.create({
   },
   timeSlotGridHint: {
     fontSize: 11,
+  },
+  /** iOS 26+ Liquid Glass 导航栏：子视图内用 stretch + 居中，避免图标相对玻璃圆偏心 */
+  gymNavHeaderRightIOS: {
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingRight: 10,
+    minWidth: 44,
+    minHeight: 44,
+  },
+  gymNavHeaderButton: {
+    width: 44,
+    height: 44,
+    paddingHorizontal: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  gymNavHeaderIconWrap: {
+    width: 26,
+    height: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   /** Modal 内需占满可视区域，以便 KeyboardAvoidingView 推算底部 inset */
   modalKeyboardAvoid: {

@@ -207,7 +207,7 @@ export default function MyReservationsScreen() {
   }>({ type: null, reservation: null });
   const [checkAnswers, setCheckAnswers] = useState<{ clean: 'yes' | 'no'; equipment: 'yes' | 'no' }>({
     clean: 'yes',
-    equipment: 'yes',
+    equipment: 'no',
   });
 
   const [detailModalVisible, setDetailModalVisible] = useState(false);
@@ -400,7 +400,7 @@ export default function MyReservationsScreen() {
 
   const openCheckPrompt = (reservation: Reservation, type: 'checkIn' | 'checkOut') => {
     setCheckPrompt({ type, reservation });
-    setCheckAnswers({ clean: 'yes', equipment: 'yes' });
+    setCheckAnswers({ clean: 'yes', equipment: 'no' });
   };
   const closeCheckPrompt = () => {
     setCheckPrompt({ type: null, reservation: null });
