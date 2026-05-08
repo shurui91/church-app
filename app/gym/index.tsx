@@ -12,6 +12,8 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   Pressable,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
 import { Stack, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -1073,27 +1075,33 @@ export default function GymScreen() {
         transparent
         animationType="slide"
         onRequestClose={() => setShowReservationModal(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-            <View style={styles.modalHeader}>
-              <Text
-                style={[
-                  styles.modalTitle,
-                  { color: colors.text, fontSize: getFontSizeValue(20) },
-                ]}>
-                {t('gym.createReservationTitle')}
-              </Text>
-              <TouchableOpacity
-                onPress={() => setShowReservationModal(false)}
-                style={styles.closeButton}>
-                <Ionicons name="close" size={24} color={colors.text} />
-              </TouchableOpacity>
-            </View>
+        <KeyboardAvoidingView
+          style={styles.modalKeyboardAvoid}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+          <View style={styles.modalOverlay}>
+            <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+              <View style={styles.modalHeader}>
+                <Text
+                  style={[
+                    styles.modalTitle,
+                    { color: colors.text, fontSize: getFontSizeValue(20) },
+                  ]}>
+                  {t('gym.createReservationTitle')}
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setShowReservationModal(false)}
+                  style={styles.closeButton}>
+                  <Ionicons name="close" size={24} color={colors.text} />
+                </TouchableOpacity>
+              </View>
 
-            <ScrollView
-              style={styles.modalScroll}
-              showsVerticalScrollIndicator={true}
-              keyboardShouldPersistTaps="handled">
+              <ScrollView
+                style={styles.modalScroll}
+                contentContainerStyle={styles.modalScrollContent}
+                showsVerticalScrollIndicator={true}
+                keyboardShouldPersistTaps="handled"
+                keyboardDismissMode="on-drag"
+                automaticallyAdjustKeyboardInsets>
             {selectedSlot && selectedDate && (
               <>
                 <View style={styles.modalInfo}>
@@ -1384,6 +1392,7 @@ export default function GymScreen() {
             </ScrollView>
           </View>
         </View>
+        </KeyboardAvoidingView>
       </Modal>
       {/* 已预约详情模态框 */}
       <Modal
@@ -1739,6 +1748,10 @@ const styles = StyleSheet.create({
   timeSlotGridHint: {
     fontSize: 11,
   },
+  /** Modal 内需占满可视区域，以便 KeyboardAvoidingView 推算底部 inset */
+  modalKeyboardAvoid: {
+    flex: 1,
+  },
   modalOverlay: {
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.5)',
@@ -1837,6 +1850,11 @@ const styles = StyleSheet.create({
   },
   modalScroll: {
     flexGrow: 1,
+  },
+  /** 留出底部空隙，键盘弹起时 ScrollView 能把备注/按钮滚入可视区 */
+  modalScrollContent: {
+    flexGrow: 1,
+    paddingBottom: 24,
   },
   waiverModalContent: {
     flexGrow: 1,
