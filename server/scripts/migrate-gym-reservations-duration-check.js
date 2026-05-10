@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * 将 gym_reservations_duration_check 改为允许 duration ∈ {60, 120, 180}。
- * 解决批量脚本写入 3 小时块（180 分钟）时的约束错误。
+ * 若 ADD CONSTRAINT 报错「violated by some row」，本脚本会先规整 duration 再加重约束。
  *
  * 用法（在 server 目录）：
  *   node scripts/migrate-gym-reservations-duration-check.js
@@ -15,6 +15,16 @@ async function main() {
     await db.run(`
       ALTER TABLE gym_reservations
       DROP CONSTRAINT IF EXISTS gym_reservations_duration_check
+    `);
+    await db.run(`
+      UPDATE gym_reservations
+      SET duration = duration * 60
+      WHERE duration IN (1, 2, 3, 4, 5, 6)
+    `);
+    await db.run(`
+      UPDATE gym_reservations
+      SET duration = LEAST(180, GREATEST(60, (ROUND(duration::numeric / 60) * 60)::integer))
+      WHERE duration NOT IN (60, 120, 180)
     `);
     await db.run(`
       ALTER TABLE gym_reservations

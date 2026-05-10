@@ -521,6 +521,17 @@ export async function initDatabase() {
       ALTER TABLE gym_reservations
       DROP CONSTRAINT IF EXISTS gym_reservations_duration_check
     `, []);
+    // 旧数据可能存在非法 duration（如曾用 1–6 表示小时、或其它分钟数）；先规整再 ADD CHECK，避免启动失败
+    await db.run(`
+      UPDATE gym_reservations
+      SET duration = duration * 60
+      WHERE duration IN (1, 2, 3, 4, 5, 6)
+    `, []);
+    await db.run(`
+      UPDATE gym_reservations
+      SET duration = LEAST(180, GREATEST(60, (ROUND(duration::numeric / 60) * 60)::integer))
+      WHERE duration NOT IN (60, 120, 180)
+    `, []);
     await db.run(`
       ALTER TABLE gym_reservations
       ADD CONSTRAINT gym_reservations_duration_check
