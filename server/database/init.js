@@ -516,6 +516,17 @@ export async function initDatabase() {
         CHECK (status IN ('pending', 'checked_in', 'checked_out', 'cancelled'))
     `, []);
 
+    // HTTP API 仍为 60/120 分钟；库内允许 180 以供批量占位脚本等写入整段占用
+    await db.run(`
+      ALTER TABLE gym_reservations
+      DROP CONSTRAINT IF EXISTS gym_reservations_duration_check
+    `, []);
+    await db.run(`
+      ALTER TABLE gym_reservations
+      ADD CONSTRAINT gym_reservations_duration_check
+        CHECK (duration IN (60, 120, 180))
+    `, []);
+
     await db.run(`
       ALTER TABLE gym_reservations
       ADD COLUMN IF NOT EXISTS user_name TEXT

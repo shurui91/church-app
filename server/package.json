@@ -10,6 +10,9 @@
     "kill-port": "./scripts/kill-port.sh 3000",
     "dev:clean": "./scripts/kill-port.sh 3000 && npm run dev",
     "gym:block-days": "node scripts/seed-gym-blackout-dates.js",
+    "gym:bulk-weekends": "node scripts/bulk-book-gym-2026-weekends-two-users.js",
+    "gym:migrate-duration": "node scripts/migrate-gym-reservations-duration-check.js",
+    "gym:bulk-badminton": "node scripts/bulk-book-gym-badminton-wed-sat-2026.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
