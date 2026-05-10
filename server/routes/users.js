@@ -28,10 +28,10 @@ const sanitizeUserPayload = (user) => ({
 
 /**
  * GET /api/users
- * Get all users (requires admin or super_admin role)
+ * Get all users (requires admin, super_admin, responsible_one, or usher)
  * Query params: ?role=member (optional role filter)
  */
-router.get('/', authenticate, authorize('admin', 'super_admin', 'responsible_one'), async (req, res) => {
+router.get('/', authenticate, authorize('admin', 'super_admin', 'responsible_one', 'usher'), async (req, res) => {
   try {
     const { role } = req.query;
     
@@ -131,7 +131,7 @@ const adminRouteMiddleware = allowAdminListWithoutAuth ? [] : [authenticate];
 
 router.get('/admins', ...adminRouteMiddleware, async (req, res) => {
   try {
-    const roles = ['super_admin', 'admin', 'responsible_one'];
+    const roles = ['super_admin', 'admin', 'responsible_one', 'usher'];
     
     // 调试日志：检查数据库中各角色的数量
     const stats = await User.getRoleStats(); 

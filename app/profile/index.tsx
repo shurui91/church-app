@@ -307,15 +307,15 @@ export default function ProfileScreen() {
                       onPress={() => router.push('/attendance')}
                     />
                   )}
-                  {/* 查看所有出席数据 - 只有 super_admin, admin, responsible_one 可以访问 */}
-                  {['super_admin', 'admin', 'responsible_one'].includes(user?.role || '') && (
+                  {/* 查看所有出席数据 - super_admin, admin, responsible_one, usher */}
+                  {['super_admin', 'admin', 'responsible_one', 'usher'].includes(user?.role || '') && (
                     <SubMenuItem
                       icon='list-outline'
                       title='查看所有出席数据'
                       onPress={() => router.push('/attendance/view-all')}
                     />
                   )}
-                  {['super_admin', 'admin', 'responsible_one'].includes(user?.role || '') && (
+                  {['super_admin', 'admin', 'responsible_one', 'usher'].includes(user?.role || '') && (
                     <SubMenuItem
                       icon='calendar-outline'
                       title={t('travel.title') || '行程表'}
@@ -327,7 +327,7 @@ export default function ProfileScreen() {
             </>
           )}
 
-          {['super_admin', 'admin', 'responsible_one'].includes(user?.role || '') && (
+          {['super_admin', 'admin', 'responsible_one', 'usher'].includes(user?.role || '') && (
             <MenuItem
               icon='basketball-outline'
               title='体育馆'

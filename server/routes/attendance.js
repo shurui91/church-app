@@ -20,12 +20,11 @@ function canAccessAttendance(user) {
 
 /**
  * Helper function to check if user can access "view all attendance" feature
- * Only super_admin, admin, and responsible_one can access
+ * Only super_admin, admin, responsible_one, and usher can access
  */
 function canViewAllAttendance(user) {
   if (!user) return false;
-  // Only allow super_admin, admin, and responsible_one
-  return ['super_admin', 'admin', 'responsible_one'].includes(user.role);
+  return ['super_admin', 'admin', 'responsible_one', 'usher'].includes(user.role);
 }
 
 /**
@@ -282,7 +281,7 @@ router.post('/', authenticate, authorizeAttendance, async (req, res) => {
  * GET /api/attendance
  * Get attendance records for current user
  * Query params: ?limit=50&offset=0 (optional)
- * Note: For "view all" feature, only super_admin, admin, responsible_one can see all records
+ * Note: For "view all" feature, only super_admin, admin, responsible_one, usher can see all records
  */
 router.get('/', authenticate, authorizeAttendance, async (req, res) => {
   try {
@@ -302,17 +301,15 @@ router.get('/', authenticate, authorizeAttendance, async (req, res) => {
       }
     }
 
-    // Check if user can see all records (admin, super_admin, responsible_one) or just their own
+    // Check if user can see all records (admin, super_admin, responsible_one, usher) or just their own
     const canSeeAllRecords = canViewAllAttendance(user);
 
     let records;
     if (canSeeAllRecords) {
-      // Admins and responsible_one can see all records (optionally filtered by meetingType)
+      // Admins, responsible_one, usher can see all records (optionally filtered by meetingType)
       records = await Attendance.findAll(limit, offset, meetingType);
     } else {
-      // Regular users (including usher) can only see their own records
-      // But for "view all" feature, usher should not access this endpoint
-      // This is handled by frontend, but we keep this for backward compatibility
+      // member role: only their own records
       records = await Attendance.findByUser(user.id, limit, offset);
     }
 

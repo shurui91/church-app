@@ -56,11 +56,11 @@ function formatTime(minutes) {
 
 /**
  * GET /api/gym/users
- * List users for co-reservation dropdown (only super_admin, admin, responsible_one; current user excluded)
+ * List users for co-reservation dropdown (only super_admin, admin, responsible_one, usher; current user excluded)
  */
 router.get('/gym/users', gymMiddleware, async (req, res) => {
   try {
-    const allowedRoles = ['super_admin', 'admin', 'responsible_one'];
+    const allowedRoles = ['super_admin', 'admin', 'responsible_one', 'usher'];
     const users = await User.findByRoles(allowedRoles);
     const currentId = req.user?.id;
     const sanitized = users

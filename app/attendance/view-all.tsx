@@ -52,15 +52,15 @@ export default function ViewAllAttendanceScreen() {
   const { t } = useTranslation();
   const { user } = useAuth();
 
-  // Permission check: only super_admin, admin, responsible_one can access
-  const canAccess = ['super_admin', 'admin', 'responsible_one'].includes(user?.role || '');
+  // Permission check: super_admin, admin, responsible_one, usher — same as responsible_one tier
+  const canAccess = ['super_admin', 'admin', 'responsible_one', 'usher'].includes(user?.role || '');
 
   // Redirect if no permission
   useEffect(() => {
     if (user && !canAccess) {
       Alert.alert(
         t('common.tip') || '提示',
-        '权限不足，只有管理员和负责人可以访问此功能',
+        '权限不足，只有管理员、负责人或招待可以访问此功能',
         [
           {
             text: t('common.cancel') || '确定',
