@@ -327,13 +327,11 @@ export default function ProfileScreen() {
             </>
           )}
 
-          {['super_admin', 'admin', 'responsible_one', 'usher'].includes(user?.role || '') && (
-            <MenuItem
-              icon='basketball-outline'
-              title='体育馆'
-              onPress={() => router.push('/gym')}
-            />
-          )}
+          <MenuItem
+            icon='basketball-outline'
+            title='体育馆'
+            onPress={() => router.push('/gym')}
+          />
           <MenuItem
             icon='settings-outline'
             title={t('profile.appSettings') || '应用设置'}
